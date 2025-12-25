@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunrise & Sunset Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/suncalc@1.9.0/suncalc.min.js"></script>
+    <style>
+        :root {
+            --color-primary: #2180 8d;
+            --color-primary-hover: #1d7480;
+            --color-text: #134252;
+            --color-bg: #fcfcf9;
+            --color-surface: #ffffff;
+            --color-border: rgba(94, 82, 64, 0.2);
+            --color-success: #208d8d;
+            --color-warning: #a84b2f;
+            --color-error: #c0152f;
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #fcfcf9 0%, #f5f5f5 100%);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin: 0 0 10px 0;
+            color: var(--color-text);
+        }
+
+        .header p {
+            color: #626c71;
+            margin: 0;
+            font-size: 14px;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 20px;
+            border: 1px solid var(--color-border);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        input[type="text"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--color-text);
+            background: #fafaf8;
+            transition: all 200ms ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            background: var(--color-surface);
+            box-shadow: 0 0 0 3px rgba(33, 128, 141, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-group .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 200ms ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .button--primary {
+            background: var(--color-primary);
+            color: white;
+        }
+
+        .button--primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .button--primary:active {
+            opacity: 0.9;
+        }
+
+        .button--secondary {
+            background: transparent;
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+        }
+
+        .button--secondary:hover {
+            background: rgba(94, 82, 64, 0.05);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(33, 128, 141, 0.05) 0%, rgba(33, 128, 141, 0.02) 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(33, 128, 141, 0.15);
+            text-align: center;
+        }
+
+        .result-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #626c71;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .result-card .time {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin: 0;
+        }
+
+        .result-card .ampm {
+            font-size: 14px;
+            color: #626c71;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .info-item {
+            padding: 15px;
+            background: rgba(94, 82, 64, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--color-primary);
+        }
+
+        .info-item label {
+            margin-bottom: 5px;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #626c71;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--color-text);
+            margin: 0;
+        }
+
+        .suggestions-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(94, 82, 64, 0.1);
+            transition: background-color 200ms ease;
+            font-size: 14px;
+            color: var(--color-text);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover {
+            background-color: rgba(33, 128, 141, 0.08);
+        }
+
+        .suggestion-item .location-name {
+            font-weight: 500;
+        }
+
+        .suggestion-item .location-details {
+            font-size: 12px;
+            color: #626c71;
+            margin-top: 2px;
+        }
+
+        .status {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .status.show {
+            display: block;
+        }
+
+        .status--success {
+            background: rgba(32, 141, 141, 0.1);
+            color: var(--color-success);
+            border: 1px solid rgba(32, 141, 141, 0.2);
+        }
+
+        .status--error {
+            background: rgba(192, 21, 47, 0.1);
+            color: var(--color-error);
+            border: 1px solid rgba(192, 21, 47, 0.2);
+        }
+
+        .status--warning {
+            background: rgba(168, 75, 47, 0.1);
+            color: var(--color-warning);
+            border: 1px solid rgba(168, 75, 47, 0.2);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(33, 128, 141, 0.3);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 600ms linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .results {
+                grid-template-columns: 1fr;
+            }
+
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .input-group .form-group {
+                margin-bottom: 0;
+            }
+
+            .button {
+                width: 100%;
+            }
+
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>☀️ Sunrise & Sunset</h1>
+            <p>Calculate sunrise and sunset times for any location</p>
+        </div>
+
+        <div class="card">
+            <div id="status" class="status"></div>
+
+            <div class="form-group">
+                <label for="location-input">Location</label>
+                <div class="input-group">
+                    <div class="form-group" style="flex: 1; position: relative;">
+                        <input 
+                            type="text" 
+                            id="location-input" 
+                            placeholder="Enter city name (e.g., Rajahmundry, London, New York)"
+                            value="Rajahmundry"
+                            autocomplete="off"
+                            oninput="suggestLocations()"
+                        >
+                        <div id="suggestions-dropdown" class="suggestions-dropdown" style="display: none;"></div>
+                    </div>
+                    <button class="button button--primary" onclick="searchLocation()">
+                        <span>Search</span>
+                    </button>
+                    <button class="button button--secondary" onclick="useCurrentLocation()" title="Use your current location">
+                        📍
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="date-input">Date</label>
+                <input type="date" id="date-input">
+            </div>
+
+            <div class="info-section">
+                <div class="info-item">
+                    <label>Latitude</label>
+                    <p class="value" id="latitude">—</p>
+                </div>
+                <div class="info-item">
+                    <label>Longitude</label>
+                    <p class="value" id="longitude">—</p>
+                </div>
+                <div class="info-item">
+                    <label>Timezone</label>
+                    <p class="value" id="timezone">—</p>
+                </div>
+                <div class="info-item">
+                    <label>GMT Offset</label>
+                    <p class="value" id="gmt-offset">—</p>
+                </div>
+            </div>
+
+            <button class="button button--primary" onclick="calculateTimes()" style="width: 100%; margin-top: 20px;">
+                Calculate Times
+            </button>
+        </div>
+
+        <div id="results-container" style="display: none;">
+            <div class="card">
+                <div class="results">
+                    <div class="result-card">
+                        <h3>🌅 Sunrise</h3>
+                        <p class="time" id="sunrise-time">—</p>
+                        <p class="ampm" id="sunrise-ampm"></p>
+                    </div>
+                    <div class="result-card">
+                        <h3>🌆 Sunset</h3>
+                        <p class="time" id="sunset-time">—</p>
+                        <p class="ampm" id="sunset-ampm"></p>
+                    </div>
+                </div>
+
+                <div class="info-section" style="margin-top: 25px;">
+                    <div class="info-item">
+                        <label>Location</label>
+                        <p class="value" id="result-location">—</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Date</label>
+                        <p class="value" id="result-date">—</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Timezone</label>
+                        <p class="value" id="result-timezone">—</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Day Length</label>
+                        <p class="value" id="day-length">—</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Solar Noon</label>
+                        <p class="value" id="solar-noon">—</p>
+                    </div>
+                    <div class="info-item">
+                        <label>UTC Offset</label>
+                        <p class="value" id="utc-offset">—</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default location (Rajahmundry)
+        let currentLat = 17.3667;
+        let currentLon = 81.7833;
+        let currentLocationName = "Rajahmundry, India";
+        let currentTimeZone = "Asia/Kolkata";
+
+        // Set today's date as default
+        const today = new Date();
+        document.getElementById('date-input').valueAsDate = today;
+
+        function showStatus(message, type = 'info') {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            statusEl.className = `status show status--${type}`;
+            setTimeout(() => statusEl.classList.remove('show'), 4000);
+        }
+
+        function useCurrentLocation() {
+            const statusEl = document.getElementById('status');
+            if (!navigator.geolocation) {
+                showStatus('Geolocation not supported by your browser', 'error');
+                return;
+            }
+
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    currentLat = position.coords.latitude;
+                    currentLon = position.coords.longitude;
+                    reverseGeocode(currentLat, currentLon);
+                    btn.disabled = false;
+                    btn.textContent = '📍';
+                    showStatus('Location updated', 'success');
+                },
+                (error) => {
+                    btn.disabled = false;
+                    btn.textContent = '📍';
+                    if (error.code === 1) {
+                        showStatus('Permission denied. Please enable location access.', 'error');
+                    } else {
+                        showStatus('Could not get location. Try entering manually.', 'error');
+                    }
+                }
+            );
+        }
+
+        function reverseGeocode(lat, lon) {
+            // Using Open-Meteo Geocoding API (free, no key required)
+            fetch(`https://geocoding-api.open-meteo.com/v1/search?latitude=${lat}&longitude=${lon}&language=en`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.results && data.results[0]) {
+                        const place = data.results[0];
+                        currentLocationName = place.name;
+                        if (place.admin1) currentLocationName += ', ' + place.admin1;
+                        if (place.country) currentLocationName += ', ' + place.country;
+                        document.getElementById('location-input').value = currentLocationName;
+                    }
+                })
+                .catch(() => {
+                    // If reverse geocoding fails, just show coordinates
+                    currentLocationName = `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+                    document.getElementById('location-input').value = currentLocationName;
+                });
+            
+            // Fetch timezone using GeoNames API
+            fetchTimezone(lat, lon);
+        }
+
+        function fetchTimezone(lat, lon) {
+            // Using Open-Meteo timezone API (most reliable)
+            return fetch(`https://open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&timezone=auto`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.timezone) {
+                        currentTimeZone = data.timezone;
+                        document.getElementById('timezone').textContent = data.timezone;
+                        
+                        // Calculate UTC offset from the timezone using Intl API
+                        const now = new Date();
+                        const formatter = new Intl.DateTimeFormat('en-US', {
+                            timeZone: data.timezone,
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        });
+                        
+                        const parts = formatter.formatToParts(now);
+                        const tzHour = parseInt(parts.find(p => p.type === 'hour').value);
+                        const tzMinute = parseInt(parts.find(p => p.type === 'minute').value);
+                        
+                        const utcFormatter = new Intl.DateTimeFormat('en-US', {
+                            timeZone: 'UTC',
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                            hour12: false
+                        });
+                        
+                        const utcParts = utcFormatter.formatToParts(now);
+                        const utcHour = parseInt(utcParts.find(p => p.type === 'hour').value);
+                        const utcMinute = parseInt(utcParts.find(p => p.type === 'minute').value);
+                        
+                        let diffHours = tzHour - utcHour;
+                        let diffMinutes = tzMinute - utcMinute;
+                        
+                        if (diffMinutes < 0) {
+                            diffHours--;
+                            diffMinutes += 60;
+                        }
+                        if (diffHours < -12) diffHours += 24;
+                        if (diffHours > 12) diffHours -= 24;
+                        
+                        const sign = diffHours >= 0 ? '+' : '';
+                        const minStr = diffMinutes > 0 ? `:${String(diffMinutes).padStart(2, '0')}` : ':00';
+                        document.getElementById('gmt-offset').textContent = `UTC ${sign}${diffHours}${minStr}`;
+                        
+                        showStatus(`Timezone detected: ${data.timezone}`, 'success');
+                        calculateTimes();
+                    } else {
+                        throw new Error('No timezone in response');
+                    }
+                })
+                .catch(() => {
+                    // Fallback: Try GeoNames API
+                    fetch(`https://api.geonames.org/timezoneJSON?lat=${lat}&lng=${lon}&username=demo`)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.timezoneId) {
+                                currentTimeZone = data.timezoneId;
+                                document.getElementById('timezone').textContent = data.timezoneId;
+                                const offset = data.gmtOffset;
+                                const sign = offset >= 0 ? '+' : '';
+                                const offsetStr = offset % 1 === 0 ? `${Math.abs(offset)}:00` : `${Math.floor(Math.abs(offset))}:30`;
+                                document.getElementById('gmt-offset').textContent = `UTC ${sign}${offsetStr}`;
+                                showStatus(`Timezone detected: ${data.timezoneId}`, 'success');
+                                calculateTimes();
+                            } else {
+                                throw new Error('No timezone data');
+                            }
+                        })
+                        .catch(() => {
+                            // Ultimate fallback to UTC
+                            currentTimeZone = "UTC";
+                            document.getElementById('timezone').textContent = "UTC";
+                            document.getElementById('gmt-offset').textContent = "UTC +0:00";
+                            showStatus('Using UTC (timezone detection unavailable)', 'warning');
+                            calculateTimes();
+                        });
+                });
+        }
+
+        let suggestionsTimeout;
+
+        function suggestLocations() {
+            const query = document.getElementById('location-input').value.trim();
+            const dropdown = document.getElementById('suggestions-dropdown');
+
+            if (query.length < 2) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            clearTimeout(suggestionsTimeout);
+            suggestionsTimeout = setTimeout(() => {
+                fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            dropdown.innerHTML = data.results.map(place => `
+                                <div class="suggestion-item" onclick="selectLocation('${place.name}', '${place.admin1 || ''}', '${place.country || ''}', ${place.latitude}, ${place.longitude})">
+                                    <div class="location-name">${place.name}</div>
+                                    <div class="location-details">${[place.admin1, place.country].filter(Boolean).join(', ')}</div>
+                                </div>
+                            `).join('');
+                            dropdown.style.display = 'block';
+                        } else {
+                            dropdown.innerHTML = '<div class="suggestion-item" style="cursor: default; color: #626c71;">No results found</div>';
+                            dropdown.style.display = 'block';
+                        }
+                    })
+                    .catch(err => {
+                        dropdown.style.display = 'none';
+                    });
+            }, 300);
+        }
+
+        function selectLocation(name, admin1, country, lat, lon) {
+            currentLat = lat;
+            currentLon = lon;
+            currentLocationName = name;
+            if (admin1) currentLocationName += ', ' + admin1;
+            if (country) currentLocationName += ', ' + country;
+
+            document.getElementById('location-input').value = currentLocationName;
+            document.getElementById('suggestions-dropdown').style.display = 'none';
+            document.getElementById('latitude').textContent = lat.toFixed(4);
+            document.getElementById('longitude').textContent = lon.toFixed(4);
+            
+            // Fetch timezone and wait for it to complete before calculating times
+            fetchTimezone(lat, lon);
+            showStatus(`Location selected: ${currentLocationName}`, 'success');
+        }
+
+        function searchLocation() {
+            const query = document.getElementById('location-input').value.trim();
+            if (!query) {
+                showStatus('Please enter a location name', 'warning');
+                return;
+            }
+
+            const btn = event.target.closest('button');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner"></span>';
+
+            // Using Open-Meteo Geocoding API
+            fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en`)
+                .then(r => r.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Search</span>';
+
+                    if (data.results && data.results[0]) {
+                        const place = data.results[0];
+                        selectLocation(place.name, place.admin1 || '', place.country || '', place.latitude, place.longitude);
+                    } else {
+                        showStatus('Location not found. Try a different search.', 'error');
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Search</span>';
+                    showStatus('Error searching location. Check your connection.', 'error');
+                });
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.id !== 'location-input') {
+                document.getElementById('suggestions-dropdown').style.display = 'none';
+            }
+        });
+
+        function calculateTimes() {
+            const dateInput = document.getElementById('date-input').value;
+            if (!dateInput) {
+                showStatus('Please select a date', 'warning');
+                return;
+            }
+
+            const date = new Date(dateInput);
+
+            // Calculate sunrise/sunset using SunCalc.js
+            const times = SunCalc.getTimes(date, currentLat, currentLon);
+
+            function formatTimeInTimezone(utcDate, timezone) {
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                    timeZone: timezone
+                });
+                return formatter.format(utcDate);
+            }
+
+            function formatAMPMInTimezone(utcDate, timezone) {
+                const formatter = new Intl.DateTimeFormat('en-US', {
+                    hour: 'numeric',
+                    hour12: true,
+                    timeZone: timezone
+                });
+                const formatted = formatter.format(utcDate);
+                return formatted.includes('AM') ? 'AM' : 'PM';
+            }
+
+            function getUTCOffsetString(timezone) {
+                const now = new Date();
+                const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+                const tzDate = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+                const diff = tzDate - utcDate;
+                const hours = Math.floor(Math.abs(diff) / 3600000);
+                const minutes = Math.floor((Math.abs(diff) % 3600000) / 60000);
+                const sign = diff >= 0 ? '+' : '-';
+                const minStr = minutes > 0 ? `:${String(minutes).padStart(2, '0')}` : '';
+                return `UTC ${sign}${hours}${minStr}`;
+            }
+
+            function dayDifference(date1, date2) {
+                const diff = Math.abs(date2 - date1);
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                return `${hours}h ${minutes}m`;
+            }
+
+            // Update results with timezone-aware formatting
+            document.getElementById('sunrise-time').textContent = formatTimeInTimezone(times.sunrise, currentTimeZone);
+            document.getElementById('sunrise-ampm').textContent = formatAMPMInTimezone(times.sunrise, currentTimeZone);
+            document.getElementById('sunset-time').textContent = formatTimeInTimezone(times.sunset, currentTimeZone);
+            document.getElementById('sunset-ampm').textContent = formatAMPMInTimezone(times.sunset, currentTimeZone);
+            document.getElementById('result-location').textContent = currentLocationName;
+            document.getElementById('result-date').textContent = date.toDateString();
+            document.getElementById('result-timezone').textContent = currentTimeZone;
+            document.getElementById('day-length').textContent = dayDifference(times.sunrise, times.sunset);
+            document.getElementById('solar-noon').textContent = formatTimeInTimezone(times.solarNoon, currentTimeZone);
+            document.getElementById('utc-offset').textContent = getUTCOffsetString(currentTimeZone);
+
+            document.getElementById('latitude').textContent = currentLat.toFixed(4);
+            document.getElementById('longitude').textContent = currentLon.toFixed(4);
+
+            document.getElementById('results-container').style.display = 'block';
+            showStatus('Times calculated successfully', 'success');
+        }
+
+        // Initialize
+        document.getElementById('latitude').textContent = currentLat.toFixed(4);
+        document.getElementById('longitude').textContent = currentLon.toFixed(4);
+        fetchTimezone(currentLat, currentLon);
+        calculateTimes();
+    </script>
+</body>
+</html>

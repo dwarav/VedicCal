@@ -1,0 +1,208 @@
+{
+  "date": "2025-12-25",
+  "time": "06:00:00",
+  "location": {
+    "city": "Rajamahendravaram",
+    "country": "India",
+    "latitude": 17.0050454,
+    "longitude": 81.7804732,
+    "timezone": "Asia/Kolkata"
+  },
+  "vedic_elements": {
+    "tithi": {
+      "number": 5,
+      "name": " Panchami",
+      "paksha": "Shukla",
+      "day": 5,
+      "fraction": 0.9086,
+      "start_date": "2025-12-24",
+      "start_time": "07:41:57",
+      "end_date": "2025-12-25",
+      "end_time": "08:13:35",
+      "duration_minutes": 1471
+    },
+    "nakshatra": {
+      "number": 24,
+      "name": "Shatabhisha",
+      "lord": "Rahu",
+      "pada": 1,
+      "fraction": 0.128,
+      "start_date": "2025-12-25",
+      "start_time": "02:48:45",
+      "end_date": "2025-12-26",
+      "end_time": "03:30:56",
+      "duration_minutes": 1482
+    },
+    "masa": {
+      "number": 10,
+      "name": "Pausha"
+    },
+    "vaara": {
+      "number": 5,
+      "name": "Guruvara"
+    },
+    "yoga": {
+      "number": 15,
+      "name": "Vajra",
+      "fraction": 0.8382,
+      "start_date": "2025-12-24",
+      "start_time": "10:32:48",
+      "end_date": "2025-12-25",
+      "end_time": "09:43:35",
+      "duration_minutes": 1390
+    },
+    "karana": {
+      "number": 10,
+      "name": "Naga",
+      "fraction": 0.8173,
+      "start_date": "2025-12-24",
+      "start_time": "20:01:38",
+      "end_date": "2025-12-25",
+      "end_time": "08:13:35",
+      "duration_minutes": 731
+    }
+  },
+  "day_times": {
+    "sunrise": "01:00:53",
+    "sunset": "12:05:28",
+    "sunrise_datetime": "2025-12-26T01:00:53",
+    "sunset_datetime": "2025-12-25T12:05:28",
+    "moonrise": "05:25:14",
+    "moonset": "16:44:29",
+    "moonrise_datetime": "2025-12-26T05:25:14",
+    "moonset_datetime": "2025-12-26T16:44:29"
+  },
+  "muhurta_timings": {
+    "brahma_muhurta": {
+      "name": "Brahma Muhurta",
+      "meaning": "48 minutes before sunrise (2 ghatikas) - Best for meditation",
+      "start": "23:24:53",
+      "end": "00:12:53",
+      "start_time": "2025-12-25 23:24:53",
+      "end_time": "2025-12-26 00:12:53",
+      "duration_minutes": 48,
+      "auspiciousness": "Most Auspicious",
+      "sunrise_used": "2025-12-26 01:00:53",
+      "prev_sunset_used": "2025-12-24 12:04:55"
+    },
+    "amruthakala": {
+      "name": "Amruthakala",
+      "meaning": "N/A - could not compute sunrise/sunset",
+      "start": "N/A",
+      "end": "N/A",
+      "start_time": null,
+      "end_time": null,
+      "duration_minutes": 0,
+      "auspiciousness": "Unknown",
+      "vaara": "Guruvara",
+      "kala_index": 4,
+      "kala_length_minutes": 0
+    },
+    "rahukalam": {
+      "name": "Rahukalam",
+      "meaning": "N/A - could not compute sunrise/sunset",
+      "start": "N/A",
+      "end": "N/A",
+      "start_time": null,
+      "end_time": null,
+      "duration_minutes": 0,
+      "auspiciousness": "Unknown",
+      "vaara": "Guruvara"
+    },
+    "yamagandam": {
+      "name": "Yamagandam",
+      "meaning": "N/A - could not compute sunrise/sunset",
+      "start": "N/A",
+      "end": "N/A",
+      "start_time": null,
+      "end_time": null,
+      "duration_minutes": 0,
+      "auspiciousness": "Unknown",
+      "vaara": "Guruvara"
+    },
+    "varjyam": {
+      "name": "Varjyam",
+      "meaning": "Varjyam for nakshatra Shatabhisha (k=0)",
+      "start": "02:48:45",
+      "end": "04:24:45",
+      "start_time": "2025-12-25 02:48:45",
+      "end_time": "2025-12-25 04:24:45",
+      "duration_minutes": 96,
+      "auspiciousness": "Inauspicious",
+      "nakshatra": "Shatabhisha",
+      "nakshatra_index": 23,
+      "k_used": 0,
+      "nakshatra_start": "2025-12-25 02:48:45",
+      "nakshatra_end": "2025-12-26 03:30:56",
+      "part_seconds": 14821.833333333334
+    },
+    "durmuhurta": {
+      "name": "Durmuhurta",
+      "meaning": "Inauspicious period - Avoid new ventures",
+      "periods": [
+        {
+          "number": 1,
+          "start": "03:40:53",
+          "end": "12:05:28",
+          "start_time": "2025-12-26 03:40:53",
+          "end_time": "2025-12-25 12:05:28",
+          "duration_minutes": -935
+        },
+        {
+          "number": 2,
+          "start": "08:12:53",
+          "end": "12:05:28",
+          "start_time": "2025-12-26 08:12:53",
+          "end_time": "2025-12-25 12:05:28",
+          "duration_minutes": -1207
+        }
+      ],
+      "auspiciousness": "Inauspicious"
+    },
+    "vijaya_muhurta": {
+      "name": "Vijaya Muhurta",
+      "meaning": "N/A - could not compute sunrise/sunset",
+      "start": "N/A",
+      "end": "N/A",
+      "start_time": null,
+      "end_time": null,
+      "duration_minutes": 0,
+      "auspiciousness": "Unknown",
+      "use_for": null
+    }
+  },
+  "auspiciousness_summary": {
+    "best_times": [
+      {
+        "name": "Brahma Muhurta",
+        "time": "23:24:53 - 00:12:53"
+      },
+      {
+        "name": "Amruthakala",
+        "time": "N/A - N/A"
+      },
+      {
+        "name": "Vijaya Muhurta",
+        "time": "N/A - N/A"
+      }
+    ],
+    "avoid_times": [
+      {
+        "name": "Rahukalam",
+        "time": "N/A - N/A"
+      },
+      {
+        "name": "Yamagandam",
+        "time": "N/A - N/A"
+      },
+      {
+        "name": "Varjyam",
+        "time": "02:48:45 - 04:24:45"
+      },
+      {
+        "name": "Durmuhurta",
+        "time": "Multiple periods"
+      }
+    ]
+  }
+}
