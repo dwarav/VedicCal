@@ -357,10 +357,10 @@
                         >
                         <div id="suggestions-dropdown" class="suggestions-dropdown" style="display: none;"></div>
                     </div>
-                    <button class="button button--primary" onclick="searchLocation()">
+                    <button class="button button--primary" onclick="searchLocation(event)">
                         <span>Search</span>
                     </button>
-                    <button class="button button--secondary" onclick="useCurrentLocation()" title="Use your current location">
+                    <button class="button button--secondary" onclick="useCurrentLocation(event)" title="Use your current location">
                         📍
                     </button>
                 </div>
@@ -441,11 +441,11 @@
     </div>
 
     <script>
-        // Default location (Rajahmundry)
-        let currentLat = 17.3667;
-        let currentLon = 81.7833;
-        let currentLocationName = "Rajahmundry, India";
-        let currentTimeZone = "Asia/Kolkata";
+        // Default location values (will be detected from system)
+        let currentLat = null;
+        let currentLon = null;
+        let currentLocationName = "";
+        let currentTimeZone = "";
 
         // Set today's date as default
         const today = new Date();
@@ -458,14 +458,14 @@
             setTimeout(() => statusEl.classList.remove('show'), 4000);
         }
 
-        function useCurrentLocation() {
+        function useCurrentLocation(e) {
             const statusEl = document.getElementById('status');
             if (!navigator.geolocation) {
                 showStatus('Geolocation not supported by your browser', 'error');
                 return;
             }
 
-            const btn = event.target.closest('button');
+            const btn = e.target.closest('button');
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span>';
 
@@ -619,16 +619,37 @@
                 fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=en`)
                     .then(r => r.json())
                     .then(data => {
+                        dropdown.innerHTML = '';
                         if (data.results && data.results.length > 0) {
-                            dropdown.innerHTML = data.results.map(place => `
-                                <div class="suggestion-item" onclick="selectLocation('${place.name}', '${place.admin1 || ''}', '${place.country || ''}', ${place.latitude}, ${place.longitude})">
-                                    <div class="location-name">${place.name}</div>
-                                    <div class="location-details">${[place.admin1, place.country].filter(Boolean).join(', ')}</div>
-                                </div>
-                            `).join('');
+                            data.results.forEach(place => {
+                                const item = document.createElement('div');
+                                item.className = 'suggestion-item';
+                                item.dataset.name = place.name || '';
+                                item.dataset.admin1 = place.admin1 || '';
+                                item.dataset.country = place.country || '';
+                                item.dataset.lat = place.latitude;
+                                item.dataset.lon = place.longitude;
+
+                                const nameDiv = document.createElement('div');
+                                nameDiv.className = 'location-name';
+                                nameDiv.textContent = place.name || '';
+
+                                const detailsDiv = document.createElement('div');
+                                detailsDiv.className = 'location-details';
+                                detailsDiv.textContent = [place.admin1, place.country].filter(Boolean).join(', ');
+
+                                item.appendChild(nameDiv);
+                                item.appendChild(detailsDiv);
+                                dropdown.appendChild(item);
+                            });
                             dropdown.style.display = 'block';
                         } else {
-                            dropdown.innerHTML = '<div class="suggestion-item" style="cursor: default; color: #626c71;">No results found</div>';
+                            const nores = document.createElement('div');
+                            nores.className = 'suggestion-item';
+                            nores.style.cursor = 'default';
+                            nores.style.color = '#626c71';
+                            nores.textContent = 'No results found';
+                            dropdown.appendChild(nores);
                             dropdown.style.display = 'block';
                         }
                     })
@@ -637,6 +658,18 @@
                     });
             }, 300);
         }
+
+        // Handle clicks on suggestion items via event delegation
+        document.getElementById('suggestions-dropdown').addEventListener('click', function(ev) {
+            const target = ev.target.closest('.suggestion-item');
+            if (!target) return;
+            const name = target.dataset.name || '';
+            const admin1 = target.dataset.admin1 || '';
+            const country = target.dataset.country || '';
+            const lat = parseFloat(target.dataset.lat);
+            const lon = parseFloat(target.dataset.lon);
+            selectLocation(name, admin1, country, lat, lon);
+        });
 
         function selectLocation(name, admin1, country, lat, lon) {
             currentLat = lat;
@@ -655,14 +688,18 @@
             showStatus(`Location selected: ${currentLocationName}`, 'success');
         }
 
-        function searchLocation() {
+        function searchLocation(e) {
             const query = document.getElementById('location-input').value.trim();
             if (!query) {
                 showStatus('Please enter a location name', 'warning');
                 return;
             }
 
-            const btn = event.target.closest('button');
+            const btn = e && e.target ? e.target.closest('button') : null;
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>';
+            }
             btn.disabled = true;
             btn.innerHTML = '<span class="spinner"></span>';
 
@@ -670,8 +707,7 @@
             fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en`)
                 .then(r => r.json())
                 .then(data => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>Search</span>';
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<span>Search</span>'; }
 
                     if (data.results && data.results[0]) {
                         const place = data.results[0];
@@ -681,16 +717,19 @@
                     }
                 })
                 .catch(err => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<span>Search</span>';
+                    if (btn) { btn.disabled = false; btn.innerHTML = '<span>Search</span>'; }
                     showStatus('Error searching location. Check your connection.', 'error');
                 });
         }
 
-        // Close dropdown when clicking outside
+        // Close dropdown when clicking outside the input or dropdown
         document.addEventListener('click', (e) => {
-            if (e.target.id !== 'location-input') {
-                document.getElementById('suggestions-dropdown').style.display = 'none';
+            const dropdown = document.getElementById('suggestions-dropdown');
+            const input = document.getElementById('location-input');
+            const clickedInsideDropdown = e.target.closest && e.target.closest('#suggestions-dropdown');
+            const clickedInput = e.target === input || e.target.closest && e.target.closest('#location-input');
+            if (!clickedInsideDropdown && !clickedInput) {
+                dropdown.style.display = 'none';
             }
         });
 
@@ -764,11 +803,83 @@
             showStatus('Times calculated successfully', 'success');
         }
 
-        // Initialize
-        document.getElementById('latitude').textContent = currentLat.toFixed(4);
-        document.getElementById('longitude').textContent = currentLon.toFixed(4);
-        fetchTimezone(currentLat, currentLon);
-        calculateTimes();
+        // Initialize: detect location from system (geolocation) with IP fallback
+        function detectSystemLocation() {
+            const latEl = document.getElementById('latitude');
+            const lonEl = document.getElementById('longitude');
+
+            function fallbackToDefault() {
+                // Fallback to Delhi coordinates if detection fails
+                currentLat = 28.6139;
+                currentLon = 77.2090;
+                currentLocationName = 'New Delhi, India';
+                latEl.textContent = currentLat.toFixed(4);
+                lonEl.textContent = currentLon.toFixed(4);
+                document.getElementById('location-input').value = currentLocationName;
+                fetchTimezone(currentLat, currentLon);
+                showStatus('Using fallback location (New Delhi)', 'warning');
+            }
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentLat = position.coords.latitude;
+                        currentLon = position.coords.longitude;
+                        latEl.textContent = currentLat.toFixed(4);
+                        lonEl.textContent = currentLon.toFixed(4);
+                        reverseGeocode(currentLat, currentLon);
+                        showStatus('Detected location from system', 'success');
+                    },
+                    (err) => {
+                        // Try IP-based fallback
+                        fetch('https://ipapi.co/json/')
+                            .then(r => r.json())
+                            .then(data => {
+                                if (data && data.latitude && data.longitude) {
+                                    currentLat = parseFloat(data.latitude);
+                                    currentLon = parseFloat(data.longitude);
+                                    currentLocationName = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+                                    document.getElementById('location-input').value = currentLocationName;
+                                    latEl.textContent = currentLat.toFixed(4);
+                                    lonEl.textContent = currentLon.toFixed(4);
+                                    fetchTimezone(currentLat, currentLon);
+                                    showStatus('Detected location via IP', 'success');
+                                } else {
+                                    fallbackToDefault();
+                                }
+                            })
+                            .catch(() => {
+                                fallbackToDefault();
+                            });
+                    },
+                    { timeout: 10000 }
+                );
+            } else {
+                // No geolocation support, use IP-based detection
+                fetch('https://ipapi.co/json/')
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data && data.latitude && data.longitude) {
+                            currentLat = parseFloat(data.latitude);
+                            currentLon = parseFloat(data.longitude);
+                            currentLocationName = [data.city, data.region, data.country_name].filter(Boolean).join(', ');
+                            document.getElementById('location-input').value = currentLocationName;
+                            latEl.textContent = currentLat.toFixed(4);
+                            lonEl.textContent = currentLon.toFixed(4);
+                            fetchTimezone(currentLat, currentLon);
+                            showStatus('Detected location via IP', 'success');
+                        } else {
+                            fallbackToDefault();
+                        }
+                    })
+                    .catch(() => {
+                        fallbackToDefault();
+                    });
+            }
+        }
+
+        // Run detection on load
+        detectSystemLocation();
     </script>
 </body>
 </html>
