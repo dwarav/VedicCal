@@ -5,25 +5,37 @@ from datetime import datetime
 app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
+def home():
+    # 1. Set Defaults (First Load)
+    # You can change this default to your preferred city
+    location = "Rajamahendravaram, India" 
+    date = datetime.now().strftime("%Y-%m-%d")
+    
+    error = None
+    
+    # 2. Handle User Search
     if request.method == 'POST':
-        location = request.form.get('location')
-        date = request.form.get('date')
+        user_loc = request.form.get('location')
+        user_date = request.form.get('date')
         
-        if not location or not date:
-            return render_template('index.html', error="Please enter both location and date.")
-            
-        try:
-            result = fetch_panchang(location, date)
-            if "error" in result:
-                return render_template('index.html', error=result['error'])
-            return render_template('result.html', data=result)
-        except Exception as e:
-            return render_template('index.html', error=f"Calculation Error: {str(e)}")
-            
-    # Default: Show form
-    today = datetime.now().strftime("%Y-%m-%d")
-    return render_template('index.html', today=today)
+        if user_loc and user_date:
+            location = user_loc
+            date = user_date
+        else:
+            error = "Please provide both location and date."
+
+    # 3. Calculate Panchang
+    try:
+        data = fetch_panchang(location, date)
+        if "error" in data:
+            error = data["error"]
+            data = None
+    except Exception as e:
+        error = str(e)
+        data = None
+
+    # 4. Render Single Page
+    return render_template('home.html', data=data, today=date, location_val=location, error=error)
 
 if __name__ == '__main__':
     app.run(debug=True)

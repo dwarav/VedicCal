@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dwara's Vedic Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+        
+        /* --- SEARCH SECTION STYLES --- */
+        .search-container {
+            max-width: 700px;
+            margin: 20px auto;
+            background: #fff8e1;
+            border: 2px solid #b71c1c;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-btn {
+            background: #b71c1c;
+            color: #fff;
+            border: none;
+            font-weight: bold;
+        }
+        .search-btn:hover { background: #8e1616; color: #fff; }
+        
+        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .form-control { border: 1px solid #d4ac0d; background: #fff; }
+        .form-control:focus { border-color: #b71c1c; box-shadow: 0 0 0 0.2rem rgba(183, 28, 28, 0.25); }
+
+        /* AUTOCOMPLETE LIST */
+        .suggestions-list {
+            position: absolute;
+            background: white;
+            border: 1px solid #d4ac0d;
+            z-index: 1000;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            list-style: none; padding: 0; margin: 0;
+            display: none;
+        }
+        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
+
+        /* --- RESULT CARD STYLES (From Previous) --- */
+        #captureArea {
+            max-width: 700px;
+            margin: 20px auto;
+            background: #fff8e1;
+            border: 2px solid #b71c1c;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .brand-header {
+            background: #b71c1c;
+            border-bottom: 4px solid #d4ac0d;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-content { text-align: center; color: #fff; flex-grow: 1; padding: 0 10px; }
+        .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); line-height: 1.1; }
+        .brand-header .subtitle { font-family: 'Roboto', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #f9e79f; margin-top: 5px; }
+        .header-img { height: 90px; width: auto; border: 2px solid #d4ac0d; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); object-fit: cover; }
+
+        .main-info { background: #f9e79f; text-align: center; padding: 12px; border-bottom: 1px solid #d4ac0d; }
+        .main-info h2 { color: #5d4037; font-weight: bold; margin: 0; font-size: 1.3rem; }
+        .main-info p { color: #795548; margin: 4px 0 0; font-size: 0.95rem; }
+
+        .header-section { background: #d4ac0d; color: #4e342e; font-weight: 900; text-align: center; padding: 8px 0; border-top: 1px solid #9a7d0a; border-bottom: 1px solid #9a7d0a; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.95rem; }
+        
+        .row-container { display: flex; background: #fcf3cf; border-bottom: 1px solid #f1c40f; }
+        .row-container:last-child { border-bottom: none; }
+        
+        .cell-left, .cell-right { flex: 1; padding: 8px 12px; display: flex; align-items: flex-start; font-size: 0.9rem; color: #3e2723; border-right: 1px solid #f1c40f; }
+        .cell-right { border-right: none; }
+
+        .label { font-weight: 700; color: #922b21; width: 130px; text-align: right; margin-right: 12px; text-decoration: underline; text-decoration-color: #d35400; flex-shrink: 0; }
+        .value { font-weight: 600; flex-grow: 1; }
+        .sub-val { font-weight: normal; font-size: 0.85em; color: #5d4037; }
+        .strikethrough { text-decoration: line-through; color: #5d4037; }
+        .good-muhurta-label { color: #1b5e20; text-decoration: none; } 
+
+        .festival-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fcf3cf; justify-content: center; }
+        .festival-item { display: flex; align-items: center; background: #fff8e1; border: 1px solid #d4ac0d; padding: 5px 10px; border-radius: 4px; width: 48%; min-width: 250px; box-sizing: border-box; }
+        .festival-item img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; border-radius: 50%; border: 2px solid #d4ac0d; }
+        .festival-item span { font-weight: 700; color: #7b241c; font-size: 0.9rem; }
+
+        .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+        .grid-item { display: flex; align-items: center; font-size: 0.85rem; font-weight: 500; }
+        .grid-icon { margin-right: 5px; font-size: 1rem; }
+
+        .share-fab { position: fixed; bottom: 25px; right: 25px; background: #25D366; color: white; border: none; border-radius: 50px; padding: 15px 25px; font-weight: bold; font-size: 1rem; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5); display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 999; }
+
+        @media(max-width: 600px) {
+            .header-img { height: 60px; }
+            .brand-header h1 { font-size: 1.4rem; }
+            .brand-header .subtitle { font-size: 0.7rem; }
+            .row-container { flex-direction: column; }
+            .cell-left { border-right: none; border-bottom: 1px dashed #f1c40f; }
+            .label { width: 120px; text-align: left; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); }
+            .festival-item { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <div class="search-container">
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        
+        <form method="POST" autocomplete="off" class="row g-3 align-items-end">
+            <div class="col-md-6 position-relative">
+                <label class="form-label">Location</label>
+                <input type="text" id="locationInput" name="location" class="form-control" value="{{ location_val }}" placeholder="Enter City..." required>
+                <ul id="suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date</label>
+                <input type="date" name="date" class="form-control" value="{{ today }}" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn search-btn w-100">Update</button>
+            </div>
+        </form>
+    </div>
+
+    {% if data %}
+    <div id="captureArea">
+        
+        <div class="brand-header">
+            <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara">
+            <div class="header-content">
+                <h1>Dwara's Vedic Calendar</h1>
+                <div class="subtitle">Precision Panchang</div>
+            </div>
+            <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family">
+        </div>
+
+        <div class="main-info">
+            <h2 id="shareDate">{{ data.meta.date }}</h2>
+            <p id="shareLoc">📍 {{ data.meta.location }}</p>
+        </div>
+
+        <div class="header-section">Sunrise and Moonrise</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Sunrise</span><span class="value"><i class="fas fa-sun text-warning"></i> {{ data.meta.sunrise }}</span></div>
+            <div class="cell-right"><span class="label">Sunset</span><span class="value"><i class="fas fa-sun text-danger"></i> {{ data.meta.sunset }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Moonrise</span><span class="value"><i class="fas fa-moon text-secondary"></i> {{ data.meta.moonrise }}</span></div>
+            <div class="cell-right"><span class="label">Moonset</span><span class="value"><i class="fas fa-moon text-secondary"></i> {{ data.meta.moonset }}</span></div>
+        </div>
+
+        <div class="header-section">Panchang</div>
+        <div class="row-container">
+            <div class="cell-left">
+                <span class="label">Tithi</span>
+                <div class="value">
+                    {% for item in data.tithi %}
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size:1.1em; margin-right:5px;">{{ item.icon }}</span> {{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="cell-right">
+                <span class="label">Nakshatra</span>
+                <div class="value">
+                    {% for item in data.nakshatra %}
+                    <div style="margin-bottom: 4px;">
+                        <span style="font-size:1.1em; margin-right:5px;">{{ item.icon }}</span> {{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left">
+                <span class="label">Yoga</span>
+                <div class="value">{% for item in data.yoga %}<div>{{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span></div>{% endfor %}</div>
+            </div>
+            <div class="cell-right">
+                <span class="label">Karana</span>
+                <div class="value">{% for item in data.karana %}<div>{{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span></div>{% endfor %}</div>
+            </div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Weekday</span><span class="value">{{ data.meta.date.split(',')[0] }}</span></div>
+            <div class="cell-right"><span class="label">Paksha</span><span class="value">{% if 'Shukla' in data.tithi[0].name %} Shukla Paksha {% else %} Krishna Paksha {% endif %}</span></div>
+        </div>
+
+        <div class="header-section">Lunar Month & Samvat</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Vikram Samvat</span><span class="value">{{ data.details.samvat.vikram }}</span></div>
+            <div class="cell-right"><span class="label">Shaka Samvat</span><span class="value">{{ data.details.samvat.shaka }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Samvatsara</span><span class="value">{{ data.details.samvat.samvatsara }}</span></div>
+            <div class="cell-right"><span class="label">Gujarati</span><span class="value">{{ data.details.samvat.gujarati }} Pingala</span></div>
+        </div>
+
+        <div class="header-section">Rashi and Nakshatra</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Moonsign</span><span class="value"><i class="fas fa-moon"></i> {{ data.details.moonsign }}</span></div>
+            <div class="cell-right"><span class="label">Nakshatra Pada</span><div class="value">{% for item in data.moon_pada %}<div>{{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span></div>{% endfor %}</div></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Sunsign</span><span class="value"><i class="fas fa-sun"></i> {{ data.details.sunsign }}</span></div>
+            <div class="cell-right"><span class="label">Surya Pada</span><div class="value">{% for item in data.sun_pada %}<div>{{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span></div>{% endfor %}</div></div>
+        </div>
+
+        <div class="header-section">Ritu and Ayana</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Ritu</span><span class="value">{{ data.details.ritu_ayana.ritu }}</span></div>
+            <div class="cell-right"><span class="label">Dinamana</span><span class="value">{{ data.details.dinamana }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Vedic Ritu</span><span class="value">{{ data.details.ritu_ayana.vedic_ritu }}</span></div>
+            <div class="cell-right"><span class="label">Ratrimana</span><span class="value">{{ data.details.ratrimana }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Ayana</span><span class="value">{{ data.details.ritu_ayana.ayana }}</span></div>
+            <div class="cell-right"><span class="label">Madhyahna</span><span class="value">{{ data.details.madhyahna }}</span></div>
+        </div>
+
+        <div class="header-section">Auspicious Timings</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Brahma Muhurta</span><span class="value">{{ data.timings.brahma }}</span></div>
+            <div class="cell-right"><span class="label">Pratah Sandhya</span><span class="value">{{ data.timings.pratah }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Abhijit</span><span class="value text-success">{{ data.timings.abhijit }}</span></div>
+            <div class="cell-right"><span class="label">Vijaya Muhurta</span><span class="value">{{ data.timings.vijaya }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Godhuli Muhurta</span><span class="value">{{ data.timings.godhuli }}</span></div>
+            <div class="cell-right"><span class="label">Sayahna Sandhya</span><span class="value">{{ data.timings.sayahna }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Amrit Kalam</span><span class="value text-success">{{ data.timings.amrit }}</span></div>
+            <div class="cell-right"><span class="label">Nishita Muhurta</span><span class="value">{{ data.timings.nishita }}</span></div>
+        </div>
+
+        <div class="header-section">Inauspicious Timings</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Rahu Kalam</span><span class="value text-danger">{{ data.timings.rahu }}</span></div>
+            <div class="cell-right"><span class="label">Yamaganda</span><span class="value text-danger">{{ data.timings.yama }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Gulikai</span><span class="value text-danger">{{ data.timings.guli }}</span></div>
+            <div class="cell-right"><span class="label">Vidaal Yoga</span><span class="value text-danger">{{ data.timings.vidaal }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Varjyam</span><span class="value text-danger">{{ data.timings.varjyam }}</span></div>
+            <div class="cell-right"><span class="label">Dur Muhurtam</span><span class="value text-danger">{{ data.timings.dur_day }}</span></div>
+        </div>
+
+        <div class="header-section">Anandadi and Tamil Yoga</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Anandadi Yoga</span><span class="value">{{ data.timings.anandadi }}</span></div>
+            <div class="cell-right"><span class="label">Tamil Yoga</span><span class="value">{{ data.timings.tamil }}</span></div>
+        </div>
+
+        <div class="header-section">Nivas and Shool</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Homahuti</span><span class="value">{{ data.details.nivas_shool.homahuti }}</span></div>
+            <div class="cell-right"><span class="label">Disha Shool</span><span class="value">{{ data.details.nivas_shool.disha_shool }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Agnivasa</span><span class="value">{{ data.details.nivas_shool.agnivasa_1 }}</span></div>
+            <div class="cell-right"><span class="label">Nakshatra Shool</span><span class="value">{{ data.details.nivas_shool.nakshatra_shool }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Shivavasa</span><span class="value">{{ data.details.nivas_shool.shivavasa_1 }}</span></div>
+            <div class="cell-right"><span class="label">Rahu Vasa</span><span class="value">{{ data.details.nivas_shool.rahu_vasa }}</span></div>
+        </div>
+
+        <div class="header-section">Other Calendars and Epoch</div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Kaliyuga</span><span class="value">{{ data.details.epoch.kaliyuga }}</span></div>
+            <div class="cell-right"><span class="label">Ayanamsha</span><span class="value">{{ data.details.epoch.ayanamsha }}</span></div>
+        </div>
+        <div class="row-container">
+            <div class="cell-left"><span class="label">Kali Ahargana</span><span class="value">{{ data.details.epoch.kali_ahargana }}</span></div>
+            <div class="cell-right"><span class="label">Julian Date</span><span class="value">{{ data.details.epoch.julian_date }}</span></div>
+        </div>
+
+        <div class="header-section">Chandrabalam & Tarabalam</div>
+        <div class="row-container" style="align-items: stretch;">
+            <div class="cell-left" style="flex-direction: column; border-right: 1px solid #f1c40f;">
+                <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Chandrabalam</div>
+                <div class="grid-container">
+                    {% for rashi in data.details.chandrabalam_tarabalam.chandrabalam.good_rashis %}
+                    <div class="grid-item"><span class="grid-icon">{{ rashi.icon }}</span> {{ rashi.name }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="cell-right" style="flex-direction: column;">
+                <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Tarabalam</div>
+                <div class="grid-container">
+                    {% for nak in data.details.chandrabalam_tarabalam.tarabalam.period_1.nakshatras %}
+                    <div class="grid-item"><span class="grid-icon">{{ nak.icon }}</span> {{ nak.name }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="header-section">Panchaka Rahita Muhurta</div>
+        <div class="row-container" style="flex-direction: column; padding: 0;">
+            {% for item in data.details.panchaka_rahita %}
+            <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
+                <span class="label {% if item.is_good %}good-muhurta-label{% endif %}" style="width: 160px; text-align: left; text-decoration: none;">{{ item.label }}</span>
+                <span class="value text-dark">- {{ item.times }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="header-section">Udaya Lagna Muhurta</div>
+        <div class="row-container" style="flex-direction: column; padding: 0;">
+            {% for item in data.details.udaya_lagna %}
+            <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
+                <span class="label" style="width: 160px; text-align: left; text-decoration: none; color: #3e2723;"><span style="font-size: 1.1rem; margin-right: 5px;">{{ item.icon }}</span> {{ item.name }}</span>
+                <span class="value text-dark">- {{ item.start }} to {{ item.end }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if data.details.festivals %}
+        <div class="header-section">Day Festivals and Events</div>
+        <div class="row-container festival-container">
+            {% for festival in data.details.festivals %}
+            <div class="festival-item">
+                <img src="{{ festival.image_url }}" alt="{{ festival.name }}">
+                <span>{{ festival.name }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+    
+    <button class="share-fab" onclick="shareCard()"><i class="fab fa-whatsapp fa-lg"></i> Share Card</button>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+    // 1. AUTOCOMPLETE LOGIC
+    const input = document.getElementById('locationInput');
+    const list = document.getElementById('suggestions');
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+        const query = this.value;
+        clearTimeout(debounceTimer);
+        if (query.length < 3) { list.style.display = 'none'; return; }
+        
+        debounceTimer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    const uniqueSet = new Set();
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const addr = item.address;
+                            const city = addr.city || addr.town || addr.village || addr.county;
+                            const country = addr.country;
+                            if (city && country) {
+                                const cleanName = `${city}, ${country}`;
+                                if (!uniqueSet.has(cleanName)) {
+                                    uniqueSet.add(cleanName);
+                                    list.style.display = 'block';
+                                    const li = document.createElement('li');
+                                    li.textContent = cleanName;
+                                    li.addEventListener('click', () => {
+                                        input.value = cleanName;
+                                        list.style.display = 'none';
+                                    });
+                                    list.appendChild(li);
+                                }
+                            }
+                        });
+                    } else { list.style.display = 'none'; }
+                });
+        }, 300);
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
+    });
+
+    // 2. SHARE CARD LOGIC
+    async function shareCard() {
+        const shareBtn = document.querySelector('.share-fab');
+        const originalHTML = shareBtn.innerHTML;
+        try {
+            shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            const canvas = await html2canvas(document.querySelector("#captureArea"), { useCORS: true, scale: 2 });
+            const caption = `*Vedic Panchang*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], "panchang.png", { type: "image/png" });
+                if (navigator.share) {
+                    try { await navigator.share({ files: [file], text: caption }); } catch(e){}
+                } else {
+                    const link = document.createElement('a');
+                    link.download = `Panchang.png`;
+                    link.href = canvas.toDataURL();
+                    link.click();
+                    window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                }
+            }, 'image/png');
+        } catch (e) { alert("Error"); } 
+        finally { shareBtn.innerHTML = originalHTML; }
+    }
+</script>
+
+</body>
+</html>
