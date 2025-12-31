@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panchang Results</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: #fdfbf7; 
+            font-family: 'Lato', sans-serif;
+            color: #333;
+        }
+        
+        /* Premium Header */
+        .header-section { 
+            background: linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%); /* Royal Purple Gradient */
+            color: white; 
+            padding: 60px 0; 
+            margin-bottom: 40px; 
+            box-shadow: 0 4px 20px rgba(74, 20, 140, 0.4);
+        }
+        
+        h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; }
+        .lead { font-weight: 300; opacity: 0.9; }
+
+        /* Card Styling */
+        .card { 
+            border: none; 
+            border-radius: 16px; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); 
+            margin-bottom: 25px; 
+            transition: transform 0.3s;
+            background: white;
+            overflow: hidden;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
+        .card-header { 
+            background: white; 
+            border-bottom: 1px solid #eee; 
+            font-weight: 700; 
+            color: #4a148c; /* Purple Text */
+            padding: 20px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            letter-spacing: 0.5px;
+            border-left: 5px solid #ff6f00; /* Gold Accent Bar */
+        }
+        
+        .card-body { padding: 25px; }
+
+        .highlight { 
+            color: #d84315; /* Burnt Orange */
+            font-weight: 700; 
+            font-size: 1.1rem;
+        }
+        
+        .text-muted { font-size: 0.9rem; color: #7f8c8d !important; }
+
+        /* Timing Boxes */
+        .timing-box { 
+            background: #fff; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 15px; 
+            border: 1px solid #f0f0f0;
+            border-left: 4px solid #ccc;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .auspicious { 
+            border-left-color: #2e7d32; /* Green */
+            background: #f1f8e9; 
+        }
+        .inauspicious { 
+            border-left-color: #c62828; /* Red */
+            background: #fbe9e7; 
+        }
+        
+        .timing-label {
+            display: block;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        
+        .timing-value { font-size: 1.1rem; font-weight: 600; color: #333; }
+
+        .badge-rise { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); }
+        .badge-set { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+<div class="header-section text-center">
+    <div class="container">
+        <h1>{{ data.meta.date }}</h1>
+        <p class="lead mb-4">📍 {{ data.meta.location }}</p>
+        <div class="d-flex justify-content-center gap-3">
+            <span class="badge badge-rise px-3 py-2 fs-6">🌅 Sunrise: {{ data.meta.sunrise }}</span>
+            <span class="badge badge-set px-3 py-2 fs-6">🌇 Sunset: {{ data.meta.sunset }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="container pb-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">🌙 Tithi (Lunar Day)</div>
+                <div class="card-body">
+                    {% for item in data.tithi %}
+                    <div class="mb-4 pb-2 border-bottom last-no-border">
+                        <div class="highlight mb-1">{{ item.name }}</div>
+                        <div class="text-muted">
+                            starts {{ item.start_fmt }} &mdash; ends {{ item.end_fmt }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">✨ Nakshatra (Star)</div>
+                <div class="card-body">
+                    {% for item in data.nakshatra %}
+                    <div class="mb-4 pb-2 border-bottom last-no-border">
+                        <div class="highlight mb-1">{{ item.name }}</div>
+                        <div class="text-muted">
+                            starts {{ item.start_fmt }} &mdash; ends {{ item.end_fmt }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">🧘 Yoga</div>
+                        <div class="card-body">
+                            {% for item in data.yoga %}
+                            <div class="mb-3">
+                                <div class="highlight fs-6">{{ item.name }}</div>
+                                <small class="text-muted">Until {{ item.end_fmt }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header">🐕 Karana</div>
+                        <div class="card-body">
+                            {% for item in data.karana %}
+                            <div class="mb-3">
+                                <div class="highlight fs-6">{{ item.name }}</div>
+                                <small class="text-muted">Until {{ item.end_fmt }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">🕒 Daily Timings</div>
+                <div class="card-body">
+                    <h6 class="text-muted mb-3 text-uppercase fw-bold" style="font-size: 0.75rem;">Inauspicious (Avoid)</h6>
+                    
+                    <div class="timing-box inauspicious">
+                        <span class="timing-label">Rahu Kalam</span>
+                        <div class="timing-value">{{ data.timings.rahu }}</div>
+                    </div>
+                    
+                    <div class="timing-box inauspicious">
+                        <span class="timing-label">Yamaganda</span>
+                        <div class="timing-value">{{ data.timings.yama }}</div>
+                    </div>
+                    
+                    <div class="timing-box inauspicious">
+                        <span class="timing-label">Varjyam</span>
+                        <div class="timing-value">{{ data.timings.varjyam }}</div>
+                    </div>
+
+                    <h6 class="text-muted mt-4 mb-3 text-uppercase fw-bold" style="font-size: 0.75rem;">Auspicious (Good)</h6>
+                    
+                    <div class="timing-box auspicious">
+                        <span class="timing-label">Amrit Kalam</span>
+                        <div class="timing-value">{{ data.timings.amrit }}</div>
+                    </div>
+                    
+                    <div class="timing-box" style="border-left-color: #ff9800; background: #fff8e1;">
+                        <span class="timing-label">Gulikai</span>
+                        <div class="timing-value">{{ data.timings.guli }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-outline-secondary rounded-pill px-4">← Calculate Another</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Remove border from last item in lists */
+    .last-no-border:last-child { border-bottom: none !important; margin-bottom: 0 !important; }
+</style>
+
+</body>
+</html>

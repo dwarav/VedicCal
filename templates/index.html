@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vedic Panchang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            background: linear-gradient(135deg, #fdfbf7 0%, #fff3e0 100%); 
+            font-family: 'Lato', sans-serif;
+            min-height: 100vh;
+        }
+        
+        .search-card { 
+            max-width: 500px; 
+            margin: 80px auto; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(50, 20, 0, 0.1); 
+            background: white; 
+            position: relative;
+            border-top: 5px solid #ff6f00; /* Saffron Accent */
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: #4a148c; /* Royal Purple */
+            font-weight: 700;
+        }
+
+        .form-label {
+            color: #5d4037;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: #ff6f00;
+            box-shadow: 0 0 0 4px rgba(255, 111, 0, 0.1);
+        }
+
+        .btn-vedic { 
+            background: linear-gradient(45deg, #ff6f00, #ff8f00); 
+            color: white; 
+            font-weight: bold; 
+            border: none; 
+            border-radius: 10px;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn-vedic:hover { 
+            background: linear-gradient(45deg, #e65100, #f57c00); 
+            color: white; 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 111, 0, 0.3);
+        }
+        
+        /* Autocomplete Styles */
+        .suggestions-list {
+            position: absolute;
+            background: white;
+            border: 1px solid #eee;
+            border-top: none;
+            z-index: 1000;
+            width: calc(100% - 80px); 
+            max-height: 250px;
+            overflow-y: auto;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: none; 
+        }
+        .suggestions-list li {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f9f9f9;
+            font-size: 0.95rem;
+            color: #444;
+        }
+        .suggestions-list li:hover {
+            background-color: #fff8e1; /* Light cream hover */
+            color: #d84315;
+            padding-left: 20px; /* Slight movement effect */
+            transition: padding 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="search-card text-center">
+            <h2 class="mb-4">🕉️ Vedic Panchang</h2>
+            
+            {% if error %}
+            <div class="alert alert-danger shadow-sm border-0">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" autocomplete="off">
+                <div class="mb-4 text-start position-relative">
+                    <label class="form-label">Location</label>
+                    <input type="text" id="locationInput" name="location" class="form-control" placeholder="Start typing city name..." required>
+                    <ul id="suggestions" class="suggestions-list"></ul>
+                </div>
+
+                <div class="mb-5 text-start">
+                    <label class="form-label">Date</label>
+                    <input type="date" name="date" class="form-control" value="{{ today }}" required>
+                </div>
+                <button type="submit" class="btn btn-vedic w-100 py-3">View Panchang</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('locationInput');
+        const list = document.getElementById('suggestions');
+        let debounceTimer;
+
+        input.addEventListener('input', function() {
+            const query = this.value;
+            clearTimeout(debounceTimer);
+            
+            if (query.length < 3) { 
+                list.style.display = 'none'; 
+                return; 
+            }
+            
+            debounceTimer = setTimeout(() => {
+                // We add &addressdetails=1 to get the broken-down address fields
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=10&addressdetails=1`)
+                    .then(response => response.json())
+                    .then(data => {
+                        list.innerHTML = ''; 
+                        const uniqueSet = new Set(); // To remove duplicates
+                        
+                        if (data.length > 0) {
+                            let hasResults = false;
+
+                            data.forEach(item => {
+                                const addr = item.address;
+                                // Find the most relevant "City" name from the various fields OSM uses
+                                const city = addr.city || addr.town || addr.village || addr.municipality || addr.hamlet || addr.county;
+                                const country = addr.country;
+
+                                if (city && country) {
+                                    const cleanName = `${city}, ${country}`;
+                                    
+                                    // Only add if we haven't seen this exact combo yet
+                                    if (!uniqueSet.has(cleanName)) {
+                                        uniqueSet.add(cleanName);
+                                        hasResults = true;
+                                        
+                                        const li = document.createElement('li');
+                                        li.textContent = cleanName;
+                                        
+                                        li.addEventListener('click', () => {
+                                            input.value = cleanName;
+                                            list.style.display = 'none';
+                                        });
+                                        
+                                        list.appendChild(li);
+                                    }
+                                }
+                            });
+
+                            list.style.display = hasResults ? 'block' : 'none';
+                        } else { 
+                            list.style.display = 'none'; 
+                        }
+                    })
+                    .catch(err => console.error(err));
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target !== input && e.target !== list) { 
+                list.style.display = 'none'; 
+            }
+        });
+    </script>
+</body>
+</html>
