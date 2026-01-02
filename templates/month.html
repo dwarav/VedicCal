@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Vedic Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+        
+        /* --- COPY OF PREMIUM HEADER STYLES --- */
+        .brand-header {
+            background-color: #b71c1c; 
+            border-bottom: 6px solid #d4ac0d;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
+        .brand-header h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem;
+            color: #ffffff; margin: 0; font-weight: 700;
+            letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
+        }
+        .brand-header .subtitle {
+            font-family: 'Roboto', sans-serif; font-size: 0.9rem;
+            color: #f9e79f; text-transform: uppercase;
+            letter-spacing: 3px; margin-top: 8px; font-weight: 500;
+        }
+        .header-img {
+            height: 110px; width: auto; border: 3px solid #d4ac0d;
+            border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            object-fit: cover; background: #fff;
+        }
+
+        /* --- NAVIGATION BAR --- */
+        .nav-bar {
+            background-color: #8e1616; padding: 10px 0; text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px;
+        }
+        .nav-bar a {
+            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif;
+            font-weight: bold; text-transform: uppercase; margin: 0 25px;
+            font-size: 1rem; padding-bottom: 4px; border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
+
+        /* SEARCH & CALENDAR STYLES */
+        .search-container {
+            max-width: 900px; margin: 0 auto 30px auto;
+            background: #fff8e1; border: 2px solid #b71c1c;
+            border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
+        .search-btn:hover { background: #8e1616; color: #fff; }
+        .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
+        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .form-control { border: 1px solid #d4ac0d; background: #fff; padding-right: 40px; }
+        .suggestions-list { position: absolute; background: white; border: 1px solid #d4ac0d; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
+        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
+
+        /* GRID */
+        .calendar-wrapper { max-width: 1400px; margin: 0 auto; padding: 0 15px; } /* Increased width */
+        
+        .calendar-header { 
+            display: grid; grid-template-columns: repeat(7, 1fr); 
+            background: #d4ac0d; color: #4e342e; font-weight: 900; 
+            text-align: center; padding: 10px 0; border-radius: 8px 8px 0 0; 
+        }
+        .calendar-body { 
+            display: grid; grid-template-columns: repeat(7, 1fr); 
+            background: #fcf3cf; border: 1px solid #d4ac0d; border-top: none; 
+        }
+        .day-cell { 
+            background: #fff; min-height: 180px; 
+            border: 1px solid #eee; padding: 5px; 
+            position: relative; cursor: pointer; 
+        }
+        .day-cell:hover { background: #fff8e1; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-color: #d4ac0d; }
+        
+        .day-number { font-weight: 900; font-size: 1rem; color: #b71c1c; position: absolute; top: 5px; left: 8px; }
+        .day-content { margin-top: 25px; font-size: 0.8rem; text-align: center; }
+        
+        .tithi-block { margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
+        .tithi-icon { font-size: 1.1rem; color: #5d4037; }
+        .tithi-name { font-weight: 700; color: #3e2723; display: block; font-size: 0.85rem; }
+        
+        .nak-name { font-weight: 600; color: #5d4037; font-size: 0.8rem; display: block; margin-top: 4px; }
+        
+        /* Updated Time Text Style to show full Date & Time */
+        .time-text { 
+            display: block; font-size: 0.65rem; color: #666; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .time-label { color: #999; font-size: 0.6rem; text-transform: uppercase; margin-right: 2px; }
+
+        .festival-badge { 
+            background: #1b5e20; color: white; font-size: 0.65rem; 
+            padding: 2px 4px; border-radius: 4px; margin-top: 5px; 
+            display: inline-block; width: 100%; white-space: nowrap; 
+            overflow: hidden; text-overflow: ellipsis; 
+        }
+        .empty-cell { background: #f9f9f9; }
+
+        @media(max-width: 768px) {
+            .header-img { height: 70px; }
+            .brand-header h1 { font-size: 1.5rem; }
+            .brand-header .subtitle { font-size: 0.7rem; }
+            .day-cell { min-height: 140px; }
+            .time-text { font-size: 0.6rem; } 
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand-header">
+    <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara">
+    <div class="header-content">
+        <h1>Dwara's Vedic Calendar</h1>
+        <div class="subtitle">PRECISION PANCHANG</div>
+    </div>
+    <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family">
+</div>
+
+<div class="nav-bar">
+    <a href="/">Daily View</a>
+    <a href="/month" class="active">Monthly View</a>
+</div>
+
+<div class="search-container">
+    <form method="POST" id="monthForm" autocomplete="off" class="row g-3 align-items-end">
+        <div class="col-md-6 position-relative">
+            <label class="form-label">Location</label>
+            <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="Enter City..." required>
+            <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location"><i class="fas fa-crosshairs"></i></button>
+            <ul id="suggestions" class="suggestions-list"></ul>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Month & Year</label>
+            <input type="month" name="month_year" class="form-control" value="{{ current_ym }}" required>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn search-btn w-100">Go</button>
+        </div>
+    </form>
+</div>
+
+<div class="calendar-wrapper mb-5">
+    <h2 class="text-center mb-4" style="font-family: 'Playfair Display'; color: #b71c1c; font-weight: 700;">
+        {{ month_name }} {{ year }}
+    </h2>
+
+    <div class="calendar-header">
+        <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div style="color:#d32f2f;">SUN</div>
+    </div>
+    
+    <div class="calendar-body">
+        {% for week in calendar_data %}
+            {% for day in week %}
+                {% if day is none %}
+                    <div class="day-cell empty-cell"></div>
+                {% else %}
+                    <div class="day-cell" onclick="window.location.href='/?location={{ location }}&date={{ day.date_str }}'">
+                        <span class="day-number">{{ day.day }}</span>
+                        
+                        <div class="day-content">
+                            {% if day.error %}
+                                <small class="text-danger">Error</small>
+                            {% else %}
+                                <div class="tithi-block">
+                                    <span class="tithi-name"><span class="tithi-icon">{{ day.tithi_icon }}</span> {{ day.tithi }}</span>
+                                    <div class="time-text"><span class="time-label">Start:</span> {{ day.tithi_start }}</div>
+                                    <div class="time-text"><span class="time-label">End:</span> {{ day.tithi_end }}</div>
+                                </div>
+
+                                <div class="nak-block">
+                                    <span class="nak-name">{{ day.nakshatra }}</span>
+                                    <div class="time-text"><span class="time-label">End:</span> {{ day.nak_end }}</div>
+                                </div>
+                                
+                                {% if day.is_festival %}
+                                <div class="festival-badge">{{ day.festival_name }}</div>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function detectLocation() {
+        if (navigator.geolocation) {
+            const btn = document.querySelector('.gps-btn i');
+            btn.classList.add('fa-spin'); 
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const addr = data.address;
+                            const city = addr.city || addr.town || addr.village;
+                            const country = addr.country;
+                            if(city) {
+                                document.getElementById('locationInput').value = `${city}, ${country}`;
+                                document.getElementById('monthForm').submit();
+                            } else { alert("Could not determine specific city name."); }
+                            btn.classList.remove('fa-spin');
+                        });
+                },
+                function(error) { alert("Location access denied."); btn.classList.remove('fa-spin'); }
+            );
+        } else { alert("Geolocation not supported."); }
+    }
+
+    const input = document.getElementById('locationInput');
+    const list = document.getElementById('suggestions');
+    let debounceTimer;
+    input.addEventListener('input', function() {
+        const query = this.value;
+        clearTimeout(debounceTimer);
+        if (query.length < 3) { list.style.display = 'none'; return; }
+        debounceTimer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    const uniqueSet = new Set();
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const addr = item.address;
+                            const city = addr.city || addr.town || addr.village;
+                            const country = addr.country;
+                            if (city && country) {
+                                const cleanName = `${city}, ${country}`;
+                                if (!uniqueSet.has(cleanName)) {
+                                    uniqueSet.add(cleanName);
+                                    list.style.display = 'block';
+                                    const li = document.createElement('li');
+                                    li.textContent = cleanName;
+                                    li.addEventListener('click', () => {
+                                        input.value = cleanName;
+                                        list.style.display = 'none';
+                                    });
+                                    list.appendChild(li);
+                                }
+                            }
+                        });
+                    } else { list.style.display = 'none'; }
+                });
+        }, 300);
+    });
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
+    });
+</script>
+
+</body>
+</html>
