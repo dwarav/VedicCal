@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # Defaults
-    location = "Bangalore, India" 
+    location = "Rajamahendravaram, India" 
     date = datetime.now().strftime("%Y-%m-%d")
     
     error = None
