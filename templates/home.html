@@ -11,7 +11,7 @@
     <style>
         body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
         
-        /* --- SEARCH SECTION STYLES --- */
+        /* SEARCH CONTAINER */
         .search-container {
             max-width: 700px;
             margin: 20px auto;
@@ -30,11 +30,24 @@
         }
         .search-btn:hover { background: #8e1616; color: #fff; }
         
+        /* GPS Button Styling */
+        .gps-btn {
+            position: absolute;
+            right: 10px;
+            top: 32px; /* Align with input box */
+            border: none;
+            background: transparent;
+            color: #b71c1c;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .gps-btn:hover { color: #d32f2f; transform: scale(1.1); }
+
         .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .form-control { border: 1px solid #d4ac0d; background: #fff; }
+        .form-control { border: 1px solid #d4ac0d; background: #fff; padding-right: 40px; /* Space for GPS icon */ }
         .form-control:focus { border-color: #b71c1c; box-shadow: 0 0 0 0.2rem rgba(183, 28, 28, 0.25); }
 
-        /* AUTOCOMPLETE LIST */
+        /* AUTOCOMPLETE */
         .suggestions-list {
             position: absolute;
             background: white;
@@ -50,55 +63,41 @@
         .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
 
-        /* --- RESULT CARD STYLES (From Previous) --- */
+        /* CARD STYLES */
         #captureArea {
-            max-width: 700px;
-            margin: 20px auto;
-            background: #fff8e1;
-            border: 2px solid #b71c1c;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 700px; margin: 20px auto; background: #fff8e1;
+            border: 2px solid #b71c1c; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-
         .brand-header {
-            background: #b71c1c;
-            border-bottom: 4px solid #d4ac0d;
-            padding: 10px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background: #b71c1c; border-bottom: 4px solid #d4ac0d; padding: 10px 15px;
+            display: flex; justify-content: space-between; align-items: center;
         }
         .header-content { text-align: center; color: #fff; flex-grow: 1; padding: 0 10px; }
-        .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); line-height: 1.1; }
+        .brand-header h1 { font-family: 'Playfair Display', serif; font-size: 1.8rem; margin: 0; font-weight: 700; letter-spacing: 1px; line-height: 1.1; }
         .brand-header .subtitle { font-family: 'Roboto', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; color: #f9e79f; margin-top: 5px; }
-        .header-img { height: 90px; width: auto; border: 2px solid #d4ac0d; border-radius: 6px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); object-fit: cover; }
+        .header-img { height: 90px; width: auto; border: 2px solid #d4ac0d; border-radius: 6px; object-fit: cover; }
 
         .main-info { background: #f9e79f; text-align: center; padding: 12px; border-bottom: 1px solid #d4ac0d; }
         .main-info h2 { color: #5d4037; font-weight: bold; margin: 0; font-size: 1.3rem; }
         .main-info p { color: #795548; margin: 4px 0 0; font-size: 0.95rem; }
 
         .header-section { background: #d4ac0d; color: #4e342e; font-weight: 900; text-align: center; padding: 8px 0; border-top: 1px solid #9a7d0a; border-bottom: 1px solid #9a7d0a; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.95rem; }
-        
         .row-container { display: flex; background: #fcf3cf; border-bottom: 1px solid #f1c40f; }
         .row-container:last-child { border-bottom: none; }
-        
         .cell-left, .cell-right { flex: 1; padding: 8px 12px; display: flex; align-items: flex-start; font-size: 0.9rem; color: #3e2723; border-right: 1px solid #f1c40f; }
         .cell-right { border-right: none; }
-
         .label { font-weight: 700; color: #922b21; width: 130px; text-align: right; margin-right: 12px; text-decoration: underline; text-decoration-color: #d35400; flex-shrink: 0; }
         .value { font-weight: 600; flex-grow: 1; }
         .sub-val { font-weight: normal; font-size: 0.85em; color: #5d4037; }
         .strikethrough { text-decoration: line-through; color: #5d4037; }
         .good-muhurta-label { color: #1b5e20; text-decoration: none; } 
-
         .festival-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fcf3cf; justify-content: center; }
         .festival-item { display: flex; align-items: center; background: #fff8e1; border: 1px solid #d4ac0d; padding: 5px 10px; border-radius: 4px; width: 48%; min-width: 250px; box-sizing: border-box; }
         .festival-item img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; border-radius: 50%; border: 2px solid #d4ac0d; }
         .festival-item span { font-weight: 700; color: #7b241c; font-size: 0.9rem; }
-
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .grid-item { display: flex; align-items: center; font-size: 0.85rem; font-weight: 500; }
         .grid-icon { margin-right: 5px; font-size: 1rem; }
-
         .share-fab { position: fixed; bottom: 25px; right: 25px; background: #25D366; color: white; border: none; border-radius: 50px; padding: 15px 25px; font-weight: bold; font-size: 1rem; box-shadow: 0 5px 20px rgba(37, 211, 102, 0.5); display: flex; align-items: center; gap: 10px; cursor: pointer; z-index: 999; }
 
         @media(max-width: 600px) {
@@ -122,10 +121,13 @@
         <div class="alert alert-danger">{{ error }}</div>
         {% endif %}
         
-        <form method="POST" autocomplete="off" class="row g-3 align-items-end">
+        <form method="POST" id="panchangForm" autocomplete="off" class="row g-3 align-items-end">
             <div class="col-md-6 position-relative">
                 <label class="form-label">Location</label>
                 <input type="text" id="locationInput" name="location" class="form-control" value="{{ location_val }}" placeholder="Enter City..." required>
+                <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
                 <ul id="suggestions" class="suggestions-list"></ul>
             </div>
             <div class="col-md-4">
@@ -359,7 +361,56 @@
 
 <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
-    // 1. AUTOCOMPLETE LOGIC
+    // AUTO LOCATION DETECTION SCRIPT
+    function detectLocation() {
+        if (navigator.geolocation) {
+            const btn = document.querySelector('.gps-btn i');
+            btn.classList.add('fa-spin'); // Add spinner animation
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const addr = data.address;
+                            // Priority logic for City name
+                            const city = addr.city || addr.town || addr.village || addr.county || addr.state_district;
+                            const country = addr.country;
+                            
+                            if(city) {
+                                document.getElementById('locationInput').value = `${city}, ${country}`;
+                                document.getElementById('panchangForm').submit();
+                            } else {
+                                alert("Could not determine specific city name.");
+                            }
+                            btn.classList.remove('fa-spin');
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            btn.classList.remove('fa-spin');
+                        });
+                },
+                function(error) {
+                    alert("Location access denied or unavailable.");
+                    btn.classList.remove('fa-spin');
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    }
+
+    // Auto-Run on First Load
+    {% if is_first_load %}
+    window.onload = function() {
+        detectLocation();
+    };
+    {% endif %}
+
+    // Autocomplete Logic
     const input = document.getElementById('locationInput');
     const list = document.getElementById('suggestions');
     let debounceTimer;
@@ -404,7 +455,7 @@
         if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
     });
 
-    // 2. SHARE CARD LOGIC
+    // Share Card Logic
     async function shareCard() {
         const shareBtn = document.querySelector('.share-fab');
         const originalHTML = shareBtn.innerHTML;

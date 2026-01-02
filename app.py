@@ -6,15 +6,15 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    # 1. Set Defaults (First Load)
-    # You can change this default to your preferred city
-    location = "Rajamahendravaram, India" 
+    # Defaults
+    location = "Bangalore, India" 
     date = datetime.now().strftime("%Y-%m-%d")
     
     error = None
+    is_first_load = False # Flag to control auto-detection
     
-    # 2. Handle User Search
     if request.method == 'POST':
+        # User manually searched or Auto-location script submitted
         user_loc = request.form.get('location')
         user_date = request.form.get('date')
         
@@ -23,8 +23,11 @@ def home():
             date = user_date
         else:
             error = "Please provide both location and date."
+    else:
+        # Initial GET request (Page Open)
+        is_first_load = True 
 
-    # 3. Calculate Panchang
+    # Calculate Panchang
     try:
         data = fetch_panchang(location, date)
         if "error" in data:
@@ -34,8 +37,14 @@ def home():
         error = str(e)
         data = None
 
-    # 4. Render Single Page
-    return render_template('home.html', data=data, today=date, location_val=location, error=error)
+    return render_template('home.html', 
+                           data=data, 
+                           today=date, 
+                           location_val=location, 
+                           error=error,
+                           is_first_load=is_first_load) # Pass the flag
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run(host="0.0.0.0", port=8012, debug=False)  # port matches your Service
+    
