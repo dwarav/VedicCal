@@ -201,7 +201,9 @@
                                 </div>
                                 
                                 {% if day.is_festival %}
-                                <div class="festival-badge">{{ day.festival_name }}</div>
+                                    {% for fname in day.festival_names %}
+                                        <div class="festival-badge">{{ fname }}</div>
+                                    {% endfor %}
                                 {% endif %}
                             {% endif %}
                         </div>
