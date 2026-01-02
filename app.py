@@ -46,9 +46,9 @@ def home():
                            is_first_load=is_first_load) # Pass the flag
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    # app.run(host="0.0.0.0", port=8012, debug=False)  # port matches your Service
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(debug=True)
+    # # app.run(host="0.0.0.0", port=8012, debug=False)  # port matches your Service
+    # port = int(os.environ.get("PORT", 8080))
+    # app.run(host="0.0.0.0", port=port, debug=False)
 
     
