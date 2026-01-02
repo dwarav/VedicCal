@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 from panchang_engine import fetch_panchang
 from datetime import datetime
+import os
 
 app = Flask(__name__)
 
@@ -46,5 +47,8 @@ def home():
 
 if __name__ == '__main__':
     # app.run(debug=True)
-    app.run(host="0.0.0.0", port=8012, debug=False)  # port matches your Service
+    # app.run(host="0.0.0.0", port=8012, debug=False)  # port matches your Service
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
+
     
