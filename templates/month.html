@@ -117,6 +117,17 @@
             .day-cell { min-height: 140px; }
             .time-text { font-size: 0.6rem; } 
         }
+        /* Update this specific style in month.html */
+        .time-text {
+            display: block;
+            font-size: 0.65rem;
+            color: #666;
+            line-height: 1.2;
+            /* Remove white-space: nowrap to allow wrapping if date is long */
+            /* white-space: nowrap; */ 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+}
     </style>
 </head>
 <body>
@@ -175,6 +186,9 @@
                             {% if day.error %}
                                 <small class="text-danger">Error</small>
                             {% else %}
+                                <div style="font-size: 0.7rem; color: #b71c1c; font-weight: bold; margin-bottom: 5px;">
+                                    {{ day.lunar_month }}
+                                </div>
                                 <div class="tithi-block">
                                     <span class="tithi-name"><span class="tithi-icon">{{ day.tithi_icon }}</span> {{ day.tithi }}</span>
                                     <div class="time-text"><span class="time-label">Start:</span> {{ day.tithi_start }}</div>
