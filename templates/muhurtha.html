@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhurtha Finder - Dwara's Vedic Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+
+        /* --- PREMIUM HEADER --- */
+        .brand-header {
+            background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
+        .brand-header h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #ffffff;
+            margin: 0; font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
+        }
+        .brand-header .subtitle {
+            font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #f9e79f;
+            text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 500;
+        }
+        .header-img {
+            height: 110px; width: auto; border: 3px solid #d4ac0d; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); object-fit: cover; background: #fff;
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-bar { background-color: #8e1616; padding: 10px 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .nav-bar a {
+            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif; font-weight: bold;
+            text-transform: uppercase; margin: 0 25px; font-size: 1rem; padding-bottom: 4px;
+            border-bottom: 2px solid transparent; transition: all 0.3s;
+        }
+        .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
+
+        /* SEARCH CONTAINER & GPS */
+        .search-container {
+            max-width: 900px; margin: 0 auto 30px auto; background: #fff8e1;
+            border: 2px solid #b71c1c; border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
+        .search-btn:hover { background: #8e1616; color: #fff; }
+        
+        .gps-btn { 
+            position: absolute; right: 10px; top: 32px; border: none; 
+            background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; 
+        }
+        .gps-btn:hover { color: #d32f2f; transform: scale(1.1); }
+        
+        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .form-control { border: 1px solid #d4ac0d; padding-right: 40px; }
+        
+        .suggestions-list { 
+            position: absolute; background: white; border: 1px solid #d4ac0d; 
+            z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; 
+        }
+        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
+
+        /* --- MUHURTHA CARDS --- */
+        .muhurtha-wrapper { max-width: 1000px; margin: 0 auto; padding: 0 15px; }
+        
+        .nav-pills .nav-link {
+            color: #b71c1c; background-color: #fff; border: 1px solid #b71c1c; margin: 0 5px; font-weight: bold;
+        }
+        .nav-pills .nav-link.active { background-color: #b71c1c; color: #fff; }
+
+        .muhurtha-card {
+            background: #fff; border: 1px solid #d4ac0d; border-radius: 8px;
+            margin-bottom: 15px; padding: 15px; display: flex;
+            align-items: center; justify-content: space-between;
+            transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .muhurtha-card:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-color: #b71c1c; }
+        
+        .m-date { font-size: 1.5rem; font-weight: 900; color: #b71c1c; line-height: 1; text-align: center; min-width: 80px; }
+        .m-date span { display: block; font-size: 0.8rem; font-weight: normal; color: #555; text-transform: uppercase; }
+        
+        .m-details { flex-grow: 1; padding-left: 20px; border-left: 2px solid #f9e79f; margin-left: 15px; }
+        .m-nak { font-weight: bold; color: #3e2723; }
+        .m-tithi { font-size: 0.9rem; color: #5d4037; }
+        
+        .m-action .btn { font-size: 0.8rem; border-radius: 20px; padding: 5px 15px; }
+
+        .section-title { font-family: 'Playfair Display'; color: #b71c1c; text-align: center; margin-bottom: 20px; }
+        
+        @media(max-width: 600px) {
+            .header-img { height: 60px; }
+            .brand-header h1 { font-size: 1.4rem; }
+            .nav-bar a { margin: 0 10px; font-size: 0.8rem; }
+            .muhurtha-card { flex-direction: column; text-align: center; }
+            .m-details { border-left: none; border-top: 1px solid #eee; padding-left: 0; padding-top: 10px; margin-left: 0; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand-header">
+    <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara">
+    <div class="header-content">
+        <h1>Dwara's Vedic Calendar</h1>
+        <div class="subtitle">PRECISION PANCHANG</div>
+    </div>
+    <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family">
+</div>
+
+<div class="nav-bar">
+    <a href="/">Daily View</a>
+    <a href="/month">Monthly View</a>
+    <a href="/muhurtha" class="active">Muhurtha Finder</a>
+    <a href="/horoscope">Horoscope</a>
+</div>
+
+<div class="search-container">
+    <form method="POST" id="muhurthaForm" autocomplete="off">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6 position-relative">
+                <label class="form-label">Location</label>
+                <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="Enter City..." required>
+                <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location">
+                    <i class="fas fa-crosshairs"></i>
+                </button>
+                <ul id="suggestions" class="suggestions-list"></ul>
+            </div>
+            
+            <div class="col-md-4">
+                <label class="form-label">Month</label>
+                <input type="month" name="month_year" class="form-control" value="{{ current_ym }}">
+            </div>
+            
+            <div class="col-md-2">
+                <button type="submit" class="btn search-btn w-100">Find</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="muhurtha-wrapper">
+    
+    <h2 class="section-title">Auspicious Dates in {{ month_name }} {{ year }}</h2>
+
+    <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
+        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-marriage">Marriage (Vivaha)</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-gruha">House Warming</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-naming">Naming / Birthday</button></li>
+        <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-vehicle">Vehicle / Property</button></li>
+    </ul>
+
+    <div class="tab-content">
+        
+        <div class="tab-pane fade show active" id="pills-marriage">
+            {% if not muhurtha_data.marriage %}
+                <div class="alert alert-warning text-center">No standard Marriage Muhurthas found in this month.</div>
+            {% endif %}
+            {% for item in muhurtha_data.marriage %}
+                <div class="muhurtha-card">
+                    <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
+                    <div class="m-details">
+                        <div class="m-nak">✨ {{ item.nakshatra }}</div>
+                        <div class="m-tithi">🌙 {{ item.tithi }}</div>
+                    </div>
+                    <div class="m-action">
+                        <a href="/?location={{ location }}&date={{ item.full_date }}" class="btn btn-outline-danger">Check Timings</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="pills-gruha">
+            {% if not muhurtha_data.gruha %}
+                <div class="alert alert-warning text-center">No standard House Warming dates found.</div>
+            {% endif %}
+            {% for item in muhurtha_data.gruha %}
+                <div class="muhurtha-card">
+                    <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
+                    <div class="m-details">
+                        <div class="m-nak">🏡 {{ item.nakshatra }}</div>
+                        <div class="m-tithi">🌙 {{ item.tithi }}</div>
+                    </div>
+                    <div class="m-action">
+                        <a href="/?location={{ location }}&date={{ item.full_date }}" class="btn btn-outline-danger">Check Timings</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="pills-naming">
+            {% for item in muhurtha_data.naming %}
+                <div class="muhurtha-card">
+                    <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
+                    <div class="m-details">
+                        <div class="m-nak">👶 {{ item.nakshatra }}</div>
+                        <div class="m-tithi">🌙 {{ item.tithi }}</div>
+                    </div>
+                    <div class="m-action">
+                        <a href="/?location={{ location }}&date={{ item.full_date }}" class="btn btn-outline-danger">Check Timings</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="tab-pane fade" id="pills-vehicle">
+            {% for item in muhurtha_data.vehicle %}
+                <div class="muhurtha-card">
+                    <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
+                    <div class="m-details">
+                        <div class="m-nak">🚗 {{ item.nakshatra }}</div>
+                        <div class="m-tithi">🌙 {{ item.tithi }}</div>
+                    </div>
+                    <div class="m-action">
+                        <a href="/?location={{ location }}&date={{ item.full_date }}" class="btn btn-outline-danger">Check Timings</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // AUTO LOCATION DETECTION SCRIPT (Same as Home)
+    function detectLocation() {
+        if (navigator.geolocation) {
+            const btn = document.querySelector('.gps-btn i');
+            btn.classList.add('fa-spin'); 
+            
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const addr = data.address;
+                            const city = addr.city || addr.town || addr.village || addr.county;
+                            const country = addr.country;
+                            
+                            if(city) {
+                                document.getElementById('locationInput').value = `${city}, ${country}`;
+                                document.getElementById('muhurthaForm').submit();
+                            } else {
+                                alert("Could not determine specific city name.");
+                            }
+                            btn.classList.remove('fa-spin');
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            btn.classList.remove('fa-spin');
+                        });
+                },
+                function(error) {
+                    alert("Location access denied or unavailable.");
+                    btn.classList.remove('fa-spin');
+                }
+            );
+        } else {
+            alert("Geolocation is not supported by your browser.");
+        }
+    }
+
+    // AUTOCOMPLETE LOGIC
+    const input = document.getElementById('locationInput');
+    const list = document.getElementById('suggestions');
+    let debounceTimer;
+
+    input.addEventListener('input', function() {
+        const query = this.value;
+        clearTimeout(debounceTimer);
+        if (query.length < 3) { list.style.display = 'none'; return; }
+        
+        debounceTimer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    const uniqueSet = new Set();
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const addr = item.address;
+                            const city = addr.city || addr.town || addr.village;
+                            const country = addr.country;
+                            if (city && country) {
+                                const cleanName = `${city}, ${country}`;
+                                if (!uniqueSet.has(cleanName)) {
+                                    uniqueSet.add(cleanName);
+                                    list.style.display = 'block';
+                                    const li = document.createElement('li');
+                                    li.textContent = cleanName;
+                                    li.addEventListener('click', () => {
+                                        input.value = cleanName;
+                                        list.style.display = 'none';
+                                    });
+                                    list.appendChild(li);
+                                }
+                            }
+                        });
+                    } else { list.style.display = 'none'; }
+                });
+        }, 300);
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
+    });
+</script>
+
+</body>
+</html>

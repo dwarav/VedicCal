@@ -6,6 +6,7 @@ from timezonefinder import TimezoneFinder
 import os
 import math
 import urllib.parse
+import calendar
 
 # ================= CONFIG =================
 SERVER_EPHE_PATH = '/home/u285716465/domains/dwara.org/public_html/vedic/ephe'
@@ -34,7 +35,7 @@ PADA_NAMES = [f"{n} Pada {i+1}" for n in NAKSHATRAS for i in range(4)]
 # ICONS
 RASHI_ICONS = {"Mesha (Aries)": "♈", "Vrishabha (Taurus)": "♉", "Mithuna (Gemini)": "♊", "Karka (Cancer)": "♋", "Simha (Leo)": "♌", "Kanya (Virgo)": "♍", "Tula (Libra)": "♎", "Vrishchika (Scorpio)": "♏", "Dhanu (Sagittarius)": "♐", "Makara (Capricorn)": "♑", "Kumbha (Aquarius)": "♒", "Meena (Pisces)": "♓"}
 NAK_ICONS = {"Ashwini": "🐴", "Bharani": "🐘", "Krittika": "🔥", "Rohini": "🐍", "Mrigashira": "🦌", "Ardra": "💧", "Punarvasu": "🏹", "Pushya": "🌸", "Ashlesha": "🐍", "Magha": "👑", "Purva Phalguni": "🛋️", "Uttara Phalguni": "🛏️", "Hasta": "🖐️", "Chitra": "✨", "Swati": "🌬️", "Vishakha": "⚖️", "Anuradha": "🌸", "Jyeshtha": "🌂", "Mula": "🌿", "Purva Ashadha": "🌊", "Uttara Ashadha": "🐘", "Shravana": "👂", "Dhanishta": "🥁", "Shatabhisha": "⭕", "Purva Bhadrapada": "🦁", "Uttara Bhadrapada": "🐮", "Revati": "🐟"}
-TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "¾", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
+TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "🌔", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
 
 VARJYAM_STARTS = [50, 24, 30, 40, 14, 21, 30, 20, 32, 30, 20, 18, 22, 20, 14, 14, 10, 14, 20, 24, 20, 10, 10, 18, 16, 24, 30]
 AMRIT_STARTS = [42, 48, 54, 52, 38, 35, 54, 44, 56, 54, 44, 48, 42, 46, 34, 32, 38, 38, 40, 48, 52, 38, 38, 42, 36, 48, 56]
@@ -99,7 +100,7 @@ def setup_swisseph():
 
 def get_location(name):
     try:
-        geolocator = Nominatim(user_agent="dwara_panchang_v8", timeout=5)
+        geolocator = Nominatim(user_agent="dwara_panchang_v9", timeout=5)
         loc = geolocator.geocode(name)
         if not loc: return None
         tf = TimezoneFinder()
@@ -132,8 +133,7 @@ def calc_sun_rise_set(jd, lat, lon):
         rise = swe.rise_trans(jd_search, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)[1][0]
         set_ = swe.rise_trans(jd_search, swe.SUN, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)[1][0]
         return rise, set_
-    except:
-        return 0.0, 0.0
+    except: return 0.0, 0.0
 
 def calc_moon_rise_set(jd_start, lat, lon):
     if jd_start is None: return 0.0, 0.0
@@ -143,8 +143,7 @@ def calc_moon_rise_set(jd_start, lat, lon):
         res_rise = swe.rise_trans(jd_search, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
         res_set = swe.rise_trans(jd_search, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
         return res_rise[1][0], res_set[1][0]
-    except:
-        return 0.0, 0.0
+    except: return 0.0, 0.0
 
 def get_pos(jd):
     if jd is None: return 0.0, 0.0
@@ -153,8 +152,7 @@ def get_pos(jd):
         sun = swe.calc_ut(jd, swe.SUN, flags)[0][0]
         moon = swe.calc_ut(jd, swe.MOON, flags)[0][0]
         return sun, moon
-    except:
-        return 0.0, 0.0
+    except: return 0.0, 0.0
 
 def get_events(start_jd, end_jd, func, names, count, is_karana=False):
     events = []
@@ -173,8 +171,7 @@ def get_events(start_jd, end_jd, func, names, count, is_karana=False):
             curr_search = e_jd + 0.002
             curr_idx = (curr_idx + 1) % count
             loops += 1
-    except:
-        pass
+    except: pass
     return events
 
 def find_trans(start, func, target):
@@ -277,12 +274,10 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
             end_t = d_end.strftime('%b %d, %I:%M %p') if d_end and e['end'] else "Full Night"
             res.append(f"{val} upto {end_t}")
         return " | ".join(res)
-    
     anandadi_str = fmt_event(nak_events, lambda idx: ANANDADI_YOGAS[(idx + ananda_offset[weekday_idx]) % 28])
     tamil_str = fmt_event(nak_events, lambda idx: get_tamil_yoga(weekday_idx, idx))
     baana_str = fmt_event(nak_events, lambda idx: get_baana_type(sun_nak_idx, idx))
     n, j = get_netram_jeevan(nak_events[0]['index'])
-    
     ss_found = []
     vidaal_found = []
     for e in nak_events:
@@ -290,14 +285,11 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
         start_t = d_start.strftime('%I:%M %p') if d_start else "..."
         d_end = dt_from_jd(e['end'], tz)
         end_t = d_end.strftime('%I:%M %p') if d_end and e['end'] else "Full Night"
-        
         if get_sarvartha_siddhi(weekday_idx, e['index']): ss_found.append(f"{start_t} - {end_t}")
         if get_vidaal_yoga(weekday_idx, e['index']): vidaal_found.append(f"{start_t} - {end_t}")
-
     sarvartha_str = ", ".join(ss_found) if ss_found else "None"
     vidaal_str = ", ".join(vidaal_found) if vidaal_found else "None"
     tripushkara_str = get_tripushkara_yoga(tithi_events, nak_events, weekday_idx, start_jd, end_jd, tz)
-
     return {"anandadi": anandadi_str, "tamil": tamil_str, "sarvartha": sarvartha_str, "baana": baana_str, "netrama": n, "jeevanama": j, "tripushkara": tripushkara_str, "vidaal": vidaal_str}
 
 def get_samvat_details(dt):
@@ -485,6 +477,81 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
     if nak_idx == 3: add_fest("Rohini Vrat")
     return festivals
 
+# --- HOROSCOPE CALCULATION ---
+def get_horoscope_by_birth_details(loc, date_str, time_str):
+    setup_swisseph()
+    try:
+        dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+    except: return None
+
+    tz = loc['tz']
+    local_dt = tz.localize(dt)
+    jd = swe.julday(local_dt.year, local_dt.month, local_dt.day, local_dt.hour + local_dt.minute/60.0 + local_dt.second/3600.0)
+
+    # Calculate Planets
+    flags = swe.FLG_SIDEREAL | swe.FLG_SPEED
+    planet_map = {0: swe.SUN, 1: swe.MOON, 2: swe.MARS, 3: swe.MERCURY, 4: swe.JUPITER, 5: swe.VENUS, 6: swe.SATURN, 7: swe.MEAN_NODE, 8: swe.MEAN_NODE}
+    
+    chart_data = {i: [] for i in range(12)} 
+    
+    # Lagna
+    cusps, ascmc = swe.houses(jd, loc['lat'], loc['lon'], b'P')
+    lagna_deg = ascmc[0]
+    lagna_rashi = int(lagna_deg / 30)
+    chart_data[lagna_rashi].append("Lagna")
+    
+    moon_long = 0
+    
+    # Planets
+    for i in range(8):
+        body = planet_map[i]
+        res = swe.calc_ut(jd, body, flags)[0]
+        deg = res[0]
+        if i == 8: deg = (deg + 180) % 360 # Ketu
+        if i == 1: moon_long = deg
+            
+        rashi = int(deg / 30)
+        p_name = ["Sun", "Moon", "Mars", "Merc", "Jup", "Ven", "Sat", "Rahu", "Ketu"][i]
+        chart_data[rashi].append(p_name)
+    
+    # ADDED: Nakshatra Calc
+    nak_idx = int(moon_long / 13.333333333)
+    pada = int((moon_long % 13.333333333) / 3.333333333) + 1
+    nak_str = f"{NAKSHATRAS[nak_idx]} ({pada} Pada)"
+
+    return {"chart": chart_data, "lagna": RASHIS[lagna_rashi], "moon_sign": RASHIS[int(moon_long/30)], "nakshatra": nak_str}
+
+# --- MUHURTHA CALCULATOR ---
+def get_monthly_muhurthas(loc, year, month):
+    RULES = {
+        "marriage": {"naks": ["Rohini", "Mrigashira", "Magha", "Uttara Phalguni", "Hasta", "Swati", "Anuradha", "Mula", "Uttara Ashadha", "Uttara Bhadrapada", "Revati"], "tithis": ["Dwitiya", "Tritiya", "Panchami", "Saptami", "Dashami", "Ekadashi", "Trayodashi"], "exclude_days": [1, 6]},
+        "gruha": {"naks": ["Rohini", "Mrigashira", "Pushya", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Anuradha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Uttara Bhadrapada", "Revati"], "tithis": ["Dwitiya", "Tritiya", "Panchami", "Shashthi", "Saptami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi"], "exclude_days": [1, 6]},
+        "naming": {"naks": ["Ashwini", "Rohini", "Mrigashira", "Punarvasu", "Pushya", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Anuradha", "Shravana", "Dhanishta", "Shatabhisha", "Uttara Bhadrapada", "Revati"], "tithis": ["Pratipada", "Dwitiya", "Tritiya", "Panchami", "Saptami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi", "Purnima"], "exclude_days": []},
+        "vehicle": {"naks": ["Ashwini", "Rohini", "Punarvasu", "Pushya", "Hast", "Chitra", "Swati", "Anuradha", "Shravana", "Dhanishta", "Shatabhisha", "Revati"], "tithis": ["Tritiya", "Panchami", "Shashthi", "Dashami", "Ekadashi", "Purnima"], "exclude_days": [1]}
+    }
+    cal = calendar.monthcalendar(year, month)
+    results = {k: [] for k in RULES.keys()}
+    for week in cal:
+        for day in week:
+            if day == 0: continue
+            date_str = f"{year}-{month:02d}-{day:02d}"
+            try:
+                data = fetch_month_day_data(loc, date_str)
+                dt_obj = datetime(year, month, day)
+                weekday = dt_obj.weekday()
+                curr_nak = data['nakshatra'].split(' ')[0]
+                curr_tithi = data['tithi']
+                tithi_name = curr_tithi.split(' ')[-1]
+                for cat, rule in RULES.items():
+                    if weekday in rule['exclude_days']: continue
+                    nak_match = any(n in curr_nak for n in rule['naks'])
+                    tithi_match = any(t == tithi_name for t in rule['tithis'])
+                    if "Amavasya" in curr_tithi or "Chaturthi" in tithi_name or "Navami" in tithi_name: tithi_match = False
+                    if nak_match and tithi_match:
+                        results[cat].append({"date": f"{day} {calendar.month_name[month]}", "day_name": dt_obj.strftime("%A"), "nakshatra": curr_nak, "tithi": curr_tithi, "full_date": date_str})
+            except: continue
+    return results
+
 # --- Main Fetch Function ---
 def fetch_panchang(loc_str_or_dict, date_str):
     setup_swisseph()
@@ -508,14 +575,10 @@ def fetch_panchang(loc_str_or_dict, date_str):
         s = rise + ((k_map[w_idx]-1) * (day_len/8))
         d_start = dt_from_jd(s, tz)
         d_end = dt_from_jd(s + day_len/8, tz)
-        
-        # SAFETY CHECK
         if not d_start or not d_end: return "---"
-        
         s_fmt = d_start.strftime('%b %d, %I:%M %p') if d_start.date() != dt.date() else d_start.strftime('%I:%M %p')
         e_fmt = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != dt.date() else d_end.strftime('%I:%M %p')
         return f"{s_fmt} - {e_fmt}"
-    
     rahu_time = get_kalam(RAHU_KEY)
     yama_time = get_kalam(YAMA_KEY)
     guli_time = get_kalam(GULI_KEY)
@@ -530,12 +593,6 @@ def fetch_panchang(loc_str_or_dict, date_str):
     epoch = get_epoch_details(jd_noon, dt)
     chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_idx)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
-    
-    tithi_events = get_events(rise, rise_next, lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 12), 0), TITHIS, 30)
-    nak_events = get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 13.333333333), 0), NAKSHATRAS, 27)
-    
-    calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
-    nk_start = nak_events[0]['start']
     panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_idx, nak_idx, w_idx)
     festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)
     dinamana = fmt_duration(rise, set_)
@@ -553,6 +610,11 @@ def fetch_panchang(loc_str_or_dict, date_str):
     fn_yoga = lambda j: (int((get_pos(j)[1] + get_pos(j)[0]) % 360 / 13.333333333), 0)
     fn_karana = lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 6), 0)
     
+    tithi_events = get_events(rise, rise_next, fn_tithi, TITHIS, 30)
+    nak_events = get_events(rise, rise_next, fn_nak, NAKSHATRAS, 27)
+    calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
+    
+    nk_start = nak_events[0]['start'] if nak_events else rise
     v_s = nk_start + (VARJYAM_STARTS[nak_idx]/60.0)
     varjyam_time = fmt_range(v_s, v_s + 4/60.0)
     a_s = nk_start + (AMRIT_STARTS[nak_idx]/60.0)
@@ -608,7 +670,7 @@ def fetch_month_day_data(loc, date_str):
         d = dt_from_jd(jd, tz)
         if not d: return "---"
         return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
-    
+
     t_item = tithi_events[0]
     tithi_name = t_item['name'].split(' ')[-1]
     tithi_icon = TITHI_ICONS.get(t_item['name'], "🌑")

@@ -1,6 +1,6 @@
 import calendar
 from flask import Flask, render_template, request
-from panchang_engine import fetch_panchang, get_location, fetch_month_day_data
+from panchang_engine import fetch_panchang, get_location, fetch_month_day_data, get_monthly_muhurthas, get_horoscope_by_birth_details, get_location
 from datetime import datetime
 import pytz
 
@@ -119,6 +119,79 @@ def monthly_view():
                            year=year, 
                            location=loc_name_display, 
                            current_ym=f"{year}-{month:02d}")
+
+
+@app.route('/muhurtha', methods=['GET', 'POST'])
+def muhurtha_view():
+    today = datetime.now()
+    year = today.year
+    month = today.month
+    
+    # Default Location Logic (Same as other pages)
+    loc_name = "Bangalore, India"
+    loc_data = {
+        'name': "Bangalore, India",
+        'lat': 12.9716,
+        'lon': 77.5946,
+        'tz': pytz.timezone('Asia/Kolkata')
+    }
+
+    if request.method == 'POST':
+        if request.form.get('month_year'):
+            ym_str = request.form.get('month_year')
+            year, month = map(int, ym_str.split('-'))
+        
+        if request.form.get('location'):
+            loc_name = request.form.get('location')
+            found_loc = get_location(loc_name)
+            if found_loc:
+                loc_data = found_loc
+
+    # Calculate Muhurthas
+    muhurtha_data = get_monthly_muhurthas(loc_data, year, month)
+    month_name = calendar.month_name[month]
+
+    return render_template('muhurtha.html', 
+                           muhurtha_data=muhurtha_data, 
+                           month_name=month_name, 
+                           year=year, 
+                           location=loc_name, 
+                           current_ym=f"{year}-{month:02d}")
+
+
+
+@app.route('/horoscope', methods=['GET', 'POST'])
+def horoscope_view():
+    birth_date = ""
+    birth_time = ""
+    city_name = "Bangalore, India" # Default
+    data = None
+    
+    if request.method == 'POST':
+        birth_date = request.form.get('birth_date')
+        birth_time = request.form.get('birth_time')
+        city_name = request.form.get('location')
+        
+        if birth_date and birth_time and city_name:
+            # Get Coords
+            loc = get_location(city_name)
+            if loc:
+                # Calculate using local Swiss Ephemeris (100% Accurate)
+                data = get_horoscope_by_birth_details(loc, birth_date, birth_time)
+            
+            # (Optional) Add dummy predictions based on Sign
+            # Real predictions would require a massive database
+            if data and "moon_sign" in data:
+                sign = data['moon_sign'].split(' ')[0] # Get just the name
+                data["predictions"] = {
+                    "daily": f"Today is a good day for {sign} to focus on personal growth.",
+                    "weekly": f"This week brings new opportunities in career for {sign}.",
+                    "yearly": f"2025 is a transformative year for {sign} natives."
+                }
+
+    return render_template('horoscope.html', data=data, 
+                           birth_date=birth_date, birth_time=birth_time, location=city_name)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

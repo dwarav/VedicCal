@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horoscope - Dwara's Vedic Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+
+        /* --- PREMIUM HEADER (Standardized) --- */
+        .brand-header {
+            background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
+        .brand-header h1 {
+            font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #ffffff;
+            margin: 0; font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
+        }
+        .brand-header .subtitle {
+            font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #f9e79f;
+            text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 500;
+        }
+        .header-img {
+            height: 110px; width: auto; border: 3px solid #d4ac0d; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); object-fit: cover; background: #fff;
+        }
+
+        /* --- NAVIGATION --- */
+        .nav-bar { background-color: #8e1616; padding: 10px 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .nav-bar a {
+            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif; font-weight: bold;
+            text-transform: uppercase; margin: 0 25px; font-size: 1rem; padding-bottom: 4px;
+            border-bottom: 2px solid transparent; transition: all 0.3s;
+        }
+        .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
+
+        /* --- FORM CONTAINER --- */
+        .search-container {
+            max-width: 900px; margin: 0 auto 30px auto; background: #fff8e1;
+            border: 2px solid #b71c1c; border-radius: 8px; padding: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
+        .search-btn:hover { background: #8e1616; color: #fff; }
+        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
+        .form-control { border: 1px solid #d4ac0d; background: #fff; }
+        
+        /* --- HOROSCOPE CONTENT --- */
+        .horoscope-wrapper { max-width: 900px; margin: 0 auto; padding: 0 15px; }
+
+        .result-card {
+            background: #fff; border: 1px solid #d4ac0d; border-radius: 8px;
+            padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center;
+        }
+        
+        .sign-title { font-family: 'Playfair Display'; color: #b71c1c; font-size: 2.5rem; margin-bottom: 5px; }
+        .sign-icon { font-size: 3.5rem; color: #d4ac0d; margin-bottom: 15px; display: block; }
+        
+        /* INFO GRID */
+        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; margin-bottom: 30px; }
+        .info-box { background: #fff8e1; border: 1px solid #f9e79f; padding: 15px; border-radius: 6px; }
+        .info-label { display: block; font-size: 0.8rem; color: #7b241c; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
+        .info-val { font-size: 1.1rem; color: #3e2723; font-weight: 500; }
+
+        /* TABS */
+        .nav-pills .nav-link {
+            color: #b71c1c; background-color: #fff; border: 1px solid #b71c1c; 
+            margin: 0 5px; font-weight: bold; width: 100px;
+        }
+        .nav-pills .nav-link.active { background-color: #b71c1c; color: #fff; }
+        
+        .prediction-box {
+            background: #fff8e1; border-left: 4px solid #b71c1c; 
+            padding: 20px; font-size: 1.1rem; line-height: 1.6; color: #3e2723;
+            margin-top: 20px; border-radius: 4px; text-align: left;
+        }
+
+        @media(max-width: 600px) {
+            .header-img { height: 60px; }
+            .brand-header h1 { font-size: 1.4rem; }
+            .nav-bar a { margin: 0 10px; font-size: 0.8rem; }
+            .info-grid { grid-template-columns: 1fr; }
+            .nav-pills .nav-link { width: 45%; margin-bottom: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="brand-header">
+    <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara">
+    <div class="header-content">
+        <h1>Dwara's Vedic Calendar</h1>
+        <div class="subtitle">PRECISION PANCHANG</div>
+    </div>
+    <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family">
+</div>
+
+<div class="nav-bar">
+    <a href="/">Daily View</a>
+    <a href="/month">Monthly View</a>
+    <a href="/muhurtha">Muhurtha</a>
+    <a href="/horoscope" class="active">Horoscope</a>
+</div>
+
+<div class="container">
+    
+    <div class="search-container">
+        <form method="POST">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Birth Date</label>
+                    <input type="date" name="birth_date" class="form-control" value="{{ birth_date }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Birth Time</label>
+                    <input type="time" name="birth_time" class="form-control" value="{{ birth_time }}" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Place of Birth</label>
+                    <input type="text" name="location" class="form-control" value="{{ location }}" placeholder="City..." required>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn search-btn w-100">Calculate</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    {% if data %}
+    <div class="horoscope-wrapper">
+        <div class="result-card">
+            
+            <i class="fas fa-om sign-icon"></i>
+            <h2 class="sign-title">{{ data.moon_sign }} Rashi</h2>
+            <p class="text-muted">Based on your birth details</p>
+            
+            <div class="info-grid">
+                <div class="info-box">
+                    <span class="info-label">Ascendant (Lagna)</span>
+                    <span class="info-val">{{ data.lagna }}</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">Moon Sign (Rashi)</span>
+                    <span class="info-val">{{ data.moon_sign }}</span>
+                </div>
+                <div class="info-box">
+                    <span class="info-label">Nakshatra</span>
+                    <span class="info-val">{{ data.nakshatra }}</span>
+                </div>
+            </div>
+
+            <ul class="nav nav-pills justify-content-center mb-3" id="pills-tab" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-daily">Daily</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-weekly">Weekly</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-monthly">Monthly</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-yearly">Yearly</button></li>
+            </ul>
+
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-daily">
+                    <div class="prediction-box">
+                        <strong>For {{ data.moon_sign }} today:</strong><br>
+                        {{ data.predictions.daily }}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-weekly">
+                    <div class="prediction-box">
+                        <strong>Weekly Outlook:</strong><br>
+                        {{ data.predictions.weekly }}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-monthly">
+                    <div class="prediction-box">
+                        <strong>Monthly Forecast:</strong><br>
+                        Predictions coming soon.
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pills-yearly">
+                    <div class="prediction-box">
+                        <strong>Yearly Overview (2025):</strong><br>
+                        {{ data.predictions.yearly }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
