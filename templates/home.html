@@ -11,143 +11,79 @@
     <style>
         body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
 
-        /* --- PREMIUM BRAND HEADER (Matches Photo) --- */
+        /* HEADER STYLES */
         .brand-header {
-            background-color: #b71c1c; /* Royal Red */
-            border-bottom: 6px solid #d4ac0d; /* Thick Gold Border */
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-
-        .header-content {
-            text-align: center;
-            flex-grow: 1;
-            padding: 0 15px;
-        }
-
+        .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
         .brand-header h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.8rem;
-            color: #ffffff;
-            margin: 0;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-            line-height: 1;
+            font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #ffffff; margin: 0;
+            font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
         }
-
         .brand-header .subtitle {
-            font-family: 'Roboto', sans-serif;
-            font-size: 0.9rem;
-            color: #f9e79f; /* Gold Text */
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: 8px;
-            font-weight: 500;
+            font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #f9e79f;
+            text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 500;
         }
-
         .header-img {
-            height: 110px; /* Adjust size */
-            width: auto;
-            border: 3px solid #d4ac0d; /* Gold Frame */
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            object-fit: cover;
-            background: #fff;
+            height: 110px; width: auto; border: 3px solid #d4ac0d; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); object-fit: cover; background: #fff;
         }
 
-        /* --- NAVIGATION BAR --- */
-        .nav-bar {
-            background-color: #8e1616; /* Darker Red */
-            padding: 10px 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            margin-bottom: 20px;
-        }
-
+        /* NAVIGATION & SEARCH */
+        .nav-bar { background-color: #8e1616; padding: 10px 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .nav-bar a {
-            color: #fff;
-            text-decoration: none;
-            font-family: 'Roboto', sans-serif;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin: 0 25px;
-            font-size: 1rem;
-            padding-bottom: 4px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s;
+            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif; font-weight: bold;
+            text-transform: uppercase; margin: 0 25px; font-size: 1rem; padding-bottom: 4px;
+            border-bottom: 2px solid transparent; transition: all 0.3s;
         }
+        .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
 
-        .nav-bar a:hover, .nav-bar a.active {
-            color: #f9e79f;
-            border-bottom: 2px solid #f9e79f;
-        }
-
-        /* --- SEARCH CONTAINER --- */
         .search-container {
-            max-width: 700px;
-            margin: 0 auto 30px auto;
-            background: #fff8e1;
-            border: 2px solid #b71c1c;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-width: 700px; margin: 0 auto 30px auto; background: #fff8e1; border: 2px solid #b71c1c;
+            border-radius: 8px; padding: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        
         .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
         .search-btn:hover { background: #8e1616; color: #fff; }
         .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
         .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
         .form-control { border: 1px solid #d4ac0d; background: #fff; padding-right: 40px; }
+        .suggestions-list { position: absolute; background: white; border: 1px solid #d4ac0d; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
+        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
 
-        /* --- RESULT CARD --- */
+        /* RESULT CARD */
         #captureArea {
-            max-width: 700px;
-            margin: 0 auto;
-            background: #fff8e1;
-            border: 2px solid #b71c1c;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            max-width: 700px; margin: 0 auto; background: #fff8e1;
+            border: 2px solid #b71c1c; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
-        
-        /* Capture Header (Simplified for Image Export) */
-        .capture-header {
-            background: #b71c1c;
-            border-bottom: 4px solid #d4ac0d;
-            padding: 15px;
-            text-align: center;
-        }
+        .capture-header { background: #b71c1c; border-bottom: 4px solid #d4ac0d; padding: 15px; text-align: center; }
         .capture-header h1 { font-family: 'Playfair Display', serif; color: #fff; margin: 0; font-size: 2rem; }
         .capture-header p { color: #f9e79f; margin: 0; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
-
+        
         .main-info { background: #f9e79f; text-align: center; padding: 12px; border-bottom: 1px solid #d4ac0d; }
         .main-info h2 { color: #5d4037; font-weight: bold; margin: 0; font-size: 1.3rem; }
         .main-info p { color: #795548; margin: 4px 0 0; font-size: 0.95rem; }
 
         .header-section { background: #d4ac0d; color: #4e342e; font-weight: 900; text-align: center; padding: 8px 0; border-top: 1px solid #9a7d0a; border-bottom: 1px solid #9a7d0a; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.95rem; }
-        
         .row-container { display: flex; background: #fcf3cf; border-bottom: 1px solid #f1c40f; }
         .row-container:last-child { border-bottom: none; }
         
         .cell-left, .cell-right { flex: 1; padding: 8px 12px; display: flex; align-items: flex-start; font-size: 0.9rem; color: #3e2723; border-right: 1px solid #f1c40f; }
         .cell-right { border-right: none; }
-
+        
         .label { font-weight: 700; color: #922b21; width: 130px; text-align: right; margin-right: 12px; text-decoration: underline; text-decoration-color: #d35400; flex-shrink: 0; }
         .value { font-weight: 600; flex-grow: 1; }
         .sub-val { font-weight: normal; font-size: 0.85em; color: #5d4037; }
         .strikethrough { text-decoration: line-through; color: #5d4037; }
-        
-        /* Green Text for Auspicious */
         .text-success { color: #1b5e20 !important; }
+        .text-danger { color: #b71c1c !important; }
 
-        /* Festival Images */
         .festival-container { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fcf3cf; justify-content: center; }
         .festival-item { display: flex; align-items: center; background: #fff8e1; border: 1px solid #d4ac0d; padding: 5px 10px; border-radius: 4px; width: 48%; min-width: 250px; box-sizing: border-box; }
         .festival-item img { width: 50px; height: 50px; object-fit: cover; margin-right: 10px; border-radius: 50%; border: 2px solid #d4ac0d; }
         .festival-item span { font-weight: 700; color: #7b241c; font-size: 0.9rem; }
-
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
         .grid-item { display: flex; align-items: center; font-size: 0.85rem; font-weight: 500; }
         .grid-icon { margin-right: 5px; font-size: 1rem; }
@@ -185,9 +121,7 @@
 <div class="container">
     
     <div class="search-container">
-        {% if error %}
-        <div class="alert alert-danger">{{ error }}</div>
-        {% endif %}
+        {% if error %} <div class="alert alert-danger">{{ error }}</div> {% endif %}
         <form method="POST" id="panchangForm" autocomplete="off" class="row g-3 align-items-end">
             <div class="col-md-6 position-relative">
                 <label class="form-label">Location</label>
@@ -199,9 +133,7 @@
                 <label class="form-label">Date</label>
                 <input type="date" name="date" class="form-control" value="{{ today }}" required>
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn search-btn w-100">Update</button>
-            </div>
+            <div class="col-md-2"><button type="submit" class="btn search-btn w-100">Update</button></div>
         </form>
     </div>
 
@@ -242,14 +174,16 @@
             <div class="cell-right"><span class="label">Paksha</span><span class="value">{% if 'Shukla' in data.tithi[0].name %} Shukla Paksha {% else %} Krishna Paksha {% endif %}</span></div>
         </div>
 
-        <div class="header-section">Lunar Month & Samvat</div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Vikram Samvat</span><span class="value">{{ data.details.samvat.vikram }}</span></div>
-            <div class="cell-right"><span class="label">Shaka Samvat</span><span class="value">{{ data.details.samvat.shaka }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Samvatsara</span><span class="value">{{ data.details.samvat.samvatsara }}</span></div>
-            <div class="cell-right"><span class="label">Gujarati</span><span class="value">{{ data.details.samvat.gujarati }} Pingala</span></div>
+        <div class="no-share">
+            <div class="header-section">Lunar Month & Samvat</div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Vikram Samvat</span><span class="value">{{ data.details.samvat.vikram }}</span></div>
+                <div class="cell-right"><span class="label">Shaka Samvat</span><span class="value">{{ data.details.samvat.shaka }}</span></div>
+            </div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Samvatsara</span><span class="value">{{ data.details.samvat.samvatsara }}</span></div>
+                <div class="cell-right"><span class="label">Gujarati</span><span class="value">{{ data.details.samvat.gujarati }} Pingala</span></div>
+            </div>
         </div>
 
         <div class="header-section">Rashi and Nakshatra</div>
@@ -262,22 +196,24 @@
             <div class="cell-right"><span class="label">Surya Pada</span><div class="value">{% for item in data.sun_pada %}<div>{{ item.name }} <span class="sub-val">upto {{ item.end_fmt }}</span></div>{% endfor %}</div></div>
         </div>
 
-        <div class="header-section">Ritu and Ayana</div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Ritu</span><span class="value">{{ data.details.ritu_ayana.ritu }}</span></div>
-            <div class="cell-right"><span class="label">Dinamana</span><span class="value">{{ data.details.dinamana }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Vedic Ritu</span><span class="value">{{ data.details.ritu_ayana.vedic_ritu }}</span></div>
-            <div class="cell-right"><span class="label">Ratrimana</span><span class="value">{{ data.details.ratrimana }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Ayana</span><span class="value">{{ data.details.ritu_ayana.ayana }}</span></div>
-            <div class="cell-right"><span class="label">Madhyahna</span><span class="value">{{ data.details.madhyahna }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Vedic Ayana</span><span class="value"><s class="strikethrough">{{ data.details.ritu_ayana.ayana }}</s> {{ data.details.ritu_ayana.vedic_ayana }}</span></div>
-            <div class="cell-right"></div>
+        <div class="no-share">
+            <div class="header-section">Ritu and Ayana</div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Ritu</span><span class="value">{{ data.details.ritu_ayana.ritu }}</span></div>
+                <div class="cell-right"><span class="label">Dinamana</span><span class="value">{{ data.details.dinamana }}</span></div>
+            </div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Vedic Ritu</span><span class="value">{{ data.details.ritu_ayana.vedic_ritu }}</span></div>
+                <div class="cell-right"><span class="label">Ratrimana</span><span class="value">{{ data.details.ratrimana }}</span></div>
+            </div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Ayana</span><span class="value">{{ data.details.ritu_ayana.ayana }}</span></div>
+                <div class="cell-right"><span class="label">Madhyahna</span><span class="value">{{ data.details.madhyahna }}</span></div>
+            </div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Vedic Ayana</span><span class="value"><s class="strikethrough">{{ data.details.ritu_ayana.ayana }}</s> {{ data.details.ritu_ayana.vedic_ayana }}</span></div>
+                <div class="cell-right"></div>
+            </div>
         </div>
 
         <div class="header-section">Auspicious Timings</div>
@@ -301,7 +237,7 @@
             <div class="cell-left"><span class="label">Sarvartha Siddhi</span><span class="value text-success">{{ data.timings.sarvartha }}</span></div>
             <div class="cell-right"><span class="label">Tri Pushkara</span><span class="value text-success">{{ data.timings.tripushkara }}</span></div>
         </div>
-        
+
         <div class="header-section">Inauspicious Timings</div>
         <div class="row-container">
             <div class="cell-left"><span class="label">Rahu Kalam</span><span class="value text-danger">{{ data.timings.rahu }}</span></div>
@@ -320,97 +256,81 @@
             <div class="cell-right"></div>
         </div>
 
-        <div class="header-section">Anandadi and Tamil Yoga</div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Anandadi Yoga</span><span class="value">{{ data.timings.anandadi }}</span></div>
-            <div class="cell-right"><span class="label">Tamil Yoga</span><span class="value">{{ data.timings.tamil }}</span></div>
-        </div>
+        <div class="no-share">
+            <div class="header-section">Anandadi and Tamil Yoga</div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Anandadi Yoga</span><span class="value">{{ data.timings.anandadi }}</span></div>
+                <div class="cell-right"><span class="label">Tamil Yoga</span><span class="value">{{ data.timings.tamil }}</span></div>
+            </div>
 
-        <div class="header-section">Nivas and Shool</div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Homahuti</span><span class="value">{{ data.details.nivas_shool.homahuti }}</span></div>
-            <div class="cell-right"><span class="label">Disha Shool</span><span class="value">{{ data.details.nivas_shool.disha_shool }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Agnivasa</span><span class="value">{{ data.details.nivas_shool.agnivasa_1 }}</span></div>
-            <div class="cell-right"><span class="label">Nakshatra Shool</span><span class="value">{{ data.details.nivas_shool.nakshatra_shool }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label"></span><span class="value">{{ data.details.nivas_shool.agnivasa_2 }}</span></div>
-            <div class="cell-right"><span class="label">Chandra Vasa</span><span class="value">{{ data.details.nivas_shool.chandra_vasa }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Shivavasa</span><span class="value">{{ data.details.nivas_shool.shivavasa_1 }}</span></div>
-            <div class="cell-right"><span class="label">Rahu Vasa</span><span class="value">{{ data.details.nivas_shool.rahu_vasa }}</span></div>
-        </div>
+            <div class="header-section">Nivas and Shool</div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Homahuti</span><span class="value">{{ data.details.nivas_shool.homahuti }}</span></div>
+                <div class="cell-right"><span class="label">Disha Shool</span><span class="value">{{ data.details.nivas_shool.disha_shool }}</span></div>
+            </div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Agnivasa</span><span class="value">{{ data.details.nivas_shool.agnivasa_1 }}</span></div>
+                <div class="cell-right"><span class="label">Nakshatra Shool</span><span class="value">{{ data.details.nivas_shool.nakshatra_shool }}</span></div>
+            </div>
 
-        <div class="header-section">Other Calendars and Epoch</div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Kaliyuga</span><span class="value">{{ data.details.epoch.kaliyuga }}</span></div>
-            <div class="cell-right"><span class="label">Ayanamsha</span><span class="value">{{ data.details.epoch.ayanamsha }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">Kali Ahargana</span><span class="value">{{ data.details.epoch.kali_ahargana }}</span></div>
-            <div class="cell-right"><span class="label">Julian Date</span><span class="value">{{ data.details.epoch.julian_date }}</span></div>
-        </div>
-        <div class="row-container">
-            <div class="cell-left"><span class="label">National Civil Date</span><span class="value">{{ data.details.epoch.civil_date }}</span></div>
-            <div class="cell-right"><span class="label">Modified Julian Day</span><span class="value">{{ data.details.epoch.mjd }}</span></div>
-        </div>
+            <div class="header-section">Other Calendars and Epoch</div>
+            <div class="row-container">
+                <div class="cell-left"><span class="label">Kaliyuga</span><span class="value">{{ data.details.epoch.kaliyuga }}</span></div>
+                <div class="cell-right"><span class="label">Ayanamsha</span><span class="value">{{ data.details.epoch.ayanamsha }}</span></div>
+            </div>
 
-        <div class="header-section">Chandrabalam & Tarabalam</div>
-        <div class="row-container" style="align-items: stretch;">
-            <div class="cell-left" style="flex-direction: column; border-right: 1px solid #f1c40f;">
-                <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Chandrabalam</div>
-                <div class="grid-container">
-                    {% for rashi in data.details.chandrabalam_tarabalam.chandrabalam.good_rashis %}
-                    <div class="grid-item"><span class="grid-icon">{{ rashi.icon }}</span> {{ rashi.name }}</div>
-                    {% endfor %}
+            <div class="header-section">Chandrabalam & Tarabalam</div>
+            <div class="row-container" style="align-items: stretch;">
+                <div class="cell-left" style="flex-direction: column; border-right: 1px solid #f1c40f;">
+                    <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Chandrabalam</div>
+                    <div class="grid-container">
+                        {% for rashi in data.details.chandrabalam_tarabalam.chandrabalam.good_rashis %}
+                        <div class="grid-item"><span class="grid-icon">{{ rashi.icon }}</span> {{ rashi.name }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="cell-right" style="flex-direction: column;">
+                    <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Tarabalam</div>
+                    <div class="grid-container">
+                        {% for nak in data.details.chandrabalam_tarabalam.tarabalam.period_1.nakshatras %}
+                        <div class="grid-item"><span class="grid-icon">{{ nak.icon }}</span> {{ nak.name }}</div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-            <div class="cell-right" style="flex-direction: column;">
-                <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Tarabalam</div>
-                <div class="grid-container">
-                    {% for nak in data.details.chandrabalam_tarabalam.tarabalam.period_1.nakshatras %}
-                    <div class="grid-item"><span class="grid-icon">{{ nak.icon }}</span> {{ nak.name }}</div>
-                    {% endfor %}
+
+            <div class="header-section">Panchaka Rahita Muhurta</div>
+            <div class="row-container" style="flex-direction: column; padding: 0;">
+                {% for item in data.details.panchaka_rahita %}
+                <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
+                    <span class="label {% if item.is_good %}good-muhurta-label{% endif %}" style="width: 160px; text-align: left; text-decoration: none;">{{ item.label }}</span>
+                    <span class="value text-dark">- {{ item.times }}</span>
                 </div>
+                {% endfor %}
             </div>
-        </div>
 
-        <div class="header-section">Panchaka Rahita Muhurta</div>
-        <div class="row-container" style="flex-direction: column; padding: 0;">
-            {% for item in data.details.panchaka_rahita %}
-            <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
-                <span class="label {% if item.is_good %}good-muhurta-label{% endif %}" style="width: 160px; text-align: left; text-decoration: none;">{{ item.label }}</span>
-                <span class="value text-dark">- {{ item.times }}</span>
+            <div class="header-section">Udaya Lagna Muhurta</div>
+            <div class="row-container" style="flex-direction: column; padding: 0;">
+                {% for item in data.details.udaya_lagna %}
+                <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
+                    <span class="label" style="width: 160px; text-align: left; text-decoration: none; color: #3e2723;"><span style="font-size: 1.1rem; margin-right: 5px;">{{ item.icon }}</span> {{ item.name }}</span>
+                    <span class="value text-dark">- {{ item.start }} to {{ item.end }}</span>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
 
-        <div class="header-section">Udaya Lagna Muhurta</div>
-        <div class="row-container" style="flex-direction: column; padding: 0;">
-            {% for item in data.details.udaya_lagna %}
-            <div class="d-flex border-bottom border-warning py-2 px-3" style="font-size: 0.9rem; border-color: #f1c40f !important;">
-                <span class="label" style="width: 160px; text-align: left; text-decoration: none; color: #3e2723;"><span style="font-size: 1.1rem; margin-right: 5px;">{{ item.icon }}</span> {{ item.name }}</span>
-                <span class="value text-dark">- {{ item.start }} to {{ item.end }}</span>
+            {% if data.details.festivals %}
+            <div class="header-section">Day Festivals and Events</div>
+            <div class="row-container festival-container">
+                {% for festival in data.details.festivals %}
+                <div class="festival-item">
+                    <img src="{{ festival.image_url }}" alt="{{ festival.name }}">
+                    <span>{{ festival.name }}</span>
+                </div>
+                {% endfor %}
             </div>
-            {% endfor %}
-        </div>
-
-        {% if data.details.festivals %}
-        <div class="header-section">Day Festivals and Events</div>
-        <div class="row-container festival-container">
-            {% for festival in data.details.festivals %}
-            <div class="festival-item">
-                <img src="{{ festival.image_url }}" alt="{{ festival.name }}">
-                <span>{{ festival.name }}</span>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-
-    </div>
+            {% endif %}
+        </div> </div>
     {% endif %}
     
     <button class="share-fab" onclick="shareCard()"><i class="fab fa-whatsapp fa-lg"></i> Share Card</button>
@@ -492,10 +412,32 @@
     async function shareCard() {
         const shareBtn = document.querySelector('.share-fab');
         const originalHTML = shareBtn.innerHTML;
+        shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
         try {
-            shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-            const canvas = await html2canvas(document.querySelector("#captureArea"), { useCORS: true, scale: 2 });
-            const caption = `*Vedic Panchang*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
+            // 1. Create a deep clone of the capture area
+            const originalNode = document.querySelector("#captureArea");
+            const clone = originalNode.cloneNode(true);
+
+            // 2. Prepare clone for capture
+            clone.style.width = "700px"; 
+            clone.style.position = "absolute";
+            clone.style.left = "-9999px"; 
+            clone.style.top = "0";
+            
+            // 3. REMOVE sections we don't want to share
+            const unwanted = clone.querySelectorAll('.no-share');
+            unwanted.forEach(el => el.remove());
+
+            // 4. Append clone to body to render
+            document.body.appendChild(clone);
+
+            // 5. Generate Canvas
+            const canvas = await html2canvas(clone, { useCORS: true, scale: 2 });
+            document.body.removeChild(clone); // Cleanup
+
+            // 6. Share
+            const caption = `*Dwara's Vedic Calendar*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
             canvas.toBlob(async (blob) => {
                 const file = new File([blob], "panchang.png", { type: "image/png" });
                 if (navigator.share) {
@@ -508,8 +450,13 @@
                     window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
                 }
             }, 'image/png');
-        } catch (e) { alert("Error"); } 
-        finally { shareBtn.innerHTML = originalHTML; }
+
+        } catch (e) { 
+            alert("Error generating card."); 
+            console.error(e);
+        } finally { 
+            shareBtn.innerHTML = originalHTML; 
+        }
     }
 </script>
 </body>
