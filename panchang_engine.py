@@ -99,19 +99,21 @@ def setup_swisseph():
 
 def get_location(name):
     try:
-        geolocator = Nominatim(user_agent="dwara_panchang_v6", timeout=5)
+        geolocator = Nominatim(user_agent="dwara_panchang_v8", timeout=5)
         loc = geolocator.geocode(name)
         if not loc: return None
         tf = TimezoneFinder()
         tz_str = tf.timezone_at(lng=loc.longitude, lat=loc.latitude)
         return {'name': loc.address, 'lat': loc.latitude, 'lon': loc.longitude, 'tz': pytz.timezone(tz_str)}
-    except Exception: return None
+    except Exception:
+        return None
 
 def jd_from_dt(dt_local):
     dt_utc = dt_local.astimezone(pytz.utc)
     return swe.julday(dt_utc.year, dt_utc.month, dt_utc.day, dt_utc.hour + dt_utc.minute/60.0 + dt_utc.second/3600.0)
 
 def dt_from_jd(jd, tz):
+    if jd is None: return None
     y, m, d, h_dec = swe.revjul(jd)
     h = int(h_dec)
     mins = (h_dec - h) * 60
@@ -123,36 +125,56 @@ def dt_from_jd(jd, tz):
 
 # ================= CALCULATORS =================
 def calc_sun_rise_set(jd, lat, lon):
+    if jd is None: return 0.0, 0.0
     geopos = (float(lon), float(lat), 0.0)
     jd_search = jd - 0.375
-    rise = swe.rise_trans(jd_search, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)[1][0]
-    set_ = swe.rise_trans(jd_search, swe.SUN, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)[1][0]
-    return rise, set_
+    try:
+        rise = swe.rise_trans(jd_search, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)[1][0]
+        set_ = swe.rise_trans(jd_search, swe.SUN, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)[1][0]
+        return rise, set_
+    except:
+        return 0.0, 0.0
 
 def calc_moon_rise_set(jd_start, lat, lon):
+    if jd_start is None: return 0.0, 0.0
     geopos = (float(lon), float(lat), 0.0)
     jd_search = jd_start - 0.5
-    res_rise = swe.rise_trans(jd_search, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
-    res_set = swe.rise_trans(jd_search, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
-    return res_rise[1][0], res_set[1][0]
+    try:
+        res_rise = swe.rise_trans(jd_search, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
+        res_set = swe.rise_trans(jd_search, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
+        return res_rise[1][0], res_set[1][0]
+    except:
+        return 0.0, 0.0
 
 def get_pos(jd):
+    if jd is None: return 0.0, 0.0
     flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
-    return swe.calc_ut(jd, swe.SUN, flags)[0][0], swe.calc_ut(jd, swe.MOON, flags)[0][0]
+    try:
+        sun = swe.calc_ut(jd, swe.SUN, flags)[0][0]
+        moon = swe.calc_ut(jd, swe.MOON, flags)[0][0]
+        return sun, moon
+    except:
+        return 0.0, 0.0
 
 def get_events(start_jd, end_jd, func, names, count, is_karana=False):
     events = []
-    curr_idx, _ = func(start_jd)
-    s_jd = find_trans(start_jd - 1.5, func, (curr_idx - 1) % count) or start_jd
-    curr_search = start_jd
-    while True:
-        e_jd = find_trans(curr_search, func, curr_idx)
-        name = get_karana_name(curr_idx) if is_karana else names[curr_idx]
-        events.append({'name': name, 'start': s_jd, 'end': e_jd, 'index': curr_idx})
-        if not e_jd or e_jd >= end_jd: break
-        s_jd = e_jd
-        curr_search = e_jd + 0.002
-        curr_idx = (curr_idx + 1) % count
+    if start_jd is None: return []
+    try:
+        curr_idx, _ = func(start_jd)
+        s_jd = find_trans(start_jd - 1.5, func, (curr_idx - 1) % count) or start_jd
+        curr_search = start_jd
+        loops = 0
+        while loops < 10:
+            e_jd = find_trans(curr_search, func, curr_idx)
+            name = get_karana_name(curr_idx) if is_karana else names[curr_idx]
+            events.append({'name': name, 'start': s_jd, 'end': e_jd, 'index': curr_idx})
+            if not e_jd or e_jd >= end_jd: break
+            s_jd = e_jd
+            curr_search = e_jd + 0.002
+            curr_idx = (curr_idx + 1) % count
+            loops += 1
+    except:
+        pass
     return events
 
 def find_trans(start, func, target):
@@ -160,16 +182,20 @@ def find_trans(start, func, target):
     curr = t1
     found = False
     while curr < t2:
-        if func(curr)[0] != func(curr + 1/24.0)[0] and func(curr)[0] == target:
-            t1, t2 = curr, curr + 1/24.0
-            found = True
-            break
+        try:
+            if func(curr)[0] != func(curr + 1/24.0)[0] and func(curr)[0] == target:
+                t1, t2 = curr, curr + 1/24.0
+                found = True
+                break
+        except: pass
         curr += 1/24.0
     if not found: return None
     while (t2 - t1) > 0.00001:
         mid = (t1 + t2)/2
-        if func(mid)[0] == target: t1 = mid
-        else: t2 = mid
+        try:
+            if func(mid)[0] == target: t1 = mid
+            else: t2 = mid
+        except: break
     return t2
 
 def get_karana_name(k):
@@ -178,6 +204,7 @@ def get_karana_name(k):
     return KARANAS[(k - 1) % 7]
 
 def fmt_duration(jd_start, jd_end):
+    if jd_start is None or jd_end is None: return "---"
     duration_days = jd_end - jd_start
     total_seconds = int(duration_days * 24 * 3600)
     hours = total_seconds // 3600
@@ -195,63 +222,32 @@ def get_tamil_yoga(weekday_idx, nak_idx):
     return "Siddha"
 
 def get_sarvartha_siddhi(weekday_idx, nak_idx):
-    # Mapping Weekday (0-6) -> List of Auspicious Nakshatra Indices
-    # Sun(6): Ashwini(0), Pushya(7), U.Phal(11), Hasta(12), Mula(18), U.Ash(20), U.Bhad(25)
-    # Mon(0): Rohini(3), Mrig(4), Pushya(7), Anuradha(16), Shravana(21)
-    # Tue(1): Ashwini(0), Krit(2), Ashlesha(8), U.Ash(20)
-    # Wed(2): Krit(2), Rohini(3), Mrig(4), Ardra(5), Punar(6)
-    # Thu(3): Ashwini(0), Punar(6), Pushya(7), Anuradha(16), Revati(26)
-    # Fri(4): Ashwini(0), Bharani(1), Ardra(5), U.Phal(11), Anuradha(16)
-    # Sat(5): Rohini(3), Swati(14), Shravana(21)
-    ss_map = {
-        6: [0, 7, 11, 12, 18, 20, 25],
-        0: [3, 4, 7, 16, 21],
-        1: [0, 2, 8, 20],
-        2: [2, 3, 4, 5, 6],
-        3: [0, 6, 7, 16, 26],
-        4: [0, 1, 5, 11, 16],
-        5: [3, 14, 21]
-    }
+    ss_map = {6: [12, 7, 18, 11, 20, 25, 0], 0: [21, 3, 4, 7, 16], 1: [0, 2, 4, 8], 2: [3, 16, 12, 2, 4], 3: [7, 16, 2, 6, 26], 4: [26, 16, 0, 6, 21], 5: [3, 14, 21]}
     return nak_idx in ss_map.get(weekday_idx, [])
 
 def get_vidaal_yoga(weekday_idx, nak_idx):
-    # Placeholder Logic: Matches obscure bad yogas
-    # Example: Sun+Bharani(1), Mon+Chitra(13)...
-    bad_map = {
-        6: [1, 13], 0: [13], 1: [20], 2: [18], 3: [9], 4: [10], 5: [26]
-    }
+    bad_map = {6: [1, 13], 0: [13], 1: [20], 2: [18], 3: [9], 4: [10], 5: [26]}
     return nak_idx in bad_map.get(weekday_idx, [])
 
 def get_tripushkara_yoga(tithi_events, nak_events, weekday_idx, start_jd, end_jd, tz):
-    # Weekday check: Sun(6), Tue(1), Sat(5)
     if weekday_idx not in [1, 5, 6]: return "None"
-    
-    # Valid Tithis (Indices): 2(1), 7(6), 12(11) of both pakshas
     valid_tithis = [1, 6, 11, 16, 21, 26]
-    # Valid Nakshatras (Indices): Krittika(2), Punarvasu(6), U.Phal(11), Vishakha(15), U.Ash(20), P.Bhad(24)
     valid_naks = [2, 6, 11, 15, 20, 24]
-    
     timings = []
-    
     for t in tithi_events:
         if t['index'] in valid_tithis:
             t_s = max(t['start'], start_jd)
             t_e = min(t['end'] if t['end'] else end_jd, end_jd)
-            
             for n in nak_events:
                 if n['index'] in valid_naks:
                     n_s = max(n['start'], start_jd)
                     n_e = min(n['end'] if n['end'] else end_jd, end_jd)
-                    
-                    # Intersect
                     latest_start = max(t_s, n_s)
                     earliest_end = min(t_e, n_e)
-                    
                     if latest_start < earliest_end:
                         s_str = dt_from_jd(latest_start, tz).strftime('%I:%M %p')
                         e_str = dt_from_jd(earliest_end, tz).strftime('%I:%M %p')
                         timings.append(f"{s_str} - {e_str}")
-                        
     return ", ".join(timings) if timings else "None"
 
 def get_netram_jeevan(nak_idx):
@@ -277,7 +273,8 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
         res = []
         for e in ev_list:
             val = type_fn(e['index'])
-            end_t = dt_from_jd(e['end'], pytz.utc).strftime('%I:%M %p') if e['end'] else "Full Night"
+            d_end = dt_from_jd(e['end'], tz)
+            end_t = d_end.strftime('%b %d, %I:%M %p') if d_end and e['end'] else "Full Night"
             res.append(f"{val} upto {end_t}")
         return " | ".join(res)
     
@@ -286,25 +283,19 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
     baana_str = fmt_event(nak_events, lambda idx: get_baana_type(sun_nak_idx, idx))
     n, j = get_netram_jeevan(nak_events[0]['index'])
     
-    # Calculate Sarvartha & Vidaal Timings (Iterate Events)
     ss_found = []
     vidaal_found = []
-    
     for e in nak_events:
-        start_t = dt_from_jd(e['start'], tz).strftime('%I:%M %p')
-        end_t = dt_from_jd(e['end'], tz).strftime('%I:%M %p') if e['end'] else "Full Night"
+        d_start = dt_from_jd(e['start'], tz)
+        start_t = d_start.strftime('%I:%M %p') if d_start else "..."
+        d_end = dt_from_jd(e['end'], tz)
+        end_t = d_end.strftime('%I:%M %p') if d_end and e['end'] else "Full Night"
         
-        # Check Sarvartha
-        if get_sarvartha_siddhi(weekday_idx, e['index']):
-            ss_found.append(f"{start_t} - {end_t}")
-            
-        # Check Vidaal
-        if get_vidaal_yoga(weekday_idx, e['index']):
-            vidaal_found.append(f"{start_t} - {end_t}")
+        if get_sarvartha_siddhi(weekday_idx, e['index']): ss_found.append(f"{start_t} - {end_t}")
+        if get_vidaal_yoga(weekday_idx, e['index']): vidaal_found.append(f"{start_t} - {end_t}")
 
     sarvartha_str = ", ".join(ss_found) if ss_found else "None"
     vidaal_str = ", ".join(vidaal_found) if vidaal_found else "None"
-    
     tripushkara_str = get_tripushkara_yoga(tithi_events, nak_events, weekday_idx, start_jd, end_jd, tz)
 
     return {"anandadi": anandadi_str, "tamil": tamil_str, "sarvartha": sarvartha_str, "baana": baana_str, "netrama": n, "jeevanama": j, "tripushkara": tripushkara_str, "vidaal": vidaal_str}
@@ -517,9 +508,14 @@ def fetch_panchang(loc_str_or_dict, date_str):
         s = rise + ((k_map[w_idx]-1) * (day_len/8))
         d_start = dt_from_jd(s, tz)
         d_end = dt_from_jd(s + day_len/8, tz)
+        
+        # SAFETY CHECK
+        if not d_start or not d_end: return "---"
+        
         s_fmt = d_start.strftime('%b %d, %I:%M %p') if d_start.date() != dt.date() else d_start.strftime('%I:%M %p')
         e_fmt = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != dt.date() else d_end.strftime('%I:%M %p')
         return f"{s_fmt} - {e_fmt}"
+    
     rahu_time = get_kalam(RAHU_KEY)
     yama_time = get_kalam(YAMA_KEY)
     guli_time = get_kalam(GULI_KEY)
@@ -534,13 +530,21 @@ def fetch_panchang(loc_str_or_dict, date_str):
     epoch = get_epoch_details(jd_noon, dt)
     chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_idx)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
+    
+    tithi_events = get_events(rise, rise_next, lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 12), 0), TITHIS, 30)
+    nak_events = get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 13.333333333), 0), NAKSHATRAS, 27)
+    
+    calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
+    nk_start = nak_events[0]['start']
     panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_idx, nak_idx, w_idx)
     festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)
     dinamana = fmt_duration(rise, set_)
     ratrimana = fmt_duration(set_, rise_next)
     madhyahna_jd = rise + (set_ - rise) / 2
+    
     def fmt_dt(jd): 
         d = dt_from_jd(jd, tz)
+        if not d: return "---"
         return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
     def fmt_range(start, end): return f"{fmt_dt(start)} - {fmt_dt(end)}"
     
@@ -548,11 +552,6 @@ def fetch_panchang(loc_str_or_dict, date_str):
     fn_nak = lambda j: (int(get_pos(j)[1] / 13.333333333), 0)
     fn_yoga = lambda j: (int((get_pos(j)[1] + get_pos(j)[0]) % 360 / 13.333333333), 0)
     fn_karana = lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 6), 0)
-    
-    tithi_events = get_events(rise, rise_next, fn_tithi, TITHIS, 30)
-    nak_events = get_events(rise, rise_next, fn_nak, NAKSHATRAS, 27)
-    calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
-    nk_start = nak_events[0]['start']
     
     v_s = nk_start + (VARJYAM_STARTS[nak_idx]/60.0)
     varjyam_time = fmt_range(v_s, v_s + 4/60.0)
@@ -605,7 +604,11 @@ def fetch_month_day_data(loc, date_str):
     
     festivals = get_festivals_details(rise, tithi_at_sunrise_idx, sun_long, dt, nak_idx_sunrise, moon_rashi_idx)
     
-    def fmt_dt(jd): return dt_from_jd(jd, tz).strftime("%b %d, %I:%M %p") if jd else "..."
+    def fmt_dt(jd): 
+        d = dt_from_jd(jd, tz)
+        if not d: return "---"
+        return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
+    
     t_item = tithi_events[0]
     tithi_name = t_item['name'].split(' ')[-1]
     tithi_icon = TITHI_ICONS.get(t_item['name'], "🌑")
