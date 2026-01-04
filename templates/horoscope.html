@@ -11,7 +11,7 @@
     <style>
         body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
 
-        /* --- PREMIUM HEADER (Standardized) --- */
+        /* --- PREMIUM HEADER --- */
         .brand-header {
             background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
             padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
@@ -42,36 +42,113 @@
 
         /* --- FORM CONTAINER --- */
         .search-container {
-            max-width: 900px; margin: 0 auto 30px auto; background: #fff8e1;
+            max-width: 1000px; margin: 0 auto 30px auto; background: #fff8e1;
             border: 2px solid #b71c1c; border-radius: 8px; padding: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
         .search-btn:hover { background: #8e1616; color: #fff; }
-        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .form-control { border: 1px solid #d4ac0d; background: #fff; }
+        .form-label { color: #7b241c; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; }
+        .form-control, .form-select { border: 1px solid #d4ac0d; background: #fff; }
         
-        /* --- HOROSCOPE CONTENT --- */
-        .horoscope-wrapper { max-width: 900px; margin: 0 auto; padding: 0 15px; }
+        .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
+        .suggestions-list { position: absolute; background: white; border: 1px solid #d4ac0d; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
+        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
+        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
 
+        /* --- RESULTS --- */
+        .horoscope-wrapper { max-width: 900px; margin: 0 auto; padding: 0 15px; }
         .result-card {
             background: #fff; border: 1px solid #d4ac0d; border-radius: 8px;
-            padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); text-align: center;
+            padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
         }
         
-        .sign-title { font-family: 'Playfair Display'; color: #b71c1c; font-size: 2.5rem; margin-bottom: 5px; }
-        .sign-icon { font-size: 3.5rem; color: #d4ac0d; margin-bottom: 15px; display: block; }
-        
-        /* INFO GRID */
-        .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px; margin-bottom: 30px; }
-        .info-box { background: #fff8e1; border: 1px solid #f9e79f; padding: 15px; border-radius: 6px; }
-        .info-label { display: block; font-size: 0.8rem; color: #7b241c; text-transform: uppercase; font-weight: bold; margin-bottom: 5px; }
-        .info-val { font-size: 1.1rem; color: #3e2723; font-weight: 500; }
+        /* BIO DATA TABLE */
+        .bio-table {
+            width: 100%; border-collapse: collapse; margin-bottom: 30px; border: 1px solid #f1c40f;
+        }
+        .bio-table tr { border-bottom: 1px solid #f1c40f; }
+        .bio-table td { padding: 10px 15px; font-size: 0.95rem; color: #3e2723; border-right: 1px solid #f1c40f; }
+        .bio-table td:last-child { border-right: none; }
+        .bio-label { font-weight: 700; color: #922b21; width: 20%; background-color: #fff8e1; }
+        .bio-val { font-weight: 500; width: 30%; }
 
-        /* TABS */
+        /* SOUTH INDIAN CHART STYLES */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 120px); /* Increased height for details */
+            gap: 2px;
+            background-color: #d4ac0d;
+            border: 3px solid #d4ac0d;
+            margin: 20px auto;
+            max-width: 600px; /* Slightly wider */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .chart-cell {
+            background-color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            position: relative;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .chart-cell::before {
+            content: attr(data-rashi);
+            position: absolute;
+            top: 2px;
+            left: 4px;
+            font-size: 0.6rem;
+            color: #b71c1c;
+            text-transform: uppercase;
+            font-weight: bold;
+            opacity: 0.6;
+        }
+        
+        .planet-text {
+            font-weight: 700;
+            color: #2c3e50;
+            line-height: 1.4;
+            font-size: 0.8rem;
+        }
+        
+        /* New class for degrees in chart */
+        .chart-deg {
+            font-size: 0.65rem;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+
+        .chart-center {
+            grid-column: 2 / span 2;
+            grid-row: 2 / span 2;
+            background-color: #fff8e1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display';
+            color: #b71c1c;
+            text-transform: uppercase;
+        }
+
+        /* PLANET TABLE */
+        .planet-table-container { margin-top: 40px; margin-bottom: 40px; }
+        .planet-table { width: 100%; border-collapse: collapse; border: 2px solid #b71c1c; font-family: 'Roboto', sans-serif; }
+        .planet-table th { background-color: #b71c1c; color: white; padding: 12px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .planet-table td { border-bottom: 1px solid #e0e0e0; padding: 10px; font-size: 0.9rem; color: #333; text-align: center; }
+        .planet-table tr:nth-child(even) { background-color: #fff8e1; }
+        .planet-table tr:hover { background-color: #fce4ec; }
+
+        /* PREDICTIONS */
         .nav-pills .nav-link {
             color: #b71c1c; background-color: #fff; border: 1px solid #b71c1c; 
-            margin: 0 5px; font-weight: bold; width: 100px;
+            margin: 0 5px; font-weight: bold; width: 120px;
         }
         .nav-pills .nav-link.active { background-color: #b71c1c; color: #fff; }
         
@@ -81,12 +158,16 @@
             margin-top: 20px; border-radius: 4px; text-align: left;
         }
 
-        @media(max-width: 600px) {
+        @media(max-width: 768px) {
             .header-img { height: 60px; }
-            .brand-header h1 { font-size: 1.4rem; }
-            .nav-bar a { margin: 0 10px; font-size: 0.8rem; }
-            .info-grid { grid-template-columns: 1fr; }
-            .nav-pills .nav-link { width: 45%; margin-bottom: 5px; }
+            .brand-header h1 { font-size: 1.5rem; }
+            .bio-table, .bio-table tbody, .bio-table tr, .bio-table td { display: block; width: 100%; }
+            .bio-table tr { margin-bottom: 10px; border: 1px solid #f1c40f; }
+            .bio-label { width: 100%; text-align: center; border-right: none; border-bottom: 1px solid #eee; }
+            .bio-val { width: 100%; text-align: center; padding: 8px; }
+            .chart-grid { grid-template-rows: repeat(4, 90px); font-size: 0.7rem; }
+            .planet-text { font-size: 0.65rem; }
+            .planet-table th, .planet-table td { font-size: 0.75rem; padding: 6px; }
         }
     </style>
 </head>
@@ -111,22 +192,35 @@
 <div class="container">
     
     <div class="search-container">
-        <form method="POST">
+        <form method="POST" id="horoscopeForm" autocomplete="off">
             <div class="row g-3 align-items-end">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label class="form-label">Name</label>
+                    <input type="text" name="name" class="form-control" value="{{ name }}" placeholder="Name">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Gender</label>
+                    <select name="gender" class="form-select">
+                        <option value="Male" {% if gender=='Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if gender=='Female' %}selected{% endif %}>Female</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
                     <label class="form-label">Birth Date</label>
                     <input type="date" name="birth_date" class="form-control" value="{{ birth_date }}" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Birth Time</label>
+                <div class="col-md-2">
+                    <label class="form-label">Time</label>
                     <input type="time" name="birth_time" class="form-control" value="{{ birth_time }}" required>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label">Place of Birth</label>
-                    <input type="text" name="location" class="form-control" value="{{ location }}" placeholder="City..." required>
+                <div class="col-md-2 position-relative">
+                    <label class="form-label">City</label>
+                    <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="City..." required>
+                    <button type="button" class="gps-btn" onclick="detectLocation()"><i class="fas fa-crosshairs"></i></button>
+                    <ul id="suggestions" class="suggestions-list"></ul>
                 </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn search-btn w-100">Calculate</button>
+                <div class="col-12 text-center mt-3">
+                    <button type="submit" class="btn search-btn px-5">Calculate Horoscope</button>
                 </div>
             </div>
         </form>
@@ -136,56 +230,426 @@
     <div class="horoscope-wrapper">
         <div class="result-card">
             
-            <i class="fas fa-om sign-icon"></i>
-            <h2 class="sign-title">{{ data.moon_sign }} Rashi</h2>
-            <p class="text-muted">Based on your birth details</p>
+            <h3 class="text-center mb-4" style="font-family: 'Playfair Display'; color: #b71c1c;">Birth Details</h3>
             
-            <div class="info-grid">
-                <div class="info-box">
-                    <span class="info-label">Ascendant (Lagna)</span>
-                    <span class="info-val">{{ data.lagna }}</span>
+            <table class="bio-table">
+                <tbody>
+                    <tr>
+                        <td class="bio-label">Name</td><td class="bio-val">{{ bio.Name }}</td>
+                        <td class="bio-label">Gender</td><td class="bio-val">{{ bio.Gender }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bio-label">Birth Date</td><td class="bio-val">{{ bio['Birth Date'] }}</td>
+                        <td class="bio-label">Birth Time</td><td class="bio-val">{{ bio['Birth Time'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bio-label">Place</td><td class="bio-val" colspan="3">{{ bio['Place of Birth'] }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bio-label">Nakshatra</td><td class="bio-val fw-bold text-danger">{{ bio.Nakshatra }}</td>
+                        <td class="bio-label">Rasi</td><td class="bio-val fw-bold text-danger">{{ bio.Rasi }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bio-label">Ayanamsa</td><td class="bio-val" colspan="3">{{ bio.Ayanamsa }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';"> divisional Charts</h4>
+            <ul class="nav nav-pills justify-content-center mb-3" id="charts-tab" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#chart-lagna">Lagna (D1)</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#chart-navamsa">Navamsa (D9)</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#chart-moon">Moon Chart</button></li>
+            </ul>
+
+            <div class="tab-content" id="charts-tabContent">
+                
+                <div class="tab-pane fade show active" id="chart-lagna">
+                    <div class="chart-grid">
+                        <div class="chart-cell" data-rashi="Meena"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Meena' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Mesha"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Mesha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Vrishabha"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Vrishabha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Mithuna"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Mithuna' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Kumbha"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Kumbha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-center"><i class="fas fa-om fa-2x mb-2"></i><div>Lagna Chart</div></div>
+                        <div class="chart-cell" data-rashi="Karka"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Karka' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Makara"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Makara' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Simha"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Simha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Dhanu"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Dhanu' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Vrishchika"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Vrishchika' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Tula"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Tula' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Kanya"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Kanya' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                        </div></div>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <span class="info-label">Moon Sign (Rashi)</span>
-                    <span class="info-val">{{ data.moon_sign }}</span>
+
+                <div class="tab-pane fade" id="chart-navamsa">
+                    <div class="chart-grid">
+                        <div class="chart-cell" data-rashi="Meena"><div class="planet-text">{% for p in data.navamsa_chart[11] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Mesha"><div class="planet-text">{% for p in data.navamsa_chart[0] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Vrishabha"><div class="planet-text">{% for p in data.navamsa_chart[1] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Mithuna"><div class="planet-text">{% for p in data.navamsa_chart[2] %}{{ p }}<br>{% endfor %}</div></div>
+
+                        <div class="chart-cell" data-rashi="Kumbha"><div class="planet-text">{% for p in data.navamsa_chart[10] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-center"><i class="fas fa-star fa-2x mb-2"></i><div>Navamsa</div></div>
+                        <div class="chart-cell" data-rashi="Karka"><div class="planet-text">{% for p in data.navamsa_chart[3] %}{{ p }}<br>{% endfor %}</div></div>
+
+                        <div class="chart-cell" data-rashi="Makara"><div class="planet-text">{% for p in data.navamsa_chart[9] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Simha"><div class="planet-text">{% for p in data.navamsa_chart[4] %}{{ p }}<br>{% endfor %}</div></div>
+
+                        <div class="chart-cell" data-rashi="Dhanu"><div class="planet-text">{% for p in data.navamsa_chart[8] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Vrishchika"><div class="planet-text">{% for p in data.navamsa_chart[7] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Tula"><div class="planet-text">{% for p in data.navamsa_chart[6] %}{{ p }}<br>{% endfor %}</div></div>
+                        <div class="chart-cell" data-rashi="Kanya"><div class="planet-text">{% for p in data.navamsa_chart[5] %}{{ p }}<br>{% endfor %}</div></div>
+                    </div>
                 </div>
-                <div class="info-box">
-                    <span class="info-label">Nakshatra</span>
-                    <span class="info-val">{{ data.nakshatra }}</span>
+
+                <div class="tab-pane fade" id="chart-moon">
+                    <div class="chart-grid">
+                        <div class="chart-cell" data-rashi="Meena"><div class="planet-text">
+                            {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Meena' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Meena' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Mesha"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Mesha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Mesha' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Vrishabha"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Vrishabha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Vrishabha' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Mithuna"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Mithuna' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Mithuna' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Kumbha"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Kumbha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Kumbha' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-center"><i class="fas fa-moon fa-2x mb-2"></i><div>Moon Chart</div></div>
+                        <div class="chart-cell" data-rashi="Karka"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Karka' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Karka' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Makara"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Makara' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Makara' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Simha"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Simha' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Simha' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+
+                        <div class="chart-cell" data-rashi="Dhanu"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Dhanu' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Dhanu' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Vrishchika"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Vrishchika' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Vrishchika' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Tula"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Tula' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Tula' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                        <div class="chart-cell" data-rashi="Kanya"><div class="planet-text">
+                             {% for p in data.planetary_positions %}
+                                {% if p.rasi == 'Kanya' %}{{ p.symbol }}{% if p.is_retro == 'Yes' %}(R){% endif %} <span class="chart-deg">{{ p.degree }}</span><br>{% endif %}
+                            {% endfor %}
+                            {% if data.moon_sign == 'Kanya' %}<b>Lagna (Mo)</b>{% endif %}
+                        </div></div>
+                    </div>
                 </div>
             </div>
 
-            <ul class="nav nav-pills justify-content-center mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#pills-daily">Daily</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-weekly">Weekly</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-monthly">Monthly</button></li>
-                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-yearly">Yearly</button></li>
-            </ul>
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Graha Sthithi (Planetary Positions)</h4>
+                <div style="overflow-x:auto;">
+                    <table class="planet-table">
+                        <thead>
+                            <tr>
+                                <th>Sym</th>
+                                <th>Planet</th>
+                                <th>R</th>
+                                <th>Sign</th>
+                                <th>Sign Lord</th>
+                                <th>Degree</th>
+                                <th>Nakshatra</th>
+                                <th>Nak Lord</th>
+                                <th>House</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in data.planetary_positions %}
+                            <tr>
+                                <td style="color: #666; font-weight: bold;">{{ p.symbol }}</td>
+                                <td style="font-weight: bold; color: #b71c1c;">{{ p.planet }}</td>
+                                <td style="color: red; font-weight: bold;">{% if p.is_retro == "Yes" %}R{% endif %}</td>
+                                <td style="font-weight: 500;">{{ p.rasi }}</td>
+                                <td>{{ p.rasi_lord }}</td>
+                                <td>{{ p.degree }}</td>
+                                <td style="font-weight: 500;">{{ p.nakshatra }}</td>
+                                <td>{{ p.nak_lord }}</td>
+                                <td>{{ p.house }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-            <div class="tab-content" id="pills-tabContent">
-                <div class="tab-pane fade show active" id="pills-daily">
-                    <div class="prediction-box">
-                        <strong>For {{ data.moon_sign }} today:</strong><br>
-                        {{ data.predictions.daily }}
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Kundli Details (Avakahada)</h4>
+                <table class="bio-table">
+                    <tbody>
+                        <tr>
+                            <td class="bio-label">Nakshatra</td><td class="bio-val fw-bold text-danger">{{ data.nakshatra }}</td>
+                            <td class="bio-label">Nak Lord</td><td class="bio-val">{{ data.kundli_details.nak_lord }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Charan</td><td class="bio-val">{{ data.nakshatra.split('(')[1].replace(')','') }}</td>
+                            <td class="bio-label">Rasi</td><td class="bio-val">{{ data.moon_sign }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Sign Lord</td><td class="bio-val">{{ data.kundli_details.sign_lord }}</td>
+                            <td class="bio-label">Gana</td><td class="bio-val">{{ data.kundli_details.gana }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Yoni</td><td class="bio-val">{{ data.kundli_details.yoni }}</td>
+                            <td class="bio-label">Nadi</td><td class="bio-val">{{ data.kundli_details.nadi }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Varna</td><td class="bio-val">{{ data.kundli_details.varna }}</td>
+                            <td class="bio-label">Vashya</td><td class="bio-val">{{ data.kundli_details.vashya }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Tatva</td><td class="bio-val">{{ data.kundli_details.tatva }}</td>
+                            <td class="bio-label">Paya</td><td class="bio-val">{{ data.kundli_details.paya }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Yunja</td><td class="bio-val">{{ data.kundli_details.yunja }}</td>
+                            <td class="bio-label">Name Alphabet</td><td class="bio-val fw-bold text-success">{{ data.kundli_details.name_alphabet }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Favourable Points</h4>
+                <table class="bio-table">
+                    <tbody>
+                        <tr>
+                            <td class="bio-label">Lucky Number</td><td class="bio-val">{{ data.kundli_details.fav.num }}</td>
+                            <td class="bio-label">Destiny Number</td><td class="bio-val">{{ data.kundli_details.fav.destiny_num }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Radical Number</td><td class="bio-val">{{ data.kundli_details.fav.radical_num }}</td>
+                            <td class="bio-label">Name Number</td><td class="bio-val">{{ data.kundli_details.fav.name_num }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Radical Ruler</td><td class="bio-val">{{ data.kundli_details.fav.radical_ruler }}</td>
+                            <td class="bio-label">Lucky Day</td><td class="bio-val">{{ data.kundli_details.fav.day }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Friendly Numbers</td><td class="bio-val">{{ data.kundli_details.fav.friendly_num }}</td>
+                            <td class="bio-label">Neutral Numbers</td><td class="bio-val">{{ data.kundli_details.fav.neutral_num }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Evil Numbers</td><td class="bio-val text-danger">{{ data.kundli_details.fav.evil_num }}</td>
+                            <td class="bio-label">Lucky Color</td><td class="bio-val">{{ data.kundli_details.fav.color }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Lucky Stone</td><td class="bio-val">{{ data.kundli_details.fav.stone }}</td>
+                            <td class="bio-label">Lucky Substone</td><td class="bio-val">{{ data.kundli_details.fav.substone }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Lucky God</td><td class="bio-val">{{ data.kundli_details.fav.deity }}</td>
+                            <td class="bio-label">Lucky Metal</td><td class="bio-val">{{ data.kundli_details.fav.metal }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Lucky Mantra</td><td class="bio-val" colspan="3" style="font-style:italic;">{{ data.kundli_details.fav.mantra }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Vimshottari Dasha (Mahadasha & Antardasha)</h4>
+                
+                <div class="accordion" id="dashaAccordion">
+                    {% for d in data.dasha_periods %}
+                    <div class="accordion-item" style="border: 1px solid #d4ac0d; margin-bottom: 5px;">
+                        <h2 class="accordion-header" id="heading{{ loop.index }}">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}" aria-expanded="false" aria-controls="collapse{{ loop.index }}" style="background-color: #fff8e1; color: #b71c1c; font-weight: bold;">
+                                <div class="row w-100 align-items-center">
+                                    <div class="col-4">
+                                        {{ d.lord }} Mahadasha
+                                    </div>
+                                    <div class="col-5 text-center" style="font-size: 0.85rem; color: #555;">
+                                        {{ d.start }} <i class="fas fa-arrow-right mx-1"></i> {{ d.end }}
+                                    </div>
+                                    <div class="col-3 text-end" style="font-size: 0.85rem; color: #7b1fa2;">
+                                        {{ d.duration }}
+                                    </div>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="collapse{{ loop.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ loop.index }}" data-bs-parent="#dashaAccordion">
+                            <div class="accordion-body" style="padding: 0;">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped mb-0" style="font-size: 0.85rem;">
+                                        <thead style="background-color: #fce4ec; color: #880e4f;">
+                                            <tr>
+                                                <th>Antardasha</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th class="text-end">Duration</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for sub in d.antardashas %}
+                                            <tr>
+                                                <td style="font-weight: 500;">{{ d.lord }} - {{ sub.lord }}</td>
+                                                <td>{{ sub.start }}</td>
+                                                <td>{{ sub.end }}</td>
+                                                <td class="text-end">{{ sub.duration }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Lagna Phal (Life Predictions)</h4>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded h-100" style="background-color: #fff3e0; border-left: 5px solid #ff9800 !important;">
+                            <h5 style="color: #e65100; font-weight: bold;"><i class="fas fa-user-circle me-2"></i>General Nature</h5>
+                            <p style="font-size: 0.95rem; color: #3e2723;">{{ data.kundli_details.prediction.general }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded h-100" style="background-color: #e8f5e9; border-left: 5px solid #2e7d32 !important;">
+                            <h5 style="color: #1b5e20; font-weight: bold;"><i class="fas fa-briefcase me-2"></i>Career & Finance</h5>
+                            <p style="font-size: 0.95rem; color: #3e2723;">{{ data.kundli_details.prediction.career }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded h-100" style="background-color: #ffebee; border-left: 5px solid #c62828 !important;">
+                            <h5 style="color: #b71c1c; font-weight: bold;"><i class="fas fa-heartbeat me-2"></i>Health</h5>
+                            <p style="font-size: 0.95rem; color: #3e2723;">{{ data.kundli_details.prediction.health }}</p>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded h-100" style="background-color: #f3e5f5; border-left: 5px solid #7b1fa2 !important;">
+                            <h5 style="color: #4a148c; font-weight: bold;"><i class="fas fa-ring me-2"></i>Marriage & Love</h5>
+                            <p style="font-size: 0.95rem; color: #3e2723;">{{ data.kundli_details.prediction.marriage }}</p>
+                        </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="pills-weekly">
-                    <div class="prediction-box">
-                        <strong>Weekly Outlook:</strong><br>
-                        {{ data.predictions.weekly }}
+            </div>
+
+            <div class="planet-table-container">
+                <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Dosha Analysis</h4>
+                <div class="row">
+                    {% for dosha in data.dosha_details %}
+                    <div class="col-md-6 mb-3">
+                        <div class="p-3 border rounded h-100" style="background-color: {% if dosha.status == 'Present' %}#ffebee{% else %}#e8f5e9{% endif %}; border-left: 5px solid {% if dosha.status == 'Present' %}#c62828{% else %}#2e7d32{% endif %} !important;">
+                            <h5 style="color: {% if dosha.status == 'Present' %}#b71c1c{% else %}#1b5e20{% endif %}; font-weight: bold;">
+                                {{ dosha.name }} 
+                                <span class="badge {% if dosha.status == 'Present' %}bg-danger{% else %}bg-success{% endif %} float-end">{{ dosha.status }}</span>
+                            </h5>
+                            <p style="font-size: 0.9rem; margin-bottom: 5px; color: #333;">{{ dosha.desc }}</p>
+                            {% if dosha.status == 'Present' %}
+                                <p style="font-size: 0.85rem; color: #d32f2f; font-weight: bold; margin: 0;">Remedy: {{ dosha.remedy }}</p>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
-                <div class="tab-pane fade" id="pills-monthly">
-                    <div class="prediction-box">
-                        <strong>Monthly Forecast:</strong><br>
-                        Predictions coming soon.
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="pills-yearly">
-                    <div class="prediction-box">
-                        <strong>Yearly Overview (2025):</strong><br>
-                        {{ data.predictions.yearly }}
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 
@@ -196,5 +660,73 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function detectLocation() {
+        if (navigator.geolocation) {
+            const btn = document.querySelector('.gps-btn i');
+            btn.classList.add('fa-spin'); 
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const addr = data.address;
+                            const city = addr.city || addr.town || addr.village;
+                            const country = addr.country;
+                            if(city) {
+                                document.getElementById('locationInput').value = `${city}, ${country}`;
+                            } else { alert("Could not determine specific city name."); }
+                            btn.classList.remove('fa-spin');
+                        });
+                },
+                function(error) { alert("Location access denied."); btn.classList.remove('fa-spin'); }
+            );
+        } else { alert("Geolocation not supported."); }
+    }
+
+    const input = document.getElementById('locationInput');
+    const list = document.getElementById('suggestions');
+    let debounceTimer;
+    input.addEventListener('input', function() {
+        const query = this.value;
+        clearTimeout(debounceTimer);
+        if (query.length < 3) { list.style.display = 'none'; return; }
+        debounceTimer = setTimeout(() => {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${query}&limit=5&addressdetails=1`)
+                .then(response => response.json())
+                .then(data => {
+                    list.innerHTML = '';
+                    const uniqueSet = new Set();
+                    if (data.length > 0) {
+                        data.forEach(item => {
+                            const addr = item.address;
+                            const city = addr.city || addr.town || addr.village;
+                            const country = addr.country;
+                            if (city && country) {
+                                const cleanName = `${city}, ${country}`;
+                                if (!uniqueSet.has(cleanName)) {
+                                    uniqueSet.add(cleanName);
+                                    list.style.display = 'block';
+                                    const li = document.createElement('li');
+                                    li.textContent = cleanName;
+                                    li.addEventListener('click', () => {
+                                        input.value = cleanName;
+                                        list.style.display = 'none';
+                                    });
+                                    list.appendChild(li);
+                                }
+                            }
+                        });
+                    } else { list.style.display = 'none'; }
+                });
+        }, 300);
+    });
+    document.addEventListener('click', function(e) {
+        if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
+    });
+</script>
+
 </body>
 </html>

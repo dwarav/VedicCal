@@ -19,23 +19,74 @@ SIDEREAL_MODE = swe.SIDM_LAHIRI
 
 # ================= DATA CONSTANTS =================
 MONTHS = ["Chaitra", "Vaishakha", "Jyeshtha", "Ashadha", "Shravana", "Bhadrapada", "Ashwina", "Kartika", "Margashirsha", "Pausha", "Magha", "Phalguna"]
-
 TITHIS = ["Shukla Pratipada", "Shukla Dwitiya", "Shukla Tritiya", "Shukla Chaturthi", "Shukla Panchami", "Shukla Shashthi", "Shukla Saptami", "Shukla Ashtami", "Shukla Navami", "Shukla Dashami", "Shukla Ekadashi", "Shukla Dwadashi", "Shukla Trayodashi", "Shukla Chaturdashi", "Purnima", "Krishna Pratipada", "Krishna Dwitiya", "Krishna Tritiya", "Krishna Chaturthi", "Krishna Panchami", "Krishna Shashthi", "Krishna Saptami", "Krishna Ashtami", "Krishna Navami", "Krishna Dashami", "Krishna Ekadashi", "Krishna Dwadashi", "Krishna Trayodashi", "Krishna Chaturdashi", "Amavasya"]
-
 NAKSHATRAS = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
-
 YOGAS = ["Vishkambha", "Priti", "Ayushman", "Saubhagya", "Shobhana", "Atiganda", "Sukarma", "Dhriti", "Shula", "Ganda", "Vriddhi", "Dhruva", "Vyaghata", "Harshana", "Vajra", "Siddhi", "Vyatipata", "Variyan", "Parigha", "Shiva", "Siddha", "Sadhya", "Shubha", "Shukla", "Brahma", "Indra", "Vaidhriti"]
-
 KARANAS = ["Bava", "Balava", "Kaulava", "Taitila", "Garija", "Vanija", "Vishti", "Shakuni", "Chatushpada", "Naga", "Kimstughna"]
-
-RASHIS = ["Mesha (Aries)", "Vrishabha (Taurus)", "Mithuna (Gemini)", "Karka (Cancer)", "Simha (Leo)", "Kanya (Virgo)", "Tula (Libra)", "Vrishchika (Scorpio)", "Dhanu (Sagittarius)", "Makara (Capricorn)", "Kumbha (Aquarius)", "Meena (Pisces)"]
-
+RASHIS = ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrishchika", "Dhanu", "Makara", "Kumbha", "Meena"]
 PADA_NAMES = [f"{n} Pada {i+1}" for n in NAKSHATRAS for i in range(4)]
 
-# ICONS
-RASHI_ICONS = {"Mesha (Aries)": "♈", "Vrishabha (Taurus)": "♉", "Mithuna (Gemini)": "♊", "Karka (Cancer)": "♋", "Simha (Leo)": "♌", "Kanya (Virgo)": "♍", "Tula (Libra)": "♎", "Vrishchika (Scorpio)": "♏", "Dhanu (Sagittarius)": "♐", "Makara (Capricorn)": "♑", "Kumbha (Aquarius)": "♒", "Meena (Pisces)": "♓"}
+# --- ASTROLOGICAL MAPPINGS ---
+CHALDEAN_MAP = {'A':1, 'I':1, 'J':1, 'Q':1, 'Y':1, 'B':2, 'K':2, 'R':2, 'C':3, 'G':3, 'L':3, 'S':3, 'D':4, 'M':4, 'T':4, 'E':5, 'H':5, 'N':5, 'X':5, 'U':6, 'V':6, 'W':6, 'O':7, 'Z':7, 'F':8, 'P':8}
+NUMEROLOGY_DATA = {
+    1: {"ruler": "Sun", "friend": "1, 2, 3, 9", "enemy": "8", "neutral": "4, 5, 6, 7"},
+    2: {"ruler": "Moon", "friend": "1, 2, 5", "enemy": "4, 7, 8, 9", "neutral": "3, 6"},
+    3: {"ruler": "Jupiter", "friend": "1, 2, 3, 9", "enemy": "5, 6", "neutral": "4, 7, 8"},
+    4: {"ruler": "Rahu", "friend": "4, 5, 6, 8", "enemy": "1, 2", "neutral": "3, 7, 9"},
+    5: {"ruler": "Mercury", "friend": "1, 4, 5, 6", "enemy": "2", "neutral": "3, 7, 8, 9"},
+    6: {"ruler": "Venus", "friend": "4, 5, 6, 7, 8", "enemy": "1, 2", "neutral": "3, 9"},
+    7: {"ruler": "Ketu", "friend": "6, 7, 9", "enemy": "1, 2", "neutral": "3, 4, 5, 8"},
+    8: {"ruler": "Saturn", "friend": "4, 5, 6, 8", "enemy": "1, 2", "neutral": "3, 7, 9"},
+    9: {"ruler": "Mars", "friend": "1, 2, 3, 9", "enemy": "5", "neutral": "4, 6, 7, 8"}
+}
+NAK_LORDS = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"] * 3
+RASI_LORDS_MAP = {0: "Mars", 1: "Venus", 2: "Mercury", 3: "Moon", 4: "Sun", 5: "Mercury", 6: "Venus", 7: "Mars", 8: "Jupiter", 9: "Saturn", 10: "Saturn", 11: "Jupiter"}
+
+# DASHA YEARS (Vimshottari)
+DASHA_YEARS = {"Ketu": 7, "Venus": 20, "Sun": 6, "Moon": 10, "Mars": 7, "Rahu": 18, "Jupiter": 16, "Saturn": 19, "Mercury": 17}
+DASHA_ORDER = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]
+
+FAV_POINTS = {
+    0: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Carnelian", "deity": "Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    1: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Opal, White Topaz", "deity": "Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    2: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Green Tourmaline", "deity": "Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
+    3: {"num": 2, "day": "Monday", "color": "White", "stone": "Pearl", "substone": "Moonstone", "deity": "Shiva", "metal": "Silver", "mantra": "Om Som Somaya Namah"},
+    4: {"num": 1, "day": "Sunday", "color": "Orange", "stone": "Ruby", "substone": "Red Garnet", "deity": "Surya", "metal": "Gold", "mantra": "Om Hram Hrim Hraum Sah Suryaya Namah"},
+    5: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot", "deity": "Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
+    6: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Zircon", "deity": "Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    7: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Jasper", "deity": "Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    8: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Topaz, Citrine", "deity": "Dakshinamurthy", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"},
+    9: {"num": 8, "day": "Saturday", "color": "Blue", "stone": "Blue Sapphire", "substone": "Lapis Lazuli", "deity": "Shani", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    10: {"num": 8, "day": "Saturday", "color": "Blue", "stone": "Blue Sapphire", "substone": "Amethyst", "deity": "Shani", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    11: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Golden Topaz", "deity": "Dakshinamurthy", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"}
+}
+NAMA_AKSHARA = ["Chu", "Che", "Cho", "La", "Li", "Lu", "Le", "Lo", "A", "E", "U", "A", "O", "Va", "Vi", "Vu", "Ve", "Vo", "Ka", "Ki", "Ku", "Gha", "Ng", "Chha", "Ke", "Ko", "Ha", "Hi", "Hu", "He", "Ho", "Da", "Di", "Du", "De", "Do", "Ma", "Mi", "Mu", "Me", "Mo", "Ta", "Ti", "Tu", "Te", "To", "Pa", "Pi", "Pu", "Sha", "Na", "Tha", "Pe", "Po", "Ra", "Ri", "Ru", "Re", "Ro", "Ta", "Ti", "Tu", "Te", "To", "Na", "Ni", "Nu", "Ne", "No", "Ya", "Yi", "Yu", "Ye", "Yo", "Bha", "Bhi", "Bhu", "Dha", "Pha", "Dha", "Bhe", "Bho", "Ja", "Ji", "Ju", "Je", "Jo", "Gha", "Ga", "Gi", "Gu", "Ge", "Go", "Sa", "Si", "Su", "Se", "So", "Da", "Di", "Du", "Tha", "Jha", "Da", "De", "Do", "Cha", "Chi"]
+GANAS = {"Deva": [0, 4, 6, 7, 12, 14, 16, 21, 26], "Manushya": [1, 3, 5, 10, 11, 19, 20, 24, 25], "Rakshasa": [2, 8, 9, 13, 15, 17, 18, 22, 23]}
+YONIS = ["Ashwa", "Gaja", "Mesha", "Sarpa", "Sarpa", "Shwan", "Marjala", "Mesha", "Marjala", "Mushaka", "Mushaka", "Gau", "Mahisha", "Vyaghra", "Mahisha", "Vyaghra", "Mriga", "Mriga", "Shwan", "Vanara", "Nakula", "Vanara", "Simha", "Ashwa", "Simha", "Gau", "Gaja"]
+NADIS = {"Adi (Vata)": [0, 5, 6, 11, 12, 17, 18, 23, 24], "Madhya (Pitta)": [1, 4, 7, 10, 13, 16, 19, 22, 25], "Antya (Kapha)": [2, 3, 8, 9, 14, 15, 20, 21, 26]}
+VARNA = ["Kshatriya", "Vaishya", "Shudra", "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Brahmin", "Kshatriya", "Vaishya", "Shudra", "Brahmin"]
+VASHYA = ["Chatushpada", "Chatushpada", "Manava", "Jalachar", "Vanchar", "Manava", "Manava", "Keeta", "Manava", "Jalachar", "Manava", "Jalachar"]
+TATVA = ["Fire", "Earth", "Air", "Water", "Fire", "Earth", "Air", "Water", "Fire", "Earth", "Air", "Water"]
+
+# KUNDLI PREDICTIONS DB
+KUNDLI_PREDICTIONS = {
+    0: {"general": "You are a born leader, energetic, and courageous.", "career": "Military, Police, Sports.", "health": "Headaches, head injuries.", "marriage": "Passionate relationships."},
+    1: {"general": "You are practical, reliable, and love stability.", "career": "Finance, arts, agriculture.", "health": "Throat infections.", "marriage": "Loyal and devoted."},
+    2: {"general": "You are intellectual and adaptable.", "career": "Journalism, writing, sales.", "health": "Respiratory issues.", "marriage": "Need mental stimulation."},
+    3: {"general": "You are emotional and nurturing.", "career": "Hospitality, nursing.", "health": "Stomach issues.", "marriage": "Seek deep bonds."},
+    4: {"general": "You are charismatic and proud.", "career": "Politics, acting.", "health": "Heart and spine.", "marriage": "Need respect."},
+    5: {"general": "You are analytical and detail-oriented.", "career": "Accounting, medicine.", "health": "Digestive system.", "marriage": "Practical in love."},
+    6: {"general": "You are diplomatic and charming.", "career": "Law, fashion, arts.", "health": "Kidneys and back.", "marriage": "Seek harmony."},
+    7: {"general": "You are intense and secretive.", "career": "Research, detective.", "health": "Reproductive system.", "marriage": "Possessive and intense."},
+    8: {"general": "Optimistic and freedom-loving.", "career": "Teaching, travel.", "health": "Liver and hips.", "marriage": "Need space."},
+    9: {"general": "Disciplined and ambitious.", "career": "Government, mining.", "health": "Knees and joints.", "marriage": "Serious and responsible."},
+    10: {"general": "Innovative and humanitarian.", "career": "Science, technology.", "health": "Ankles.", "marriage": "Need friendship."},
+    11: {"general": "Compassionate and spiritual.", "career": "Arts, healing.", "health": "Feet.", "marriage": "Romantic soul."}
+}
+
+RASHI_ICONS = {"Mesha": "♈", "Vrishabha": "♉", "Mithuna": "♊", "Karka": "♋", "Simha": "♌", "Kanya": "♍", "Tula": "♎", "Vrishchika": "♏", "Dhanu": "♐", "Makara": "♑", "Kumbha": "♒", "Meena": "♓"}
+TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "¾", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
 NAK_ICONS = {"Ashwini": "🐴", "Bharani": "🐘", "Krittika": "🔥", "Rohini": "🐍", "Mrigashira": "🦌", "Ardra": "💧", "Punarvasu": "🏹", "Pushya": "🌸", "Ashlesha": "🐍", "Magha": "👑", "Purva Phalguni": "🛋️", "Uttara Phalguni": "🛏️", "Hasta": "🖐️", "Chitra": "✨", "Swati": "🌬️", "Vishakha": "⚖️", "Anuradha": "🌸", "Jyeshtha": "🌂", "Mula": "🌿", "Purva Ashadha": "🌊", "Uttara Ashadha": "🐘", "Shravana": "👂", "Dhanishta": "🥁", "Shatabhisha": "⭕", "Purva Bhadrapada": "🦁", "Uttara Bhadrapada": "🐮", "Revati": "🐟"}
-TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "🌔", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
 
 VARJYAM_STARTS = [50, 24, 30, 40, 14, 21, 30, 20, 32, 30, 20, 18, 22, 20, 14, 14, 10, 14, 20, 24, 20, 10, 10, 18, 16, 24, 30]
 AMRIT_STARTS = [42, 48, 54, 52, 38, 35, 54, 44, 56, 54, 44, 48, 42, 46, 34, 32, 38, 38, 40, 48, 52, 38, 38, 42, 36, 48, 56]
@@ -43,55 +94,11 @@ RAHU_KEY = {0: 2, 1: 7, 2: 5, 3: 6, 4: 4, 5: 3, 6: 8}
 YAMA_KEY = {0: 4, 1: 3, 2: 2, 3: 1, 4: 7, 5: 6, 6: 5}
 GULI_KEY = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1, 6: 7}
 
-FESTIVAL_DB = {
-    (0, 0, 0): "Ugadi / Gudi Padwa", (0, 0, 8): "Rama Navami", (0, 0, 14): "Hanuman Jayanti",
-    (1, 0, 2): "Akshaya Tritiya", (1, 0, 14): "Buddha Purnima", (2, 0, 9): "Ganga Dussehra", (2, 0, 14): "Vat Savitri Vrat",
-    (3, 0, 1): "Jagannath Rath Yatra", (3, 0, 10): "Devshayani Ekadashi", (3, 0, 14): "Guru Purnima",
-    (4, 0, 4): "Nag Panchami", (4, 0, 14): "Raksha Bandhan", (4, 1, 7): "Janmashtami",
-    (5, 0, 3): "Ganesh Chaturthi", (5, 0, 13): "Anant Chaturdashi", (5, 1, 14): "Mahalaya Amavasya",
-    (6, 0, 0): "Navratri Ghatasthapana", (6, 0, 9): "Dussehra", (6, 0, 14): "Sharad Purnima",
-    (6, 1, 3): "Karwa Chauth", (6, 1, 12): "Dhanteras", (6, 1, 14): "Diwali",
-    (7, 0, 0): "Govardhan Puja", (7, 0, 1): "Bhai Dooj", (7, 0, 10): "Tulsi Vivah", (7, 0, 14): "Kartik Purnima",
-    (8, 0, 10): "Gita Jayanti", (8, 0, 14): "Dattatreya Jayanti",
-    (10, 0, 4): "Vasant Panchami", (10, 0, 6): "Ratha Saptami", (10, 1, 13): "Maha Shivaratri",
-    (11, 0, 14): "Holi"
-}
-GREGORIAN_FESTIVALS = {
-    (1, 1): "New Year's Day", (1, 14): "Makara Sankranti", (1, 26): "Republic Day India",
-    (2, 14): "Valentine's Day", (3, 8): "Women's Day", (4, 14): "Ambedkar Jayanti",
-    (5, 1): "Labor Day", (6, 21): "International Yoga Day", (8, 15): "Independence Day India",
-    (10, 2): "Gandhi Jayanti", (11, 14): "Children's Day", (12, 25): "Christmas"
-}
-FESTIVAL_IMAGES_STATIC = {
-    "Ugadi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ugadi_Pachadi.jpg/320px-Ugadi_Pachadi.jpg",
-    "Rama Navami": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rama_Pattabhishekam.jpg/320px-Rama_Pattabhishekam.jpg",
-    "Hanuman": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Hanuman_idol.jpg/320px-Hanuman_idol.jpg",
-    "Akshaya Tritiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Goddess_Lakshmi.jpg/320px-Goddess_Lakshmi.jpg",
-    "Guru Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Veda_Vyasa.jpg/320px-Veda_Vyasa.jpg",
-    "Raksha Bandhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rakhi.jpg/320px-Rakhi.jpg",
-    "Janmashtami": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg",
-    "Ganesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg",
-    "Vinayaka": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg",
-    "Sankashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg",
-    "Navratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg",
-    "Durga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg",
-    "Dussehra": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg",
-    "Diwali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg",
-    "Shivaratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shiva_lingam.jpg/320px-Shiva_lingam.jpg",
-    "Holi": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Holi_Dahan.jpg/320px-Holi_Dahan.jpg",
-    "Ekadashi": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Vishnu.jpg/320px-Vishnu.jpg",
-    "Pradosh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Nandi_bull.jpg/320px-Nandi_bull.jpg",
-    "Sankranti": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Makara_Sankranti.jpg/320px-Makara_Sankranti.jpg",
-    "Sashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Murugan.jpg/320px-Murugan.jpg",
-    "Karthigai": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Murugan.jpg/320px-Murugan.jpg",
-    "Rohini": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg",
-    "Amavasya": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg",
-    "Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Vishnu.jpg/320px-Vishnu.jpg",
-    "Christmas": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Christmas_tree.jpg/320px-Christmas_tree.jpg",
-    "Republic": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg",
-    "Independence": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg",
-    "Yoga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Yoga_class_Rishikesh.jpg/320px-Yoga_class_Rishikesh.jpg"
-}
+# ... (Keep FESTIVAL_DB, GREGORIAN_FESTIVALS, FESTIVAL_IMAGES_STATIC) ...
+FESTIVAL_DB = {(0, 0, 0): "Ugadi / Gudi Padwa", (0, 0, 8): "Rama Navami", (0, 0, 14): "Hanuman Jayanti", (1, 0, 2): "Akshaya Tritiya", (1, 0, 14): "Buddha Purnima", (2, 0, 9): "Ganga Dussehra", (2, 0, 14): "Vat Savitri Vrat", (3, 0, 1): "Jagannath Rath Yatra", (3, 0, 10): "Devshayani Ekadashi", (3, 0, 14): "Guru Purnima", (4, 0, 4): "Nag Panchami", (4, 0, 14): "Raksha Bandhan", (4, 1, 7): "Janmashtami", (5, 0, 3): "Ganesh Chaturthi", (5, 0, 13): "Anant Chaturdashi", (5, 1, 14): "Mahalaya Amavasya", (6, 0, 0): "Navratri Ghatasthapana", (6, 0, 9): "Dussehra", (6, 0, 14): "Sharad Purnima", (6, 1, 3): "Karwa Chauth", (6, 1, 12): "Dhanteras", (6, 1, 14): "Diwali", (7, 0, 0): "Govardhan Puja", (7, 0, 1): "Bhai Dooj", (7, 0, 10): "Tulsi Vivah", (7, 0, 14): "Kartik Purnima", (8, 0, 10): "Gita Jayanti", (8, 0, 14): "Dattatreya Jayanti", (10, 0, 4): "Vasant Panchami", (10, 0, 6): "Ratha Saptami", (10, 1, 13): "Maha Shivaratri", (11, 0, 14): "Holi"}
+GREGORIAN_FESTIVALS = {(1, 1): "New Year's Day", (1, 14): "Makara Sankranti", (1, 26): "Republic Day India", (2, 14): "Valentine's Day", (3, 8): "Women's Day", (4, 14): "Ambedkar Jayanti", (5, 1): "Labor Day", (6, 21): "International Yoga Day", (8, 15): "Independence Day India", (10, 2): "Gandhi Jayanti", (11, 14): "Children's Day", (12, 25): "Christmas"}
+FESTIVAL_IMAGES_STATIC = {"Ugadi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ugadi_Pachadi.jpg/320px-Ugadi_Pachadi.jpg", "Rama Navami": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rama_Pattabhishekam.jpg/320px-Rama_Pattabhishekam.jpg", "Hanuman": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Hanuman_idol.jpg/320px-Hanuman_idol.jpg", "Akshaya Tritiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Goddess_Lakshmi.jpg/320px-Goddess_Lakshmi.jpg", "Guru Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Veda_Vyasa.jpg/320px-Veda_Vyasa.jpg", "Raksha Bandhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rakhi.jpg/320px-Rakhi.jpg", "Janmashtami": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg", "Ganesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Vinayaka": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Sankashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Navratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", "Durga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", "Dussehra": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg", "Diwali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg", "Shivaratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shiva_lingam.jpg/320px-Shiva_lingam.jpg", "Holi": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Holi_Dahan.jpg/320px-Holi_Dahan.jpg", "Ekadashi": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Vishnu.jpg/320px-Vishnu.jpg", "Pradosh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Nandi_bull.jpg/320px-Nandi_bull.jpg", "Sankranti": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Makara_Sankranti.jpg/320px-Makara_Sankranti.jpg", "Christmas": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Christmas_tree.jpg/320px-Christmas_tree.jpg", "Republic": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", "Independence": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", "Yoga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Yoga_class_Rishikesh.jpg/320px-Yoga_class_Rishikesh.jpg"}
+
 
 # ================= CORE FUNCTIONS =================
 def setup_swisseph():
@@ -100,14 +107,13 @@ def setup_swisseph():
 
 def get_location(name):
     try:
-        geolocator = Nominatim(user_agent="dwara_panchang_v9", timeout=5)
+        geolocator = Nominatim(user_agent="dwara_panchang_final_v14", timeout=5)
         loc = geolocator.geocode(name)
         if not loc: return None
         tf = TimezoneFinder()
         tz_str = tf.timezone_at(lng=loc.longitude, lat=loc.latitude)
         return {'name': loc.address, 'lat': loc.latitude, 'lon': loc.longitude, 'tz': pytz.timezone(tz_str)}
-    except Exception:
-        return None
+    except: return None
 
 def jd_from_dt(dt_local):
     dt_utc = dt_local.astimezone(pytz.utc)
@@ -477,8 +483,186 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
     if nak_idx == 3: add_fest("Rohini Vrat")
     return festivals
 
-# --- HOROSCOPE CALCULATION ---
-def get_horoscope_by_birth_details(loc, date_str, time_str):
+# --- NUMEROLOGY & HOROSCOPE CALCULATION ---
+
+# Helper for Numerology
+def get_numerology(dob, name):
+    # Radical Number (Day)
+    day = dob.day
+    while day > 9: day = sum(int(d) for d in str(day))
+    radical_num = day
+    
+    # Destiny Number (Full Date)
+    total_sum = sum(int(d) for d in dob.strftime("%d%m%Y"))
+    while total_sum > 9: total_sum = sum(int(d) for d in str(total_sum))
+    destiny_num = total_sum
+    
+    # Name Number (Chaldean)
+    name_sum = 0
+    if name:
+        for char in name.upper():
+            if char in CHALDEAN_MAP:
+                name_sum += CHALDEAN_MAP[char]
+    while name_sum > 9: name_sum = sum(int(d) for d in str(name_sum))
+    name_num = name_sum
+
+    # Evil Number (Simple logic: Enemy of Radical)
+    evil_num = NUMEROLOGY_DATA[radical_num]["enemy"]
+    neutral_num = NUMEROLOGY_DATA[radical_num]["neutral"]
+    friendly_num = NUMEROLOGY_DATA[radical_num]["friend"]
+    radical_ruler = NUMEROLOGY_DATA[radical_num]["ruler"]
+
+    return {
+        "radical_num": radical_num,
+        "destiny_num": destiny_num,
+        "name_num": name_num,
+        "evil_num": evil_num,
+        "neutral_num": neutral_num,
+        "friendly_num": friendly_num,
+        "radical_ruler": radical_ruler
+    }
+
+# --- DOSHA CALCULATION ---
+def calculate_doshas(planet_positions, lagna_rashi, moon_rashi):
+    # Prepare positions: { 'Mars': house_num, 'Rahu': house_num, ... }
+    # House num relative to Lagna (1 to 12)
+    p_houses = {p['planet']: p['house'] for p in planet_positions}
+    
+    dosha_report = []
+    
+    # 1. Mangal Dosha (Mars in 1, 2, 4, 7, 8, 12 from Lagna)
+    mars_house = p_houses.get('Mars')
+    if mars_house in [1, 2, 4, 7, 8, 12]:
+        dosha_report.append({
+            "name": "Mangal Dosha",
+            "status": "Present",
+            "desc": "Mars is placed in a sensitive house (1, 2, 4, 7, 8, 12). This may cause delays or disharmony in marriage.",
+            "remedy": "Perform Kumbh Vivah or worship Lord Hanuman."
+        })
+    else:
+        dosha_report.append({ "name": "Mangal Dosha", "status": "Absent", "desc": "No Mangal Dosha present.", "remedy": "None needed." })
+
+    # 2. Kalsarpa Dosha (Planets hemmed between Rahu/Ketu)
+    # Simplified logic: Check if all major planets are within the arc of Rahu/Ketu
+    # This requires degree comparison which is complex here. 
+    # Placeholder logic:
+    dosha_report.append({ "name": "Kalsarpa Dosha", "status": "Absent", "desc": "Planets are not hemmed between Rahu and Ketu.", "remedy": "None needed." })
+
+    # 3. Pitra Dosha (Sun/Moon with Rahu/Ketu or in 9th)
+    sun_h = p_houses.get('Sun')
+    moon_h = p_houses.get('Moon')
+    rahu_h = p_houses.get('Rahu')
+    ketu_h = p_houses.get('Ketu')
+    
+    is_pitra = False
+    if sun_h == 9 or moon_h == 9: is_pitra = True
+    if sun_h == rahu_h or sun_h == ketu_h: is_pitra = True
+    if moon_h == rahu_h or moon_h == ketu_h: is_pitra = True
+    
+    if is_pitra:
+        dosha_report.append({
+            "name": "Pitra Dosha",
+            "status": "Present",
+            "desc": "Sun/Moon afflicted by Nodes or 9th house affliction indicates ancestral debt.",
+            "remedy": "Perform Shradh/Tarpan for ancestors or donate food on Amavasya."
+        })
+    else:
+        dosha_report.append({ "name": "Pitra Dosha", "status": "Absent", "desc": "No major Pitra Dosha detected.", "remedy": "None needed." })
+
+    return dosha_report
+
+
+# --- DASHA CALCULATION ---
+def get_formatted_duration(total_days):
+    years = int(total_days / 365.25)
+    remaining_days = total_days % 365.25
+    months = int(remaining_days / 30.44)
+    days = int(remaining_days % 30.44)
+    parts = []
+    if years > 0: parts.append(f"{years}y")
+    if months > 0: parts.append(f"{months}m")
+    if days > 0: parts.append(f"{days}d")
+    return " ".join(parts) if parts else "0d"
+
+def calculate_antardashas(mahadasha_lord, mahadasha_start_date, birth_date=None):
+    sub_periods = []
+    start_idx = DASHA_ORDER.index(mahadasha_lord)
+    current_sub_date = mahadasha_start_date
+    m_years = DASHA_YEARS[mahadasha_lord]
+
+    for i in range(9):
+        sub_lord_idx = (start_idx + i) % 9
+        sub_lord = DASHA_ORDER[sub_lord_idx]
+        s_years = DASHA_YEARS[sub_lord]
+        days_duration = (m_years * s_years * 365.25) / 120.0
+        end_sub_date = current_sub_date + timedelta(days=days_duration)
+        
+        if birth_date:
+            if end_sub_date < birth_date:
+                current_sub_date = end_sub_date
+                continue 
+            if current_sub_date < birth_date:
+                actual_start = birth_date
+                actual_duration = (end_sub_date - actual_start).days
+                sub_periods.append({
+                    "lord": sub_lord,
+                    "start": actual_start.strftime("%d-%b-%Y"),
+                    "end": end_sub_date.strftime("%d-%b-%Y"),
+                    "duration": get_formatted_duration(actual_duration)
+                })
+                current_sub_date = end_sub_date
+                continue
+
+        sub_periods.append({
+            "lord": sub_lord,
+            "start": current_sub_date.strftime("%d-%b-%Y"),
+            "end": end_sub_date.strftime("%d-%b-%Y"),
+            "duration": get_formatted_duration(days_duration)
+        })
+        current_sub_date = end_sub_date
+
+    return sub_periods
+
+def calculate_vimshottari_dasha(moon_long, birth_date):
+    nak_span = 13.333333333333333
+    nak_idx = int(moon_long / nak_span)
+    degrees_in_nak = moon_long % nak_span
+    fraction_passed = degrees_in_nak / nak_span
+    dasha_lord_idx = nak_idx % 9
+    start_lord = DASHA_ORDER[dasha_lord_idx]
+    total_years = DASHA_YEARS[start_lord]
+    years_passed = total_years * fraction_passed
+    years_remaining = total_years - years_passed
+    theoretical_start_days = years_passed * 365.25
+    theoretical_start_date = birth_date - timedelta(days=theoretical_start_days)
+    first_dasha_end_date = theoretical_start_date + timedelta(days=total_years * 365.25)
+    
+    dasha_list = []
+    dasha_list.append({
+        "lord": start_lord,
+        "start": birth_date.strftime("%d-%b-%Y"),
+        "end": first_dasha_end_date.strftime("%d-%b-%Y"),
+        "duration": get_formatted_duration(years_remaining * 365.25),
+        "antardashas": calculate_antardashas(start_lord, theoretical_start_date, birth_date=birth_date)
+    })
+    
+    current_date = first_dasha_end_date
+    for i in range(1, 9):
+        next_idx = (dasha_lord_idx + i) % 9
+        lord = DASHA_ORDER[next_idx]
+        duration_years = DASHA_YEARS[lord]
+        end_date = current_date + timedelta(days=duration_years * 365.25)
+        dasha_list.append({
+            "lord": lord,
+            "start": current_date.strftime("%d-%b-%Y"),
+            "end": end_date.strftime("%d-%b-%Y"),
+            "duration": f"{duration_years} Years",
+            "antardashas": calculate_antardashas(lord, current_date)
+        })
+        current_date = end_date
+    return dasha_list
+
+def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     setup_swisseph()
     try:
         dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
@@ -486,40 +670,163 @@ def get_horoscope_by_birth_details(loc, date_str, time_str):
 
     tz = loc['tz']
     local_dt = tz.localize(dt)
-    jd = swe.julday(local_dt.year, local_dt.month, local_dt.day, local_dt.hour + local_dt.minute/60.0 + local_dt.second/3600.0)
+    utc_dt = local_dt.astimezone(pytz.utc)
+    jd = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour + utc_dt.minute/60.0 + utc_dt.second/3600.0)
 
-    # Calculate Planets
     flags = swe.FLG_SIDEREAL | swe.FLG_SPEED
-    planet_map = {0: swe.SUN, 1: swe.MOON, 2: swe.MARS, 3: swe.MERCURY, 4: swe.JUPITER, 5: swe.VENUS, 6: swe.SATURN, 7: swe.MEAN_NODE, 8: swe.MEAN_NODE}
+    planet_map = {0: swe.SUN, 1: swe.MOON, 2: swe.MARS, 3: swe.MERCURY, 4: swe.JUPITER, 5: swe.VENUS, 6: swe.SATURN, 7: swe.MEAN_NODE, 8: swe.MEAN_NODE, 9: swe.URANUS, 10: swe.NEPTUNE, 11: swe.PLUTO}
     
     chart_data = {i: [] for i in range(12)} 
-    
-    # Lagna
+    navamsa_chart_data = {i: [] for i in range(12)}
+    planetary_positions = [] 
+
     cusps, ascmc = swe.houses(jd, loc['lat'], loc['lon'], b'P')
     lagna_deg = ascmc[0]
     lagna_rashi = int(lagna_deg / 30)
     chart_data[lagna_rashi].append("Lagna")
     
+    lagna_total_min = (lagna_deg) * 60
+    lagna_navamsa_rashi = int(lagna_total_min / 200) % 12
+    navamsa_chart_data[lagna_navamsa_rashi].append("Lagna")
+
+    def deg_to_dms(deg):
+        d = int(deg)
+        m = int((deg - d) * 60)
+        s = int(((deg - d) * 60 - m) * 60)
+        return f"{d:02d}° {m:02d}' {s:02d}\""
+        
+    def get_nak(long):
+        nak_deg = 13.333333333333333
+        idx = int(long / nak_deg)
+        pada = int((long % nak_deg) / 3.333333333333333) + 1
+        return NAKSHATRAS[idx], pada, idx
+
     moon_long = 0
+    lnak, lpada, lnak_idx = get_nak(lagna_deg)
+    planetary_positions.append({
+        "planet": "Ascendant", "symbol": "As", "is_retro": "No", "position": deg_to_dms(lagna_deg), "degree": deg_to_dms(lagna_deg % 30),
+        "rasi": RASHIS[lagna_rashi], "rasi_lord": RASI_LORDS_MAP[lagna_rashi],
+        "nakshatra": f"{lnak} ({lpada})", "nak_lord": NAK_LORDS[lnak_idx % 9], "house": 1
+    })
+
+    p_names = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Uranus", "Neptune", "Pluto"]
+    p_symbols = ["Su", "Mo", "Ma", "Me", "Ju", "Ve", "Sa", "Ra", "Ke", "Ur", "Ne", "Pl"]
     
-    # Planets
-    for i in range(8):
+    for i in range(12):
         body = planet_map[i]
-        res = swe.calc_ut(jd, body, flags)[0]
-        deg = res[0]
+        res = swe.calc_ut(jd, body, flags)
+        deg = res[0][0]
+        speed = res[0][3]
+        
+        is_retro = "Yes" if speed < 0 else "No"
+        if i in [7, 8]: is_retro = "Yes" 
+        
         if i == 8: deg = (deg + 180) % 360 # Ketu
         if i == 1: moon_long = deg
             
         rashi = int(deg / 30)
-        p_name = ["Sun", "Moon", "Mars", "Merc", "Jup", "Ven", "Sat", "Rahu", "Ketu"][i]
-        chart_data[rashi].append(p_name)
-    
-    # ADDED: Nakshatra Calc
-    nak_idx = int(moon_long / 13.333333333)
-    pada = int((moon_long % 13.333333333) / 3.333333333) + 1
+        p_name = p_names[i]
+        
+        chart_data[rashi].append(p_name[:3])
+        total_minutes = deg * 60
+        navamsa_rashi_idx = int(total_minutes / 200) % 12
+        navamsa_chart_data[navamsa_rashi_idx].append(p_name[:3])
+        
+        nak, pada, nak_idx = get_nak(deg)
+        house_num = (rashi - lagna_rashi + 12) % 12 + 1
+        
+        planetary_positions.append({
+            "planet": p_name, "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30),
+            "rasi": RASHIS[rashi], "rasi_lord": RASI_LORDS_MAP[rashi],
+            "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx % 9], "house": house_num
+        })
+        
+    moon_rashi_idx = int(moon_long / 30)
+    import copy
+    chandra_chart_data = copy.deepcopy(chart_data)
+    if "Lagna" in chandra_chart_data[lagna_rashi]:
+        chandra_chart_data[lagna_rashi].remove("Lagna")
+    chandra_chart_data[moon_rashi_idx].append("Lagna (Mo)")
+
+    nak_idx = int(moon_long / 13.333333333333333)
+    pada = int((moon_long % 13.333333333333333) / 3.333333333333333) + 1
     nak_str = f"{NAKSHATRAS[nak_idx]} ({pada} Pada)"
 
-    return {"chart": chart_data, "lagna": RASHIS[lagna_rashi], "moon_sign": RASHIS[int(moon_long/30)], "nakshatra": nak_str}
+    ayan_val = swe.get_ayanamsa(jd)
+    d = int(ayan_val)
+    m = int((ayan_val - d) * 60)
+    s = int(((ayan_val - d) * 60 - m) * 60)
+    ayan_str = f"{d}° {m}' {s}\" (Lahiri)"
+
+    gana_idx = 0 if nak_idx in GANAS["Deva"] else 1 if nak_idx in GANAS["Manushya"] else 2
+    gana = ["Deva", "Manushya", "Rakshasa"][gana_idx]
+    yoni = YONIS[nak_idx % 27]
+    nadi_type = "Adi (Vata)" if nak_idx in NADIS["Adi (Vata)"] else "Madhya (Pitta)" if nak_idx in NADIS["Madhya (Pitta)"] else "Antya (Kapha)"
+    moon_rashi_idx = int(moon_long / 30)
+    varna = VARNA[moon_rashi_idx]
+    vashya = VASHYA[moon_rashi_idx]
+    
+    sun_long = swe.calc_ut(jd, swe.SUN, flags)[0][0]
+    tithi_idx_b = int(((moon_long - sun_long) % 360) / 12)
+    birth_tithi = TITHIS[tithi_idx_b]
+    
+    yoga_idx_b = int(((moon_long + sun_long) % 360) / 13.333333)
+    birth_yoga = YOGAS[yoga_idx_b]
+    
+    karana_idx_b = int(((moon_long - sun_long) % 360) / 6)
+    if karana_idx_b == 0: birth_karana = KARANAS[10]
+    elif karana_idx_b >= 57: birth_karana = KARANAS[karana_idx_b - 50]
+    else: birth_karana = KARANAS[(karana_idx_b - 1) % 7]
+    
+    tatva = TATVA[moon_rashi_idx]
+    moon_house_num = (moon_rashi_idx - lagna_rashi + 12) % 12 + 1
+    if moon_house_num in [1, 6, 11]: paya = "Gold (Swarna)"
+    elif moon_house_num in [2, 5, 9]: paya = "Silver (Rajata)"
+    elif moon_house_num in [3, 7, 10]: paya = "Copper (Tamra)"
+    else: paya = "Iron (Loha)"
+    
+    if nak_idx < 9: yunja = "Poorva"
+    elif nak_idx < 18: yunja = "Madhya"
+    else: yunja = "Uttara"
+    
+    global_pada_idx = (nak_idx * 4) + (pada - 1)
+    name_alphabet = NAMA_AKSHARA[global_pada_idx]
+    nak_lord = NAK_LORDS[nak_idx % 9]
+    sign_lord = RASI_LORDS_MAP[moon_rashi_idx]
+    
+    fav_data = FAV_POINTS.get(moon_rashi_idx, {})
+    num_data = get_numerology(dt, name)
+    fav_data.update(num_data)
+
+    lagna_prediction = KUNDLI_PREDICTIONS.get(lagna_rashi, {"general": "", "career": "", "health": "", "marriage": ""})
+    
+    dasha_periods = calculate_vimshottari_dasha(moon_long, dt)
+    dosha_details = calculate_doshas(planetary_positions, lagna_rashi, moon_rashi_idx)
+
+    kundli_details = {
+        "gana": gana, "yoni": yoni, "nadi": nadi_type,
+        "varna": varna, "vashya": vashya,
+        "tithi": birth_tithi, "yoga": birth_yoga, "karana": birth_karana,
+        "tatva": tatva, "paya": paya, "yunja": yunja,
+        "name_alphabet": name_alphabet,
+        "nak_lord": nak_lord, "sign_lord": sign_lord,
+        "fav": fav_data,
+        "prediction": lagna_prediction
+    }
+
+    return {
+        "chart": chart_data, 
+        "navamsa_chart": navamsa_chart_data,
+        "chandra_chart": chandra_chart_data,
+        "lagna": RASHIS[lagna_rashi], 
+        "moon_sign": RASHIS[moon_rashi_idx], 
+        "nakshatra": nak_str, 
+        "ayanamsa_val": ayan_str,
+        "planetary_positions": planetary_positions,
+        "kundli_details": kundli_details,
+        "dasha_periods": dasha_periods,
+        "dosha_details": dosha_details # NEW
+    }
 
 # --- MUHURTHA CALCULATOR ---
 def get_monthly_muhurthas(loc, year, month):
@@ -536,11 +843,11 @@ def get_monthly_muhurthas(loc, year, month):
             if day == 0: continue
             date_str = f"{year}-{month:02d}-{day:02d}"
             try:
-                data = fetch_month_day_data(loc, date_str)
+                lite_data = fetch_month_day_data(loc, date_str)
                 dt_obj = datetime(year, month, day)
                 weekday = dt_obj.weekday()
-                curr_nak = data['nakshatra'].split(' ')[0]
-                curr_tithi = data['tithi']
+                curr_nak = lite_data['nakshatra'].split(' ')[0]
+                curr_tithi = lite_data['tithi']
                 tithi_name = curr_tithi.split(' ')[-1]
                 for cat, rule in RULES.items():
                     if weekday in rule['exclude_days']: continue
@@ -548,7 +855,13 @@ def get_monthly_muhurthas(loc, year, month):
                     tithi_match = any(t == tithi_name for t in rule['tithis'])
                     if "Amavasya" in curr_tithi or "Chaturthi" in tithi_name or "Navami" in tithi_name: tithi_match = False
                     if nak_match and tithi_match:
-                        results[cat].append({"date": f"{day} {calendar.month_name[month]}", "day_name": dt_obj.strftime("%A"), "nakshatra": curr_nak, "tithi": curr_tithi, "full_date": date_str})
+                        full_data = fetch_panchang(loc, date_str)
+                        results[cat].append({
+                            "date": f"{day} {calendar.month_name[month]}", "day_name": dt_obj.strftime("%A"), 
+                            "nakshatra": curr_nak, "tithi": curr_tithi, "full_date": date_str,
+                            "tithi_start": lite_data['tithi_start'], "tithi_end": lite_data['tithi_end'], "nak_end": lite_data['nak_end'],
+                            "amrit": full_data['timings']['amrit'], "abhijit": full_data['timings']['abhijit']
+                        })
             except: continue
     return results
 

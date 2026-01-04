@@ -159,39 +159,68 @@ def muhurtha_view():
                            current_ym=f"{year}-{month:02d}")
 
 
+# ... (Keep existing imports) ...
+from panchang_engine import get_horoscope_by_birth_details, get_location
 
 @app.route('/horoscope', methods=['GET', 'POST'])
 def horoscope_view():
+    # Defaults
     birth_date = ""
     birth_time = ""
-    city_name = "Bangalore, India" # Default
+    location_name = "Bangalore, India"
+    name = ""
+    gender = "Male"
     data = None
-    
+    bio_details = {} # Store formatted details for the view
+
     if request.method == 'POST':
+        name = request.form.get('name', 'User')
+        gender = request.form.get('gender', 'Male')
         birth_date = request.form.get('birth_date')
         birth_time = request.form.get('birth_time')
-        city_name = request.form.get('location')
+        location_name = request.form.get('location')
         
-        if birth_date and birth_time and city_name:
-            # Get Coords
-            loc = get_location(city_name)
-            if loc:
-                # Calculate using local Swiss Ephemeris (100% Accurate)
-                data = get_horoscope_by_birth_details(loc, birth_date, birth_time)
+        if birth_date and birth_time and location_name:
+            # 1. Get Coordinates
+            loc = get_location(location_name)
             
-            # (Optional) Add dummy predictions based on Sign
-            # Real predictions would require a massive database
-            if data and "moon_sign" in data:
-                sign = data['moon_sign'].split(' ')[0] # Get just the name
+            if loc:
+                # 2. Calculate Horoscope
+                data = get_horoscope_by_birth_details(loc, birth_date, birth_time, name)
+                
+                # 3. Format Date/Time for Display (e.g., "December 12, 1977 Monday")
+                dt_obj = datetime.strptime(f"{birth_date} {birth_time}", "%Y-%m-%d %H:%M")
+                formatted_date = dt_obj.strftime("%B %d, %Y %A")
+                formatted_time = dt_obj.strftime("%I:%M %p IST (+05:30)") # Assuming IST for now
+                
+                # 4. Prepare Bio Data
+                bio_details = {
+                    "Name": name,
+                    "Gender": gender,
+                    "Birth Date": formatted_date,
+                    "Birth Time": formatted_time,
+                    "Place of Birth": loc['name'],
+                    "Nakshatra": data['nakshatra'],
+                    "Rasi": data['moon_sign'],
+                    "Ayanamsa": data.get('ayanamsa_val', "Lahiri (Calculated)")
+                }
+                
+                # 5. Add Placeholder Predictions
+                sign = data['moon_sign'].split(' ')[0]
                 data["predictions"] = {
-                    "daily": f"Today is a good day for {sign} to focus on personal growth.",
-                    "weekly": f"This week brings new opportunities in career for {sign}.",
-                    "yearly": f"2025 is a transformative year for {sign} natives."
+                    "daily": f"Today is a favorable day for {sign} rashi. Financial gains are indicated.",
+                    "weekly": f"This week requires patience for {sign}. Career growth is steady.",
+                    "yearly": f"2025 brings transformation for {sign}. Saturn's transit is favorable."
                 }
 
-    return render_template('horoscope.html', data=data, 
-                           birth_date=birth_date, birth_time=birth_time, location=city_name)
-
+    return render_template('horoscope.html', 
+                           data=data, 
+                           bio=bio_details,
+                           birth_date=birth_date, 
+                           birth_time=birth_time, 
+                           location=location_name,
+                           name=name,
+                           gender=gender)
 
 if __name__ == '__main__':
     app.run(debug=True)
