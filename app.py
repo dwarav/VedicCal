@@ -25,25 +25,25 @@ def home():
     error = None
     is_first_load = False
     
-    if request.method == 'POST':
-        user_loc = request.form.get('location')
-        user_date = request.form.get('date')
+    # CHECK BOTH POST (Form) AND GET (Link) REQUESTS
+    user_loc = request.form.get('location') or request.args.get('location')
+    user_date = request.form.get('date') or request.args.get('date')
+
+    if user_loc and user_date:
+        date = user_date
+        location_name = user_loc
         
-        if user_loc and user_date:
-            date = user_date
-            location_name = user_loc
-            
-            # Try finding user location
-            fetched_loc = get_location(user_loc)
-            if fetched_loc:
-                loc_data = fetched_loc
-            else:
-                # If fail, keep default but show error
-                error = f"Could not find '{user_loc}'. Using default."
+        # Try finding user location
+        fetched_loc = get_location(user_loc)
+        if fetched_loc:
+            loc_data = fetched_loc
         else:
-            error = "Please provide both location and date."
+            # If fail, keep default but show error
+            error = f"Could not find '{user_loc}'. Using default."
     else:
-        is_first_load = True
+        # Only set first load if no parameters were passed
+        if not request.args.get('date'): 
+            is_first_load = True
 
     try:
         # Pass the DICTIONARY, not the string

@@ -88,6 +88,9 @@ RASHI_ICONS = {"Mesha": "♈", "Vrishabha": "♉", "Mithuna": "♊", "Karka": "�
 TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "¾", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
 NAK_ICONS = {"Ashwini": "🐴", "Bharani": "🐘", "Krittika": "🔥", "Rohini": "🐍", "Mrigashira": "🦌", "Ardra": "💧", "Punarvasu": "🏹", "Pushya": "🌸", "Ashlesha": "🐍", "Magha": "👑", "Purva Phalguni": "🛋️", "Uttara Phalguni": "🛏️", "Hasta": "🖐️", "Chitra": "✨", "Swati": "🌬️", "Vishakha": "⚖️", "Anuradha": "🌸", "Jyeshtha": "🌂", "Mula": "🌿", "Purva Ashadha": "🌊", "Uttara Ashadha": "🐘", "Shravana": "👂", "Dhanishta": "🥁", "Shatabhisha": "⭕", "Purva Bhadrapada": "🦁", "Uttara Bhadrapada": "🐮", "Revati": "🐟"}
 
+# --- SAMVATSARA NAMES ---
+SAMVATSARA_NAMES = ["Prabhava", "Vibhava", "Shukla", "Pramoda", "Prajapati", "Angirasa", "Shrimukha", "Bhava", "Yuva", "Dhatri", "Ishvara", "Bahudhanya", "Pramathi", "Vikrama", "Vrishapraja", "Chitrabhanu", "Subhanu", "Tarana", "Parthiva", "Vyaya", "Sarvajit", "Sarvadhari", "Virodhi", "Vikriti", "Khara", "Nandana", "Vijaya", "Jaya", "Manmatha", "Durmukha", "Hevilambi", "Vilambi", "Vikari", "Sharvari", "Plava", "Shubhakrit", "Shobhakrit", "Krodhi", "Vishvavasu", "Parabhava", "Plavanga", "Kilaka", "Saumya", "Sadharana", "Virodhikrit", "Paridhavi", "Pramadicha", "Ananda", "Rakshasa", "Nala", "Pingala", "Kalayukti", "Siddharthi", "Raudra", "Durmati", "Dundubhi", "Rudhirodgari", "Raktakshi", "Krodhana", "Akshaya"]
+
 VARJYAM_STARTS = [50, 24, 30, 40, 14, 21, 30, 20, 32, 30, 20, 18, 22, 20, 14, 14, 10, 14, 20, 24, 20, 10, 10, 18, 16, 24, 30]
 AMRIT_STARTS = [42, 48, 54, 52, 38, 35, 54, 44, 56, 54, 44, 48, 42, 46, 34, 32, 38, 38, 40, 48, 52, 38, 38, 42, 36, 48, 56]
 RAHU_KEY = {0: 2, 1: 7, 2: 5, 3: 6, 4: 4, 5: 3, 6: 8}
@@ -107,7 +110,7 @@ def setup_swisseph():
 
 def get_location(name):
     try:
-        geolocator = Nominatim(user_agent="dwara_panchang_final_v14", timeout=5)
+        geolocator = Nominatim(user_agent="dwara_panchang_final_v16", timeout=5)
         loc = geolocator.geocode(name)
         if not loc: return None
         tf = TimezoneFinder()
@@ -215,6 +218,54 @@ def fmt_duration(jd_start, jd_end):
     seconds = total_seconds % 60
     return f"{hours:02d} Hours {minutes:02d} Mins {seconds:02d} Secs"
 
+# --- HELPER: GET ENTRY/EXIT TIMES ---
+def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
+    """
+    Finds when the current Sign/Nakshatra started and when it will end.
+    Searches backward for entry and forward for exit.
+    """
+    
+    # 1. SEARCH FOR EXIT (Next Transition)
+    # Target value is next index
+    target_next = int(current_val + 1)
+    # Function to check index
+    def check_idx(t):
+        pos = swe.calc_ut(t, body_id, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
+        return int(pos / span_deg)
+        
+    # Find when it changes to next
+    exit_jd = find_trans(jd_ref, check_idx, target_next) 
+    
+    # 2. SEARCH FOR ENTRY (Previous Transition)
+    # Search backwards. We look for when it *became* current_val.
+    # Effectively finding when index changed FROM (current_val - 1) TO current_val
+    # We can use find_trans by searching backwards? No, find_trans searches forward.
+    # So we search forward from (jd_ref - a lot) until we hit current_val.
+    
+    # Search range: Moon ~3 days back, Sun ~32 days back
+    days_back = 35 if body_id == swe.SUN else 4
+    search_start = jd_ref - days_back
+    
+    # Find when it enters 'current_val'
+    entry_jd = find_trans(search_start, check_idx, current_val)
+    
+    # If not found (e.g. at edge of buffer), default to None
+    
+    # Format
+    entry_str = "---"
+    exit_str = "---"
+    
+    if entry_jd:
+        dt_ent = dt_from_jd(entry_jd, tz)
+        if dt_ent: entry_str = dt_ent.strftime("%d %b, %I:%M %p")
+        
+    if exit_jd:
+        dt_ex = dt_from_jd(exit_jd, tz)
+        if dt_ex: exit_str = dt_ex.strftime("%d %b, %I:%M %p")
+        
+    return entry_str, exit_str
+
+
 # ================= HELPER CALCULATORS =================
 def get_tamil_yoga(weekday_idx, nak_idx):
     marana_combos = [(6, 1), (0, 13), (1, 20), (2, 18), (3, 9), (4, 10), (5, 26)]
@@ -303,23 +354,63 @@ def get_samvat_details(dt):
     is_after_new_year = dt.month > 4 or (dt.month == 4 and dt.day > 14)
     vikram = year + 57 if is_after_new_year else year + 56
     shaka = year - 78 if is_after_new_year else year - 79
-    return {"vikram": vikram, "shaka": shaka, "gujarati": vikram, "samvatsara": "Pingala/Kalayukta"}
+    
+    # Samvatsara Calculation
+    samvat_idx = (shaka + 11) % 60
+    samvat_name = SAMVATSARA_NAMES[samvat_idx]
+
+    return {
+        "vikram": vikram, 
+        "shaka": shaka, 
+        "samvatsara": samvat_name,
+        "chandramasa": "" 
+    }
 
 def get_ritu_ayana_details(jd):
+    # 1. Calculate Tropical Sun (for Modern/Drik Ayana - Dec 21/Jun 21)
     sun_trop = swe.calc_ut(jd, swe.SUN, swe.FLG_SWIEPH | swe.FLG_SPEED)[0][0]
-    if (sun_trop >= 270 and sun_trop < 360) or (sun_trop >= 0 and sun_trop < 90):
-        ayana = "Uttarayana"; vedic_ayana = "Dakshinayana"
+    
+    # 2. Calculate Sidereal Sun (for Vedic Ayana & Ritu - Jan 14/Jul 16)
+    swe.set_sid_mode(SIDEREAL_MODE)
+    sun_sid = swe.calc_ut(jd, swe.SUN, swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
+
+    # --- AYANA CALCULATION ---
+    
+    # Tropical Uttarayana: Sun moves North (Winter Solstice 270° to Summer Solstice 90°)
+    if (sun_trop >= 270 or sun_trop < 90):
+        ayana = "Uttarayana (Drik)"
     else:
-        ayana = "Dakshinayana"; vedic_ayana = "Uttarayana"
-    norm_sun = sun_trop % 360
-    if 270 <= norm_sun < 330: ritu = "Shishir (Winter)"
-    elif 330 <= norm_sun < 360 or 0 <= norm_sun < 30: ritu = "Vasant (Spring)"
-    elif 30 <= norm_sun < 90: ritu = "Grishma (Summer)"
-    elif 90 <= norm_sun < 150: ritu = "Varsha (Monsoon)"
-    elif 150 <= norm_sun < 210: ritu = "Sharad (Autumn)"
-    else: ritu = "Hemant (Prewinter)"
-    vedic_ritu = "Hemant (Prewinter)" if ritu == "Shishir (Winter)" else ritu
-    return {"ritu": ritu, "vedic_ritu": vedic_ritu, "ayana": ayana, "vedic_ayana": vedic_ayana}
+        ayana = "Dakshinayana (Drik)"
+
+    # Vedic Uttarayana: Sun enters Sidereal Makara (270°) to Karka (90°)
+    # This aligns with Makara Sankranti
+    if (sun_sid >= 270 or sun_sid < 90):
+        vedic_ayana = "Uttarayana"
+    else:
+        vedic_ayana = "Dakshinayana"
+
+    # --- RITU CALCULATION (Based on Sidereal Sun) ---
+    # Vasant:   Pisces-Aries (330° - 30°)
+    # Grishma:  Taurus-Gemini (30° - 90°)
+    # Varsha:   Cancer-Leo (90° - 150°)
+    # Sharad:   Virgo-Libra (150° - 210°)
+    # Hemant:   Scorpio-Sagittarius (210° - 270°)
+    # Shishir:  Capricorn-Aquarius (270° - 330°)
+    
+    s = sun_sid % 360
+    if 330 <= s < 360 or 0 <= s < 30: ritu = "Vasant (Spring)"
+    elif 30 <= s < 90: ritu = "Grishma (Summer)"
+    elif 90 <= s < 150: ritu = "Varsha (Monsoon)"
+    elif 150 <= s < 210: ritu = "Sharad (Autumn)"
+    elif 210 <= s < 270: ritu = "Hemant (Pre-Winter)"
+    else: ritu = "Shishir (Winter)"
+
+    return {
+        "ritu": ritu, 
+        "vedic_ritu": ritu, 
+        "ayana": ayana, 
+        "vedic_ayana": vedic_ayana
+    }
 
 def calculate_muhurtas(rise, set_, rise_next, weekday_idx):
     day_len = set_ - rise
@@ -360,21 +451,90 @@ def calculate_muhurtas(rise, set_, rise_next, weekday_idx):
     }
 
 def get_nivas_shool_details(jd, weekday_idx, tithi_idx, nak_idx):
-    SHOOL_DIR = {0: "West", 1: "East", 2: "North", 3: "North", 4: "South", 5: "West", 6: "East"}
-    disha_shool = SHOOL_DIR[weekday_idx]
-    tithi_num = (tithi_idx % 15) + 1
-    weekday_num = ((weekday_idx + 1) % 7) + 1
-    agni_calc = (tithi_num + weekday_num + 1) % 4
-    AGNI_LOC = {0: "Earth (Prithvi) - Good", 3: "Earth (Prithvi) - Good", 1: "Sky (Akasha) - Bad", 2: "Netherworld (Patala) - Bad"}
-    agnivasa = AGNI_LOC[agni_calc]
-    SHIVA_VASA = {1: "Nandi", 2: "Gauri", 3: "Sabha", 4: "Krida", 5: "Kailash", 6: "Vrishabha", 7: "Bhojana", 8: "Nandi", 9: "Gauri", 10: "Sabha", 11: "Krida", 12: "Kailash", 13: "Vrishabha", 14: "Bhojana", 15: "Kailash/Smashana"}
-    shivavasa = SHIVA_VASA.get(tithi_num, "Kailash")
+    # 1. DISHA SHOOL (Travel Obstacle based on Weekday)
+    # 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+    ds_map = {0: "East", 1: "North", 2: "North", 3: "South", 4: "West", 5: "East", 6: "West"}
+    disha_shool = ds_map[weekday_idx]
+
+    # 2. CHANDRA VASA (Moon Direction based on Rashi)
+    moon_long = swe.calc_ut(jd, swe.MOON, swe.FLG_SIDEREAL)[0][0]
+    moon_rashi_idx = int(moon_long / 30)
+    
+    cv_map = {
+        0: "East", 4: "East", 8: "East",    # Mesha, Simha, Dhanu
+        1: "South", 5: "South", 9: "South", # Vrish, Kanya, Makara
+        2: "West", 6: "West", 10: "West",   # Mithuna, Tula, Kumbha
+        3: "North", 7: "North", 11: "North" # Karka, Vris, Meena
+    }
+    chandra_vasa = cv_map[moon_rashi_idx]
+
+    # 3. AGNI VASA (For Havan)
+    # Formula: (Tithi + Weekday + 1) % 4
+    # Weekday: Sun=1, Mon=2 ... Sat=7. Tithi: 1-30.
+    tithi_count = (tithi_idx % 30) + 1
+    vedic_day = 1 if weekday_idx == 6 else (weekday_idx + 2) # Convert Py(0=Mon) to Vedic(1=Sun)
+    
+    agni_rem = (tithi_count + vedic_day + 1) % 4
+    
+    # Interpretation
+    if agni_rem == 0 or agni_rem == 3: 
+        agnivasa = "Earth (Prithvi) - Auspicious"
+        homahuti_str = "Agni is Present (Good)"
+    elif agni_rem == 1: 
+        agnivasa = "Sky (Akasha) - Inauspicious"
+        homahuti_str = "Agni in Sky (Bad)"
+    else: 
+        agnivasa = "Netherworld (Patala) - Inauspicious"
+        homahuti_str = "Agni in Patala (Bad)"
+
+    # 4. SHIVA VASA (For Rudrabhishek)
+    if tithi_count == 30: shiva_loc = "Smashana (Inauspicious)"
+    else:
+        # 1-14 cycle logic
+        # 1,8,15=Nandi; 2,9=Gauri; 3,10=Sabha; 4,11=Krida; 5,12=Kailash; 6,13=Vrishabha; 7,14=Bhojana
+        eff_tithi = tithi_count if tithi_count <= 14 else (tithi_count - 14) if tithi_count < 30 else 30
+        if tithi_count == 15 or tithi_count == 29: eff_tithi = tithi_count # Handle Purnima/Shivratri specifically if needed
+        
+        # Standard Lookup
+        rem_shiva = tithi_count % 7
+        if tithi_count in [1, 8, 15, 22, 29]: shiva_loc = "Nandi (Good)"
+        elif tithi_count in [2, 9, 16, 23, 30]: 
+             if tithi_count == 30: shiva_loc = "Smashana (Bad)"
+             else: shiva_loc = "Gauri (Good)"
+        elif tithi_count in [3, 10, 17, 24]: shiva_loc = "Sabha (Bad)"
+        elif tithi_count in [4, 11, 18, 25]: shiva_loc = "Krida (Bad)"
+        elif tithi_count in [5, 12, 19, 26]: shiva_loc = "Kailash (Good)"
+        elif tithi_count in [6, 13, 20, 27]: shiva_loc = "Vrishabha (Good)"
+        else: shiva_loc = "Bhojana (Bad)"
+
+    # 5. BHADRA VASA (Vishti)
+    if moon_rashi_idx in [0, 1, 2, 7]: bhadravasa = "Swarga (Heaven) - Auspicious" # Aries, Taurus, Gem, Scorp
+    elif moon_rashi_idx in [5, 6, 8, 9]: bhadravasa = "Patala (Netherworld) - Auspicious" # Vir, Lib, Sag, Cap
+    else: bhadravasa = "Prithvi (Earth) - Inauspicious" # Can, Leo, Aqu, Pis
+
+    # 7. RAHU VASA
+    rv_map = {0: "East", 1: "North", 2: "South-East", 3: "South", 4: "West", 5: "North-West", 6: "South-West"}
+    rahu_vasa = rv_map[weekday_idx]
+
+    # 8. KUMBHA CHAKRA
+    sun_long = swe.calc_ut(jd, swe.SUN, swe.FLG_SIDEREAL)[0][0]
+    sun_rashi_idx = int(sun_long / 30)
+    if sun_rashi_idx in [0, 1, 2]: kumbha_chakra = "West"
+    elif sun_rashi_idx in [3, 4, 5]: kumbha_chakra = "North"
+    elif sun_rashi_idx in [6, 7, 8]: kumbha_chakra = "East"
+    else: kumbha_chakra = "South"
+
     return {
-        "homahuti": "Agni" if tithi_num % 2 != 0 else "Shiva", "disha_shool": disha_shool,
-        "agnivasa_1": agnivasa, "agnivasa_2": "", "nakshatra_shool": "None",
-        "chandra_vasa": "East" if tithi_num in [1,6,11] else "South",
-        "shivavasa_1": f"on {shivavasa}", "shivavasa_2": "",
-        "rahu_vasa": "South-West", "kumbha_chakra": "West"
+        "homahuti": homahuti_str, 
+        "disha_shool": disha_shool,
+        "agnivasa_1": agnivasa,
+        "agnivasa_2": "",
+        "bhadravasa": bhadravasa,
+        "chandra_vasa": chandra_vasa,
+        "shivavasa_1": shiva_loc,
+        "shivavasa_2": "",
+        "rahu_vasa": rahu_vasa,
+        "kumbha_chakra": kumbha_chakra
     }
 
 def get_epoch_details(jd, dt):
@@ -752,6 +912,63 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     pada = int((moon_long % 13.333333333333333) / 3.333333333333333) + 1
     nak_str = f"{NAKSHATRAS[nak_idx]} ({pada} Pada)"
 
+    # START/END CALCULATIONS FOR HOROSCOPE
+    def get_sign_start_end(jd_center, body_id, current_sign_idx, tz):
+        # 1. Find START (Entry into current sign)
+        # Search backward for when sign index was (current - 1)
+        # Or simpler: Find when sign index becomes current_sign_idx
+        # We start search from ~35 days back for Sun, ~4 days back for Moon
+        days_back = 35 if body_id == swe.SUN else 4
+        search_start = jd_center - days_back
+        
+        def check_sign_idx(t):
+            pos = swe.calc_ut(t, body_id, flags)[0][0]
+            return int(pos / 30)
+            
+        entry_jd = find_trans(search_start, check_sign_idx, current_sign_idx)
+        
+        # 2. Find END (Exit from current sign)
+        # Search forward for when sign index becomes (current + 1) % 12
+        next_sign = (current_sign_idx + 1) % 12
+        exit_jd = find_trans(jd_center, check_sign_idx, next_sign)
+        
+        entry_str = dt_from_jd(entry_jd, tz).strftime("%d %b %Y, %I:%M %p") if entry_jd else "---"
+        exit_str = dt_from_jd(exit_jd, tz).strftime("%d %b %Y, %I:%M %p") if exit_jd else "---"
+        return entry_str, exit_str
+
+    def get_nak_start_end(jd_center, current_nak_idx, tz):
+        # Search range for moon nakshatra: +/- 2 days
+        search_start = jd_center - 2.0
+        
+        def check_nak_idx(t):
+            pos = swe.calc_ut(t, swe.MOON, flags)[0][0]
+            return int(pos / 13.333333333)
+            
+        entry_jd = find_trans(search_start, check_nak_idx, current_nak_idx)
+        
+        next_nak = (current_nak_idx + 1) % 27
+        exit_jd = find_trans(jd_center, check_nak_idx, next_nak)
+        
+        entry_str = dt_from_jd(entry_jd, tz).strftime("%d %b %Y, %I:%M %p") if entry_jd else "---"
+        exit_str = dt_from_jd(exit_jd, tz).strftime("%d %b %Y, %I:%M %p") if exit_jd else "---"
+        return entry_str, exit_str
+
+    # Calculate Timing Details
+    sun_long = swe.calc_ut(jd, swe.SUN, flags)[0][0]
+    sun_rashi_idx = int(sun_long / 30)
+    
+    moon_entry, moon_exit = get_sign_start_end(jd, swe.MOON, moon_rashi_idx, tz)
+    sun_entry, sun_exit = get_sign_start_end(jd, swe.SUN, sun_rashi_idx, tz)
+    nak_entry, nak_exit = get_nak_start_end(jd, nak_idx, tz)
+    
+    # Store these in kundli_details
+    timings = {
+        "moon_sign_start": moon_entry, "moon_sign_end": moon_exit,
+        "sun_sign_start": sun_entry, "sun_sign_end": sun_exit,
+        "nak_start": nak_entry, "nak_end": nak_exit
+    }
+
+
     ayan_val = swe.get_ayanamsa(jd)
     d = int(ayan_val)
     m = int((ayan_val - d) * 60)
@@ -766,7 +983,6 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     varna = VARNA[moon_rashi_idx]
     vashya = VASHYA[moon_rashi_idx]
     
-    sun_long = swe.calc_ut(jd, swe.SUN, flags)[0][0]
     tithi_idx_b = int(((moon_long - sun_long) % 360) / 12)
     birth_tithi = TITHIS[tithi_idx_b]
     
@@ -811,7 +1027,8 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         "name_alphabet": name_alphabet,
         "nak_lord": nak_lord, "sign_lord": sign_lord,
         "fav": fav_data,
-        "prediction": lagna_prediction
+        "prediction": lagna_prediction,
+        "timings": timings # NEW
     }
 
     return {
@@ -825,7 +1042,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         "planetary_positions": planetary_positions,
         "kundli_details": kundli_details,
         "dasha_periods": dasha_periods,
-        "dosha_details": dosha_details # NEW
+        "dosha_details": dosha_details
     }
 
 # --- MUHURTHA CALCULATOR ---
@@ -897,6 +1114,12 @@ def fetch_panchang(loc_str_or_dict, date_str):
     guli_time = get_kalam(GULI_KEY)
 
     samvat = get_samvat_details(dt)
+    
+    # CALCULATE CHANDRAMASA (LUNAR MONTH)
+    lunar_month_idx_calc = (int(sun_long / 30) + 1) % 12
+    current_chandramasa = MONTHS[lunar_month_idx_calc]
+    samvat["chandramasa"] = current_chandramasa
+
     ritu_ayana = get_ritu_ayana_details(rise)
     muhurtas = calculate_muhurtas(rise, set_, rise_next, w_idx)
     tithi_idx = int(((moon_long - sun_long) % 360) / 12)
@@ -933,9 +1156,47 @@ def fetch_panchang(loc_str_or_dict, date_str):
     a_s = nk_start + (AMRIT_STARTS[nak_idx]/60.0)
     amrit_time = fmt_range(a_s, a_s + 4/60.0)
     
+    # SIGN TRANSITS FOR DAILY VIEW
+    def get_sign_entry_exit_daily(jd_current, body_id, current_sign_idx, tz):
+        # Similar logic to horoscope but focused on 'today' context
+        # Exit (Next transition)
+        target_next = (current_sign_idx + 1) % 12
+        def check_sign_idx(t):
+            pos = swe.calc_ut(t, body_id, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
+            return int(pos / 30)
+        exit_jd = find_trans(jd_current, check_sign_idx, target_next)
+        
+        # Entry (Prev transition)
+        search_start = jd_current - (35 if body_id == swe.SUN else 4)
+        entry_jd = find_trans(search_start, check_sign_idx, current_sign_idx)
+        
+        entry_str = dt_from_jd(entry_jd, tz).strftime("%d %b, %I:%M %p") if entry_jd else "---"
+        exit_str = dt_from_jd(exit_jd, tz).strftime("%d %b, %I:%M %p") if exit_jd else "---"
+        return entry_str, exit_str
+
+    moon_rashi_start, moon_rashi_end = get_sign_entry_exit_daily(jd_noon, swe.MOON, moon_rashi_idx, tz)
+    sun_rashi_start, sun_rashi_end = get_sign_entry_exit_daily(jd_noon, swe.SUN, sun_rashi_idx, tz)
+
     data = {
         "meta": {"location": loc['name'], "date": dt_from_jd(rise, tz).strftime("%A, %d %B %Y"), "sunrise": fmt_dt(rise), "sunset": fmt_dt(set_), "moonrise": fmt_dt(moon_rise), "moonset": fmt_dt(moon_set)},
-        "details": {"moonsign": RASHIS[moon_rashi_idx], "sunsign": RASHIS[sun_rashi_idx], "samvat": samvat, "ritu_ayana": ritu_ayana, "dinamana": dinamana, "ratrimana": ratrimana, "madhyahna": fmt_dt(madhyahna_jd), "nivas_shool": nivas_shool, "epoch": epoch, "chandrabalam_tarabalam": chandrabalam_tarabalam, "panchaka_rahita": panchaka_rahita, "udaya_lagna": udaya_lagna, "festivals": festivals},
+        "details": {
+            "moonsign": RASHIS[moon_rashi_idx], 
+            "sunsign": RASHIS[sun_rashi_idx], 
+            "samvat": samvat, 
+            "ritu_ayana": ritu_ayana, 
+            "dinamana": dinamana, 
+            "ratrimana": ratrimana, 
+            "madhyahna": fmt_dt(madhyahna_jd), 
+            "nivas_shool": nivas_shool, 
+            "epoch": epoch, 
+            "chandrabalam_tarabalam": chandrabalam_tarabalam, 
+            "panchaka_rahita": panchaka_rahita, 
+            "udaya_lagna": udaya_lagna, 
+            "festivals": festivals,
+            # NEW: Sign Timings
+            "moonsign_start": moon_rashi_start, "moonsign_end": moon_rashi_end,
+            "sunsign_start": sun_rashi_start, "sunsign_end": sun_rashi_end
+        },
         "tithi": tithi_events, "nakshatra": nak_events, "yoga": get_events(rise, rise_next, fn_yoga, YOGAS, 27), "karana": get_events(rise, rise_next, fn_karana, [], 60, True),
         "moon_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 3.333333333), 0), PADA_NAMES, 108),
         "sun_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[0] / 3.333333333), 0), PADA_NAMES, 108),

@@ -184,7 +184,7 @@
             </div>
             <div class="row-container">
                 <div class="cell-left"><span class="label">Samvatsara</span><span class="value">{{ data.details.samvat.samvatsara }}</span></div>
-                <div class="cell-right"><span class="label">Gujarati</span><span class="value">{{ data.details.samvat.gujarati }} Pingala</span></div>
+                <div class="cell-right"><span class="label">Chandramasa</span><span class="value">{{ data.details.samvat.chandramasa }}</span></div>
             </div>
         </div>
 
@@ -265,15 +265,53 @@
                 <div class="cell-right"><span class="label">Tamil Yoga</span><span class="value">{{ data.timings.tamil }}</span></div>
             </div>
 
+            <div class="no-share">
             <div class="header-section">Nivas and Shool</div>
+            
             <div class="row-container">
-                <div class="cell-left"><span class="label">Homahuti</span><span class="value">{{ data.details.nivas_shool.homahuti }}</span></div>
-                <div class="cell-right"><span class="label">Disha Shool</span><span class="value">{{ data.details.nivas_shool.disha_shool }}</span></div>
+                <div class="cell-left">
+                    <span class="label">Homahuti</span>
+                    <span class="value">{{ data.details.nivas_shool.homahuti }}</span>
+                </div>
+                <div class="cell-right">
+                    <span class="label">Agnivasa</span>
+                    <span class="value">{{ data.details.nivas_shool.agnivasa_1 }}</span>
+                </div>
             </div>
+            
             <div class="row-container">
-                <div class="cell-left"><span class="label">Agnivasa</span><span class="value">{{ data.details.nivas_shool.agnivasa_1 }}</span></div>
-                <div class="cell-right"><span class="label">Nakshatra Shool</span><span class="value">{{ data.details.nivas_shool.nakshatra_shool }}</span></div>
+                <div class="cell-left">
+                    <span class="label">Shivavasa</span>
+                    <span class="value">{{ data.details.nivas_shool.shivavasa_1 }}</span>
+                </div>
+                <div class="cell-right">
+                    <span class="label">Bhadravasa</span>
+                    <span class="value">{{ data.details.nivas_shool.bhadravasa }}</span>
+                </div>
             </div>
+
+            <div class="row-container">
+                <div class="cell-left">
+                    <span class="label">Disha Shool</span>
+                    <span class="value">{{ data.details.nivas_shool.disha_shool }}</span>
+                </div>
+                <div class="cell-right">
+                    <span class="label">Chandra Vasa</span>
+                    <span class="value">{{ data.details.nivas_shool.chandra_vasa }}</span>
+                </div>
+            </div>
+
+            <div class="row-container">
+                <div class="cell-left">
+                    <span class="label">Rahu Vasa</span>
+                    <span class="value">{{ data.details.nivas_shool.rahu_vasa }}</span>
+                </div>
+                <div class="cell-right">
+                    <span class="label">Kumbha Chakra</span>
+                    <span class="value">{{ data.details.nivas_shool.kumbha_chakra }}</span>
+                </div>
+            </div>
+        </div>
 
             <div class="header-section">Other Calendars and Epoch</div>
             <div class="row-container">

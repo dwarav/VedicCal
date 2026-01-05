@@ -3,131 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Vedic Calendar</title>
+    <title>Monthly View - Dwara's Vedic Calendar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
         body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
-        
-        /* --- COPY OF PREMIUM HEADER STYLES --- */
+
+        /* --- HEADER & NAV (Same as Home) --- */
         .brand-header {
-            background-color: #b71c1c; 
-            border-bottom: 6px solid #d4ac0d;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
         .brand-header h1 {
-            font-family: 'Playfair Display', serif; font-size: 2.8rem;
-            color: #ffffff; margin: 0; font-weight: 700;
-            letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
+            font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #ffffff;
+            margin: 0; font-weight: 700; letter-spacing: 1px;
         }
         .brand-header .subtitle {
-            font-family: 'Roboto', sans-serif; font-size: 0.9rem;
-            color: #f9e79f; text-transform: uppercase;
-            letter-spacing: 3px; margin-top: 8px; font-weight: 500;
+            font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #f9e79f;
+            text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 500;
         }
         .header-img {
-            height: 110px; width: auto; border: 3px solid #d4ac0d;
-            border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-            object-fit: cover; background: #fff;
+            height: 110px; width: auto; border: 3px solid #d4ac0d; border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4); object-fit: cover; background: #fff;
         }
 
-        /* --- NAVIGATION BAR --- */
-        .nav-bar {
-            background-color: #8e1616; padding: 10px 0; text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px;
-        }
+        .nav-bar { background-color: #8e1616; padding: 10px 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
         .nav-bar a {
-            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif;
-            font-weight: bold; text-transform: uppercase; margin: 0 25px;
-            font-size: 1rem; padding-bottom: 4px; border-bottom: 2px solid transparent;
-            transition: all 0.3s;
+            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif; font-weight: bold;
+            text-transform: uppercase; margin: 0 25px; font-size: 1rem; padding-bottom: 4px;
+            border-bottom: 2px solid transparent; transition: all 0.3s;
         }
         .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
 
-        /* SEARCH & CALENDAR STYLES */
+        /* --- SEARCH --- */
         .search-container {
-            max-width: 900px; margin: 0 auto 30px auto;
-            background: #fff8e1; border: 2px solid #b71c1c;
-            border-radius: 8px; padding: 20px;
+            max-width: 900px; margin: 0 auto 30px auto; background: #fff8e1;
+            border: 2px solid #b71c1c; border-radius: 8px; padding: 20px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
         .search-btn:hover { background: #8e1616; color: #fff; }
-        .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
         .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .form-control { border: 1px solid #d4ac0d; background: #fff; padding-right: 40px; }
+        .form-control { border: 1px solid #d4ac0d; padding-right: 40px; }
+        .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
         .suggestions-list { position: absolute; background: white; border: 1px solid #d4ac0d; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
         .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
         .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
 
-        /* GRID */
-        .calendar-wrapper { max-width: 1400px; margin: 0 auto; padding: 0 15px; } /* Increased width */
+        /* --- CALENDAR GRID --- */
+        .calendar-wrapper { max-width: 1100px; margin: 0 auto; padding: 0 15px; }
+        .month-title { font-family: 'Playfair Display'; color: #b71c1c; text-align: center; margin-bottom: 20px; font-size: 2rem; }
         
-        .calendar-header { 
-            display: grid; grid-template-columns: repeat(7, 1fr); 
-            background: #d4ac0d; color: #4e342e; font-weight: 900; 
-            text-align: center; padding: 10px 0; border-radius: 8px 8px 0 0; 
+        .calendar-table { width: 100%; border-collapse: collapse; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; }
+        .calendar-table th { background-color: #b71c1c; color: #fff; padding: 15px; text-transform: uppercase; font-size: 0.9rem; width: 14.28%; text-align: center; }
+        .calendar-table td { 
+            border: 1px solid #e0e0e0; vertical-align: top; height: 120px; padding: 0; 
+            transition: 0.2s; position: relative; 
         }
-        .calendar-body { 
-            display: grid; grid-template-columns: repeat(7, 1fr); 
-            background: #fcf3cf; border: 1px solid #d4ac0d; border-top: none; 
+        .calendar-table td:hover { background-color: #fffde7; }
+        
+        /* CLICKABLE CELL LINK */
+        .day-link {
+            display: block; width: 100%; height: 100%; text-decoration: none; color: inherit; padding: 8px;
         }
-        .day-cell { 
-            background: #fff; min-height: 180px; 
-            border: 1px solid #eee; padding: 5px; 
-            position: relative; cursor: pointer; 
-        }
-        .day-cell:hover { background: #fff8e1; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.1); border-color: #d4ac0d; }
-        
-        .day-number { font-weight: 900; font-size: 1rem; color: #b71c1c; position: absolute; top: 5px; left: 8px; }
-        .day-content { margin-top: 25px; font-size: 0.8rem; text-align: center; }
-        
-        .tithi-block { margin-bottom: 8px; border-bottom: 1px dashed #eee; padding-bottom: 4px; }
-        .tithi-icon { font-size: 1.1rem; color: #5d4037; }
-        .tithi-name { font-weight: 700; color: #3e2723; display: block; font-size: 0.85rem; }
-        
-        .nak-name { font-weight: 600; color: #5d4037; font-size: 0.8rem; display: block; margin-top: 4px; }
-        
-        /* Updated Time Text Style to show full Date & Time */
-        .time-text { 
-            display: block; font-size: 0.65rem; color: #666; 
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .time-label { color: #999; font-size: 0.6rem; text-transform: uppercase; margin-right: 2px; }
 
-        .festival-badge { 
-            background: #1b5e20; color: white; font-size: 0.65rem; 
-            padding: 2px 4px; border-radius: 4px; margin-top: 5px; 
-            display: inline-block; width: 100%; white-space: nowrap; 
-            overflow: hidden; text-overflow: ellipsis; 
+        .day-num { font-size: 1.2rem; font-weight: bold; color: #333; margin-bottom: 5px; display: block; }
+        .day-tithi { font-size: 0.8rem; color: #d35400; display: block; font-weight: 500; }
+        .day-nak { font-size: 0.75rem; color: #555; display: block; }
+        
+        .festival-badge {
+            background-color: #1b5e20; color: #fff; font-size: 0.7rem; 
+            padding: 2px 5px; border-radius: 4px; display: inline-block; 
+            margin-top: 5px; white-space: nowrap; overflow: hidden; 
+            text-overflow: ellipsis; max-width: 100%;
         }
-        .empty-cell { background: #f9f9f9; }
+
+        .empty-cell { background-color: #f9f9f9; }
 
         @media(max-width: 768px) {
-            .header-img { height: 70px; }
-            .brand-header h1 { font-size: 1.5rem; }
-            .brand-header .subtitle { font-size: 0.7rem; }
-            .day-cell { min-height: 140px; }
-            .time-text { font-size: 0.6rem; } 
+            .header-img { height: 60px; }
+            .brand-header h1 { font-size: 1.4rem; }
+            .calendar-table th { padding: 5px; font-size: 0.7rem; }
+            .calendar-table td { height: 90px; }
+            .day-link { padding: 4px; }
+            .day-num { font-size: 1rem; }
+            .day-tithi, .day-nak { font-size: 0.65rem; }
         }
-        /* Update this specific style in month.html */
-        .time-text {
-            display: block;
-            font-size: 0.65rem;
-            color: #666;
-            line-height: 1.2;
-            /* Remove white-space: nowrap to allow wrapping if date is long */
-            /* white-space: nowrap; */ 
-            overflow: hidden; 
-            text-overflow: ellipsis;
-}
     </style>
 </head>
 <body>
@@ -144,78 +109,73 @@
 <div class="nav-bar">
     <a href="/">Daily View</a>
     <a href="/month" class="active">Monthly View</a>
-    <a href="/muhurtha">Muhurtha Finder</a>
+    <a href="/muhurtha">Muhurtha</a>
     <a href="/horoscope">Horoscope</a>
 </div>
 
 <div class="search-container">
-    <form method="POST" id="monthForm" autocomplete="off" class="row g-3 align-items-end">
-        <div class="col-md-6 position-relative">
-            <label class="form-label">Location</label>
-            <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="Enter City..." required>
-            <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location"><i class="fas fa-crosshairs"></i></button>
-            <ul id="suggestions" class="suggestions-list"></ul>
-        </div>
-        <div class="col-md-4">
-            <label class="form-label">Month & Year</label>
-            <input type="month" name="month_year" class="form-control" value="{{ current_ym }}" required>
-        </div>
-        <div class="col-md-2">
-            <button type="submit" class="btn search-btn w-100">Go</button>
+    <form method="POST" id="monthForm" autocomplete="off">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6 position-relative">
+                <label class="form-label">Location</label>
+                <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="Enter City..." required>
+                <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location"><i class="fas fa-crosshairs"></i></button>
+                <ul id="suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Month & Year</label>
+                <input type="month" name="month_year" class="form-control" value="{{ current_ym }}" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn search-btn w-100">Load</button>
+            </div>
         </div>
     </form>
 </div>
 
-<div class="calendar-wrapper mb-5">
-    <h2 class="text-center mb-4" style="font-family: 'Playfair Display'; color: #b71c1c; font-weight: 700;">
-        {{ month_name }} {{ year }}
-    </h2>
-
-    <div class="calendar-header">
-        <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div style="color:#d32f2f;">SUN</div>
-    </div>
+<div class="calendar-wrapper">
+    <h2 class="month-title">{{ month_name }} {{ year }}</h2>
     
-    <div class="calendar-body">
-        {% for week in calendar_data %}
-            {% for day in week %}
-                {% if day is none %}
-                    <div class="day-cell empty-cell"></div>
-                {% else %}
-                    <div class="day-cell" onclick="window.location.href='/?location={{ location }}&date={{ day.date_str }}'">
-                        <span class="day-number">{{ day.day }}</span>
-                        
-                        <div class="day-content">
-                            {% if day.error %}
-                                <small class="text-danger">Error</small>
-                            {% else %}
-                                <div style="font-size: 0.7rem; color: #b71c1c; font-weight: bold; margin-bottom: 5px;">
-                                    {{ day.lunar_month }}
-                                </div>
-                                <div class="tithi-block">
-                                    <span class="tithi-name"><span class="tithi-icon">{{ day.tithi_icon }}</span> {{ day.tithi }}</span>
-                                    <div class="time-text"><span class="time-label">Start:</span> {{ day.tithi_start }}</div>
-                                    <div class="time-text"><span class="time-label">End:</span> {{ day.tithi_end }}</div>
-                                </div>
-
-                                <div class="nak-block">
-                                    <span class="nak-name">{{ day.nakshatra }}</span>
-                                    <div class="time-text"><span class="time-label">End:</span> {{ day.nak_end }}</div>
-                                </div>
-                                
-                                {% if day.is_festival %}
-                                    {% for fname in day.festival_names %}
-                                        <div class="festival-badge">{{ fname }}</div>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endfor %}
+    <div class="table-responsive">
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for week in calendar_data %}
+                <tr>
+                    {% for day in week %}
+                        {% if day %}
+                            <td>
+                                <a href="/?date={{ day.date_str }}&location={{ location }}" class="day-link" title="View Daily Panchang">
+                                    <span class="day-num">{{ day.day }}</span>
+                                    {% if not day.error %}
+                                        <span class="day-tithi">{{ day.tithi }}</span>
+                                        <span class="day-nak">{{ day.nakshatra.split(' ')[0] }}</span>
+                                        {% if day.is_festival %}
+                                            {% for fest in day.festival_names %}
+                                                <div class="festival-badge">{{ fest }}</div>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-danger" style="font-size:0.7rem;">Error</span>
+                                    {% endif %}
+                                </a>
+                            </td>
+                        {% else %}
+                            <td class="empty-cell"></td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function detectLocation() {
         if (navigator.geolocation) {
@@ -229,7 +189,7 @@
                         .then(response => response.json())
                         .then(data => {
                             const addr = data.address;
-                            const city = addr.city || addr.town || addr.village;
+                            const city = addr.city || addr.town || addr.village || addr.county;
                             const country = addr.country;
                             if(city) {
                                 document.getElementById('locationInput').value = `${city}, ${country}`;
