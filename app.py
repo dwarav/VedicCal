@@ -84,10 +84,10 @@ def monthly_view():
             if found_loc:
                 loc_data = found_loc
                 loc_name_display = req_loc
-            # If not found, it silently falls back to Bangalore (loc_data remains default)
 
+    # Calculate Calendar
     cal = calendar.monthcalendar(year, month)
-    month_name = calendar.month_name[month]
+    month_name = calendar.month_name[month] # Ensure this uses the updated 'month'
     calendar_data = []
     
     for week in cal:
@@ -98,13 +98,13 @@ def monthly_view():
             else:
                 date_str = f"{year}-{month:02d}-{day:02d}"
                 try:
-                    # USE LITE FUNCTION with VALID LOC DATA
+                    # USE LITE FUNCTION
                     day_data = fetch_month_day_data(loc_data, date_str)
                     
                     day_info = {
                         "day": day,
                         "date_str": date_str,
-                        **day_data
+                        **day_data # unpacks tithi_start, tithi_end, nak_end etc.
                     }
                     week_data.append(day_info)
                 except Exception as e:
