@@ -47,20 +47,49 @@ DASHA_YEARS = {"Ketu": 7, "Venus": 20, "Sun": 6, "Moon": 10, "Mars": 7, "Rahu": 
 DASHA_ORDER = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]
 
 FAV_POINTS = {
-    0: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Carnelian", "deity": "Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
-    1: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Opal, White Topaz", "deity": "Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
-    2: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Green Tourmaline", "deity": "Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
-    3: {"num": 2, "day": "Monday", "color": "White", "stone": "Pearl", "substone": "Moonstone", "deity": "Shiva", "metal": "Silver", "mantra": "Om Som Somaya Namah"},
-    4: {"num": 1, "day": "Sunday", "color": "Orange", "stone": "Ruby", "substone": "Red Garnet", "deity": "Surya", "metal": "Gold", "mantra": "Om Hram Hrim Hraum Sah Suryaya Namah"},
-    5: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot", "deity": "Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
-    6: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Zircon", "deity": "Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
-    7: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Jasper", "deity": "Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
-    8: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Topaz, Citrine", "deity": "Dakshinamurthy", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"},
-    9: {"num": 8, "day": "Saturday", "color": "Blue", "stone": "Blue Sapphire", "substone": "Lapis Lazuli", "deity": "Shani", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
-    10: {"num": 8, "day": "Saturday", "color": "Blue", "stone": "Blue Sapphire", "substone": "Amethyst", "deity": "Shani", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
-    11: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Golden Topaz", "deity": "Dakshinamurthy", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"}
+    0: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Carnelian", "deity": "Subramanya / Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    1: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Opal, White Topaz", "deity": "Mahalakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    2: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Green Tourmaline", "deity": "Maha Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
+    3: {"num": 2, "day": "Monday", "color": "White / Pearl", "stone": "Pearl", "substone": "Moonstone", "deity": "Gauri / Shiva", "metal": "Silver", "mantra": "Om Som Somaya Namah"},
+    4: {"num": 1, "day": "Sunday", "color": "Orange / Red", "stone": "Ruby", "substone": "Red Garnet", "deity": "Surya / Shiva", "metal": "Gold", "mantra": "Om Hram Hrim Hraum Sah Suryaya Namah"},
+    5: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Onyx", "deity": "Maha Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
+    6: {"num": 6, "day": "Friday", "color": "White / Light Blue", "stone": "Diamond", "substone": "White Zircon, Opal", "deity": "Mahalakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    7: {"num": 9, "day": "Tuesday", "color": "Red / Maroon", "stone": "Red Coral", "substone": "Red Jasper", "deity": "Subramanya / Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    8: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Topaz, Citrine", "deity": "Dakshinamurthy / Datta", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"},
+    9: {"num": 8, "day": "Saturday", "color": "Blue / Black", "stone": "Blue Sapphire", "substone": "Lapis Lazuli", "deity": "Shani / Hanuman", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    10: {"num": 8, "day": "Saturday", "color": "Blue / Black", "stone": "Blue Sapphire", "substone": "Amethyst, Turquoise", "deity": "Shani / Shiva", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    11: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Golden Topaz", "deity": "Dakshinamurthy / Vishnu", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"}
 }
-NAMA_AKSHARA = ["Chu", "Che", "Cho", "La", "Li", "Lu", "Le", "Lo", "A", "E", "U", "A", "O", "Va", "Vi", "Vu", "Ve", "Vo", "Ka", "Ki", "Ku", "Gha", "Ng", "Chha", "Ke", "Ko", "Ha", "Hi", "Hu", "He", "Ho", "Da", "Di", "Du", "De", "Do", "Ma", "Mi", "Mu", "Me", "Mo", "Ta", "Ti", "Tu", "Te", "To", "Pa", "Pi", "Pu", "Sha", "Na", "Tha", "Pe", "Po", "Ra", "Ri", "Ru", "Re", "Ro", "Ta", "Ti", "Tu", "Te", "To", "Na", "Ni", "Nu", "Ne", "No", "Ya", "Yi", "Yu", "Ye", "Yo", "Bha", "Bhi", "Bhu", "Dha", "Pha", "Dha", "Bhe", "Bho", "Ja", "Ji", "Ju", "Je", "Jo", "Gha", "Ga", "Gi", "Gu", "Ge", "Go", "Sa", "Si", "Su", "Se", "So", "Da", "Di", "Du", "Tha", "Jha", "Da", "De", "Do", "Cha", "Chi"]
+
+NAMA_AKSHARA = [
+    "Chu", "Che", "Cho", "La",  # Ashwini
+    "Li", "Lu", "Le", "Lo",     # Bharani
+    "A", "I", "U", "E",         # Krittika (Corrected from A, E, U, A)
+    "O", "Va", "Vi", "Vu",      # Rohini
+    "Ve", "Vo", "Ka", "Ki",     # Mrigashira
+    "Ku", "Gha", "Ng", "Chha",  # Ardra
+    "Ke", "Ko", "Ha", "Hi",     # Punarvasu
+    "Hu", "He", "Ho", "Da",     # Pushya
+    "Di", "Du", "De", "Do",     # Ashlesha
+    "Ma", "Mi", "Mu", "Me",     # Magha
+    "Mo", "Ta", "Ti", "Tu",     # Purva Phalguni
+    "Te", "To", "Pa", "Pi",     # Uttara Phalguni
+    "Pu", "Sha", "Na", "Tha",   # Hasta
+    "Pe", "Po", "Ra", "Ri",     # Chitra
+    "Ru", "Re", "Ro", "Ta",     # Swati
+    "Ti", "Tu", "Te", "To",     # Vishakha
+    "Na", "Ni", "Nu", "Ne",     # Anuradha
+    "No", "Ya", "Yi", "Yu",     # Jyeshtha
+    "Ye", "Yo", "Bha", "Bhi",   # Mula
+    "Bhu", "Dha", "Pha", "Dha", # Purva Ashadha
+    "Bhe", "Bho", "Ja", "Ji",   # Uttara Ashadha
+    "Ju", "Je", "Jo", "Gha",    # Shravana
+    "Ga", "Gi", "Gu", "Ge",     # Dhanishta
+    "Go", "Sa", "Si", "Su",     # Shatabhisha
+    "Se", "So", "Da", "Di",     # Purva Bhadrapada
+    "Du", "Tha", "Jha", "Da",   # Uttara Bhadrapada
+    "De", "Do", "Cha", "Chi"    # Revati
+]
 GANAS = {"Deva": [0, 4, 6, 7, 12, 14, 16, 21, 26], "Manushya": [1, 3, 5, 10, 11, 19, 20, 24, 25], "Rakshasa": [2, 8, 9, 13, 15, 17, 18, 22, 23]}
 YONIS = ["Ashwa", "Gaja", "Mesha", "Sarpa", "Sarpa", "Shwan", "Marjala", "Mesha", "Marjala", "Mushaka", "Mushaka", "Gau", "Mahisha", "Vyaghra", "Mahisha", "Vyaghra", "Mriga", "Mriga", "Shwan", "Vanara", "Nakula", "Vanara", "Simha", "Ashwa", "Simha", "Gau", "Gaja"]
 NADIS = {"Adi (Vata)": [0, 5, 6, 11, 12, 17, 18, 23, 24], "Madhya (Pitta)": [1, 4, 7, 10, 13, 16, 19, 22, 25], "Antya (Kapha)": [2, 3, 8, 9, 14, 15, 20, 21, 26]}
@@ -822,6 +851,40 @@ def calculate_vimshottari_dasha(moon_long, birth_date):
         current_date = end_date
     return dasha_list
 
+def get_sudarshana_chakra(planetary_positions, lagna_rashi_idx, moon_rashi_idx, sun_rashi_idx):
+    """
+    Generates data for Sudarshana Chakra (Lagna, Moon, Sun charts).
+    Returns a dict with 12 houses for each chart.
+    """
+    charts = {}
+    
+    # Helper to build a chart based on a reference sign (Shift logical house 1 to that sign)
+    def build_chart(reference_sign_idx):
+        chart = {str(i): [] for i in range(1, 13)} # Houses 1-12
+        
+        # Populate based on planet's Rasi index
+        # House = (Planet_Rasi - Reference_Rasi + 12) % 12 + 1
+        for planet in planetary_positions:
+            # We need the rasi index of the planet. 
+            # The planet object in planetary_positions has 'rasi' name, but maybe we can find the index efficiently?
+            # Or we can pass 'chart_data' (by rasi index) instead of 'planetary_positions'.
+            # Let's use RASHIS map or re-calculate. 
+            # Actually, planetary_positions has "rasi": "Aries" etc.
+            # Let's trust RASHIS.index(planet['rasi'])
+            try:
+                p_rasi_idx = RASHIS.index(planet['rasi'])
+                house_num = (p_rasi_idx - reference_sign_idx + 12) % 12 + 1
+                chart[str(house_num)].append(planet['symbol']) # Use symbol (Su, Mo, etc)
+            except:
+                pass
+        return chart
+
+    charts['lagna_chart'] = build_chart(lagna_rashi_idx)
+    charts['moon_chart'] = build_chart(moon_rashi_idx)
+    charts['sun_chart'] = build_chart(sun_rashi_idx)
+    
+    return charts
+
 def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     setup_swisseph()
     try:
@@ -833,7 +896,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     utc_dt = local_dt.astimezone(pytz.utc)
     jd = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour + utc_dt.minute/60.0 + utc_dt.second/3600.0)
 
-    flags = swe.FLG_SIDEREAL | swe.FLG_SPEED
+    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
     planet_map = {0: swe.SUN, 1: swe.MOON, 2: swe.MARS, 3: swe.MERCURY, 4: swe.JUPITER, 5: swe.VENUS, 6: swe.SATURN, 7: swe.MEAN_NODE, 8: swe.MEAN_NODE, 9: swe.URANUS, 10: swe.NEPTUNE, 11: swe.PLUTO}
     
     chart_data = {i: [] for i in range(12)} 
@@ -984,7 +1047,24 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     vashya = VASHYA[moon_rashi_idx]
     
     tithi_idx_b = int(((moon_long - sun_long) % 360) / 12)
+    tithi_idx_b = int(((moon_long - sun_long) % 360) / 12)
     birth_tithi = TITHIS[tithi_idx_b]
+    
+    # Calculate Samvat
+    samvat_details = get_samvat_details(dt)
+    
+    # Calculate Sunrise/Sunset for birth day
+    rise, set_ = calc_sun_rise_set(jd - 0.5, loc['lat'], loc['lon']) # Approx check
+    # More precise:
+    jd_noon = jd_from_dt(tz.localize(datetime(dt.year, dt.month, dt.day, 12, 0)))
+    rise, set_ = calc_sun_rise_set(jd_noon, loc['lat'], loc['lon'])
+    
+    def fmt_time(jd_time):
+        d = dt_from_jd(jd_time, tz)
+        return d.strftime('%I:%M %p') if d else "---"
+    
+    sunrise_str = fmt_time(rise)
+    sunset_str = fmt_time(set_)
     
     yoga_idx_b = int(((moon_long + sun_long) % 360) / 13.333333)
     birth_yoga = YOGAS[yoga_idx_b]
@@ -1007,24 +1087,33 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     
     global_pada_idx = (nak_idx * 4) + (pada - 1)
     name_alphabet = NAMA_AKSHARA[global_pada_idx]
+    
+    # Get all 4 alphabets for the Nakshatra
+    nak_start_idx = nak_idx * 4
+    nak_alphabets = NAMA_AKSHARA[nak_start_idx : nak_start_idx + 4]
+    nak_lord = NAK_LORDS[nak_idx % 9]
     nak_lord = NAK_LORDS[nak_idx % 9]
     sign_lord = RASI_LORDS_MAP[moon_rashi_idx]
+    lagna_lord = RASI_LORDS_MAP[lagna_rashi] # Ascendant Lord
     
     fav_data = FAV_POINTS.get(moon_rashi_idx, {})
     num_data = get_numerology(dt, name)
     fav_data.update(num_data)
-
     lagna_prediction = KUNDLI_PREDICTIONS.get(lagna_rashi, {"general": "", "career": "", "health": "", "marriage": ""})
     
     dasha_periods = calculate_vimshottari_dasha(moon_long, dt)
     dosha_details = calculate_doshas(planetary_positions, lagna_rashi, moon_rashi_idx)
-
+    
+    # SUDARSHANA CHAKRA
+    sudarshana_data = get_sudarshana_chakra(planetary_positions, lagna_rashi, moon_rashi_idx, sun_rashi_idx)
+    
     kundli_details = {
         "gana": gana, "yoni": yoni, "nadi": nadi_type,
         "varna": varna, "vashya": vashya,
         "tithi": birth_tithi, "yoga": birth_yoga, "karana": birth_karana,
         "tatva": tatva, "paya": paya, "yunja": yunja,
         "name_alphabet": name_alphabet,
+        "nak_alphabets": nak_alphabets,
         "nak_lord": nak_lord, "sign_lord": sign_lord,
         "fav": fav_data,
         "prediction": lagna_prediction,
@@ -1042,7 +1131,13 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         "planetary_positions": planetary_positions,
         "kundli_details": kundli_details,
         "dasha_periods": dasha_periods,
-        "dosha_details": dosha_details
+        "dosha_details": dosha_details,
+        "samvat": samvat_details, # New
+        "lagna_lord": lagna_lord, # New
+        "sunrise": sunrise_str,   # New
+        "sunset": sunset_str,     # New
+        "timezone": tz.zone,      # Useful for reference
+        "sudarshana": sudarshana_data # New
     }
 
 # --- MUHURTHA CALCULATOR ---

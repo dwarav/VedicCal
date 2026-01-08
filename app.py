@@ -199,9 +199,29 @@ def horoscope_view():
                     "Gender": gender,
                     "Birth Date": formatted_date,
                     "Birth Time": formatted_time,
+                    "Weekday": dt_obj.strftime("%A"),
+                    "Sunrise": data['sunrise'],
+                    "Sunset": data['sunset'],
                     "Place of Birth": loc['name'],
+                    
                     "Nakshatra": data['nakshatra'],
+                    "Tithi": data['kundli_details']['tithi'],
+                    "Yoga": data['kundli_details']['yoga'],
+                    "Karana": data['kundli_details']['karana'],
+                    
                     "Rasi": data['moon_sign'],
+                    "Rasi Lord": data['kundli_details']['sign_lord'],
+                    "Ascendant": data['lagna'],
+                    "Ascendant Lord": data['lagna_lord'],
+                    
+                    "Vikram Samvat": data['samvat']['vikram'],
+                    "Animal Sign": data['kundli_details']['yoni'],
+                    "God": data['kundli_details']['fav'].get('deity', '---'),
+                    "Bhutham": data['kundli_details']['tatva'],
+                    
+                    # Sudarshana Data is available in data['sudarshana']
+                    "Gothram": "---", # Placeholder as requested
+                    
                     "Ayanamsa": data.get('ayanamsa_val', "Lahiri (Calculated)")
                 }
                 
