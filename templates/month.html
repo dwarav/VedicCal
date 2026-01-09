@@ -1,161 +1,220 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly View - Dwara's Vedic Calendar</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <style>
-        body { background: #fdfbf7; font-family: 'Roboto', sans-serif; padding-bottom: 80px; }
+{% extends "base.html" %}
 
-        /* --- HEADER & NAV --- */
-        .brand-header {
-            background-color: #b71c1c; border-bottom: 6px solid #d4ac0d;
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .header-content { text-align: center; flex-grow: 1; padding: 0 15px; }
-        .brand-header h1 {
-            font-family: 'Playfair Display', serif; font-size: 2.8rem; color: #ffffff;
-            margin: 0; font-weight: 700; letter-spacing: 1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); line-height: 1;
-        }
-        .brand-header .subtitle {
-            font-family: 'Roboto', sans-serif; font-size: 0.9rem; color: #f9e79f;
-            text-transform: uppercase; letter-spacing: 3px; margin-top: 8px; font-weight: 500;
-        }
-        .header-img {
-            height: 110px; width: auto; border: 3px solid #d4ac0d; border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4); object-fit: cover; background: #fff;
+{% block title %}Monthly View - Dwara's Vedic Calendar{% endblock %}
+
+{% block head %}
+<style>
+    /* --- CALENDAR GRID --- */
+    .calendar-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+    }
+
+    .month-title {
+        font-family: 'Playfair Display';
+        color: #b71c1c;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 2.2rem;
+        font-weight: 700;
+    }
+
+    .calendar-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #d4ac0d;
+    }
+
+    .calendar-table th {
+        background-color: #b71c1c;
+        color: #fff;
+        padding: 15px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        width: 14.28%;
+        text-align: center;
+        border-bottom: 3px solid #d4ac0d;
+    }
+
+    .calendar-table td {
+        border-right: 1px solid #e0e0e0;
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: top;
+        height: 140px;
+        padding: 0;
+        transition: 0.2s;
+        position: relative;
+    }
+
+    .calendar-table td:last-child {
+        border-right: none;
+    }
+
+    .calendar-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Default Hover */
+    .calendar-table td:hover {
+        background-color: #fffde7;
+    }
+
+    /* HIGHLIGHTS FOR PURNIMA & AMAVASYA */
+    /* Purnima: Light Gold Background + Strong Border */
+    .cell-purnima {
+        background-color: #fff9c4 !important;
+        /* Light Yellow/Gold */
+        border: 2px solid #fbc02d !important;
+    }
+
+    /* Amavasya: Light Gray/Blue Background + Strong Border */
+    .cell-amavasya {
+        background-color: #eceff1 !important;
+        /* Light Grey */
+        border: 2px solid #546e7a !important;
+    }
+
+    /* CLICKABLE CELL LINK */
+    .day-link {
+        display: block;
+        width: 100%;
+        height: 100%;
+        text-decoration: none;
+        color: inherit;
+        padding: 8px;
+    }
+
+    .day-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 4px;
+    }
+
+    .day-num {
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #333;
+        line-height: 1;
+    }
+
+    .lunar-month-badge {
+        font-size: 0.65rem;
+        background-color: #f39c12;
+        color: #fff;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    .day-tithi {
+        font-size: 0.8rem;
+        color: #d35400;
+        display: block;
+        font-weight: 700;
+        line-height: 1.2;
+    }
+
+    /* Special styles for text on Purnima/Amavasya */
+    .cell-purnima .day-tithi {
+        color: #f57f17;
+        font-weight: 800;
+        text-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1);
+    }
+
+    .cell-amavasya .day-tithi {
+        color: #37474f;
+        font-weight: 800;
+    }
+
+    .day-nak {
+        font-size: 0.75rem;
+        color: #2e7d32;
+        display: block;
+        font-weight: 600;
+        margin-top: 2px;
+        line-height: 1.2;
+    }
+
+    .time-hint {
+        display: block;
+        font-size: 0.65rem;
+        color: #7f8c8d;
+        font-style: italic;
+        margin-top: 0px;
+        margin-bottom: 3px;
+    }
+
+    .festival-badge {
+        background-color: #c0392b;
+        color: #fff;
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .empty-cell {
+        background-color: #fcfcfc;
+    }
+
+    @media(max-width: 768px) {
+        .calendar-table th {
+            padding: 5px;
+            font-size: 0.7rem;
         }
 
-        .nav-bar { background-color: #8e1616; padding: 10px 0; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); margin-bottom: 20px; }
-        .nav-bar a {
-            color: #fff; text-decoration: none; font-family: 'Roboto', sans-serif; font-weight: bold;
-            text-transform: uppercase; margin: 0 25px; font-size: 1rem; padding-bottom: 4px;
-            border-bottom: 2px solid transparent; transition: all 0.3s;
-        }
-        .nav-bar a:hover, .nav-bar a.active { color: #f9e79f; border-bottom: 2px solid #f9e79f; }
-
-        /* --- SEARCH --- */
-        .search-container {
-            max-width: 900px; margin: 0 auto 30px auto; background: #fff8e1;
-            border: 2px solid #b71c1c; border-radius: 8px; padding: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        .search-btn { background: #b71c1c; color: #fff; border: none; font-weight: bold; }
-        .search-btn:hover { background: #8e1616; color: #fff; }
-        .form-label { color: #7b241c; font-weight: bold; font-size: 0.9rem; text-transform: uppercase; }
-        .form-control { border: 1px solid #d4ac0d; padding-right: 40px; }
-        .gps-btn { position: absolute; right: 10px; top: 32px; border: none; background: transparent; color: #b71c1c; cursor: pointer; z-index: 100; }
-        .suggestions-list { position: absolute; background: white; border: 1px solid #d4ac0d; z-index: 1000; width: 100%; max-height: 200px; overflow-y: auto; display: none; }
-        .suggestions-list li { padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; }
-        .suggestions-list li:hover { background-color: #fff3e0; color: #b71c1c; }
-
-        /* --- CALENDAR GRID --- */
-        .calendar-wrapper { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
-        .month-title { font-family: 'Playfair Display'; color: #b71c1c; text-align: center; margin-bottom: 20px; font-size: 2.2rem; font-weight: 700; }
-        
-        .calendar-table { width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden; border: 1px solid #d4ac0d; }
-        .calendar-table th { background-color: #b71c1c; color: #fff; padding: 15px; text-transform: uppercase; font-size: 0.9rem; width: 14.28%; text-align: center; border-bottom: 3px solid #d4ac0d; }
-        .calendar-table td { 
-            border-right: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; 
-            vertical-align: top; height: 140px; padding: 0; 
-            transition: 0.2s; position: relative; 
-        }
-        .calendar-table td:last-child { border-right: none; }
-        .calendar-table tr:last-child td { border-bottom: none; }
-        
-        /* Default Hover */
-        .calendar-table td:hover { background-color: #fffde7; }
-        
-        /* HIGHLIGHTS FOR PURNIMA & AMAVASYA */
-        /* Purnima: Light Gold Background + Strong Border */
-        .cell-purnima { 
-            background-color: #fff9c4 !important; /* Light Yellow/Gold */
-            border: 2px solid #fbc02d !important;
-        }
-        /* Amavasya: Light Gray/Blue Background + Strong Border */
-        .cell-amavasya { 
-            background-color: #eceff1 !important; /* Light Grey */
-            border: 2px solid #546e7a !important;
+        .calendar-table td {
+            height: 110px;
         }
 
-        /* CLICKABLE CELL LINK */
         .day-link {
-            display: block; width: 100%; height: 100%; text-decoration: none; color: inherit; padding: 8px;
+            padding: 4px;
         }
 
-        .day-header {
-            display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;
+        .day-num {
+            font-size: 1rem;
         }
-        .day-num { font-size: 1.3rem; font-weight: bold; color: #333; line-height: 1; }
+
         .lunar-month-badge {
-            font-size: 0.65rem; background-color: #f39c12; color: #fff; 
-            padding: 2px 5px; border-radius: 3px; font-weight: bold; text-transform: uppercase;
+            font-size: 0.55rem;
+            padding: 1px 3px;
         }
-        
-        .day-tithi { font-size: 0.8rem; color: #d35400; display: block; font-weight: 700; line-height: 1.2; }
-        
-        /* Special styles for text on Purnima/Amavasya */
-        .cell-purnima .day-tithi { color: #f57f17; font-weight: 800; text-shadow: 0px 0px 1px rgba(0,0,0,0.1); }
-        .cell-amavasya .day-tithi { color: #37474f; font-weight: 800; }
 
-        .day-nak { font-size: 0.75rem; color: #2e7d32; display: block; font-weight: 600; margin-top: 2px; line-height: 1.2; }
-        
+        .day-tithi,
+        .day-nak {
+            font-size: 0.65rem;
+        }
+
         .time-hint {
-            display: block; font-size: 0.65rem; color: #7f8c8d; font-style: italic; margin-top: 0px; margin-bottom: 3px;
+            font-size: 0.6rem;
         }
+    }
+</style>
+{% endblock %}
 
-        .festival-badge {
-            background-color: #c0392b; color: #fff; font-size: 0.65rem; 
-            padding: 2px 6px; border-radius: 4px; display: inline-block; 
-            margin-top: 4px; white-space: nowrap; overflow: hidden; 
-            text-overflow: ellipsis; max-width: 100%;
-        }
-
-        .empty-cell { background-color: #fcfcfc; }
-
-        @media(max-width: 768px) {
-            .header-img { height: 60px; }
-            .brand-header h1 { font-size: 1.5rem; }
-            .calendar-table th { padding: 5px; font-size: 0.7rem; }
-            .calendar-table td { height: 110px; }
-            .day-link { padding: 4px; }
-            .day-num { font-size: 1rem; }
-            .lunar-month-badge { font-size: 0.55rem; padding: 1px 3px; }
-            .day-tithi, .day-nak { font-size: 0.65rem; }
-            .time-hint { font-size: 0.6rem; }
-        }
-    </style>
-</head>
-<body>
-
-<div class="brand-header">
-    <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara">
-    <div class="header-content">
-        <h1>Dwara's Vedic Calendar</h1>
-        <div class="subtitle">PRECISION PANCHANG</div>
-    </div>
-    <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family">
-</div>
-
-<div class="nav-bar">
-    <a href="/">Daily View</a>
-    <a href="/month" class="active">Monthly View</a>
-    <a href="/muhurtha">Muhurtha</a>
-    <a href="/horoscope">Horoscope</a>
-</div>
-
+{% block content %}
 <div class="search-container">
     <form method="POST" id="monthForm" autocomplete="off">
         <div class="row g-3 align-items-end">
             <div class="col-md-6 position-relative">
                 <label class="form-label">Location</label>
-                <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}" placeholder="Enter City..." required>
-                <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location"><i class="fas fa-crosshairs"></i></button>
+                <input type="text" id="locationInput" name="location" class="form-control" value="{{ location }}"
+                    placeholder="Enter City..." required>
+                <button type="button" class="gps-btn" onclick="detectLocation()" title="Use Current Location"><i
+                        class="fas fa-crosshairs"></i></button>
                 <ul id="suggestions" class="suggestions-list"></ul>
             </div>
             <div class="col-md-4">
@@ -171,57 +230,64 @@
 
 <div class="calendar-wrapper">
     <h2 class="month-title">{{ month_name }} {{ year }}</h2>
-    
+
     <div class="table-responsive">
         <table class="calendar-table">
             <thead>
                 <tr>
-                    <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
                 </tr>
             </thead>
             <tbody>
                 {% for week in calendar_data %}
                 <tr>
                     {% for day in week %}
-                        {% if day %}
-                            {% set cell_class = "" %}
-                            {% if "Purnima" in day.tithi %}
-                                {% set cell_class = "cell-purnima" %}
-                            {% elif "Amavasya" in day.tithi %}
-                                {% set cell_class = "cell-amavasya" %}
-                            {% endif %}
-                            
-                            <td class="{{ cell_class }}">
-                                <a href="/?date={{ day.date_str }}&location={{ location }}" class="day-link" title="View Daily Panchang">
-                                    <div class="day-header">
-                                        <span class="day-num">{{ day.day }}</span>
-                                        <span class="lunar-month-badge">{{ day.lunar_month }}</span>
-                                    </div>
-                                    
-                                    {% if not day.error %}
-                                        <div class="mb-1">
-                                            <span class="day-tithi">{{ day.tithi_icon }} {{ day.tithi }}</span>
-                                            <span class="time-hint"><i class="fas fa-clock me-1"></i>{{ day.tithi_end }}</span>
-                                        </div>
-                                        
-                                        <div>
-                                            <span class="day-nak">{{ day.nakshatra.split(' ')[0] }}</span>
-                                            <span class="time-hint"><i class="fas fa-stopwatch me-1"></i>{{ day.nak_end }}</span>
-                                        </div>
+                    {% if day %}
+                    {% set cell_class = "" %}
+                    {% if "Purnima" in day.tithi %}
+                    {% set cell_class = "cell-purnima" %}
+                    {% elif "Amavasya" in day.tithi %}
+                    {% set cell_class = "cell-amavasya" %}
+                    {% endif %}
 
-                                        {% if day.is_festival %}
-                                            {% for fest in day.festival_names %}
-                                                <div class="festival-badge">{{ fest }}</div>
-                                            {% endfor %}
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="text-danger" style="font-size:0.7rem;">Error loading data</span>
-                                    {% endif %}
-                                </a>
-                            </td>
-                        {% else %}
-                            <td class="empty-cell"></td>
-                        {% endif %}
+                    <td class="{{ cell_class }}">
+                        <a href="/?date={{ day.date_str }}&location={{ location }}" class="day-link"
+                            title="View Daily Panchang">
+                            <div class="day-header">
+                                <span class="day-num">{{ day.day }}</span>
+                                <span class="lunar-month-badge">{{ day.lunar_month }}</span>
+                            </div>
+
+                            {% if not day.error %}
+                            <div class="mb-1">
+                                <span class="day-tithi">{{ day.tithi_icon }} {{ day.tithi }}</span>
+                                <span class="time-hint"><i class="fas fa-clock me-1"></i>{{ day.tithi_end }}</span>
+                            </div>
+
+                            <div>
+                                <span class="day-nak">{{ day.nakshatra.split(' ')[0] }}</span>
+                                <span class="time-hint"><i class="fas fa-stopwatch me-1"></i>{{ day.nak_end }}</span>
+                            </div>
+
+                            {% if day.is_festival %}
+                            {% for fest in day.festival_names %}
+                            <div class="festival-badge">{{ fest }}</div>
+                            {% endfor %}
+                            {% endif %}
+                            {% else %}
+                            <span class="text-danger" style="font-size:0.7rem;">Error loading data</span>
+                            {% endif %}
+                        </a>
+                    </td>
+                    {% else %}
+                    <td class="empty-cell"></td>
+                    {% endif %}
                     {% endfor %}
                 </tr>
                 {% endfor %}
@@ -229,15 +295,16 @@
         </table>
     </div>
 </div>
+{% endblock %}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}
 <script>
     function detectLocation() {
         if (navigator.geolocation) {
             const btn = document.querySelector('.gps-btn i');
-            btn.classList.add('fa-spin'); 
+            btn.classList.add('fa-spin');
             navigator.geolocation.getCurrentPosition(
-                function(position) {
+                function (position) {
                     const lat = position.coords.latitude;
                     const lon = position.coords.longitude;
                     fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
@@ -246,14 +313,14 @@
                             const addr = data.address;
                             const city = addr.city || addr.town || addr.village || addr.county;
                             const country = addr.country;
-                            if(city) {
+                            if (city) {
                                 document.getElementById('locationInput').value = `${city}, ${country}`;
                                 document.getElementById('monthForm').submit();
                             } else { alert("Could not determine specific city name."); }
                             btn.classList.remove('fa-spin');
                         });
                 },
-                function(error) { alert("Location access denied."); btn.classList.remove('fa-spin'); }
+                function (error) { alert("Location access denied."); btn.classList.remove('fa-spin'); }
             );
         } else { alert("Geolocation not supported."); }
     }
@@ -261,7 +328,7 @@
     const input = document.getElementById('locationInput');
     const list = document.getElementById('suggestions');
     let debounceTimer;
-    input.addEventListener('input', function() {
+    input.addEventListener('input', function () {
         const query = this.value;
         clearTimeout(debounceTimer);
         if (query.length < 3) { list.style.display = 'none'; return; }
@@ -295,10 +362,8 @@
                 });
         }, 300);
     });
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
     });
 </script>
-
-</body>
-</html>
+{% endblock %}
