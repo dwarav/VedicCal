@@ -619,6 +619,18 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
     last_sign_idx = -1
     lagna_start_jd = jd_start
     step = 1.0 / (24 * 60) 
+    
+    # Determine base date from start (Sunrise)
+    base_dt = dt_from_jd(jd_start, tz)
+    base_date = base_dt.date() if base_dt else None
+
+    def fmt_lagna_time(jd):
+        dt = dt_from_jd(jd, tz)
+        if not dt: return "---"
+        if base_date and dt.date() != base_date:
+            return dt.strftime("%d %b, %I:%M %p")
+        return dt.strftime("%I:%M %p")
+
     while curr_jd < jd_end:
         try:
             trop_asc = swe.houses(curr_jd, lat, lon, b'P')[0][0]
@@ -628,7 +640,12 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
             if last_sign_idx != -1 and curr_sign_idx != last_sign_idx:
                 rashi_name = RASHIS[last_sign_idx]
                 icon = RASHI_ICONS.get(rashi_name, "")
-                lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": dt_from_jd(lagna_start_jd, tz).strftime("%I:%M %p"), "end": dt_from_jd(curr_jd, tz).strftime("%I:%M %p")})
+                lagnas.append({
+                    "name": rashi_name.split(' ')[0], 
+                    "icon": icon, 
+                    "start": fmt_lagna_time(lagna_start_jd), 
+                    "end": fmt_lagna_time(curr_jd)
+                })
                 lagna_start_jd = curr_jd
             last_sign_idx = curr_sign_idx
         except: pass
@@ -636,7 +653,12 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
     if last_sign_idx != -1:
         rashi_name = RASHIS[last_sign_idx]
         icon = RASHI_ICONS.get(rashi_name, "")
-        lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": dt_from_jd(lagna_start_jd, tz).strftime("%I:%M %p"), "end": dt_from_jd(jd_end, tz).strftime("%I:%M %p")})
+        lagnas.append({
+            "name": rashi_name.split(' ')[0], 
+            "icon": icon, 
+            "start": fmt_lagna_time(lagna_start_jd), 
+            "end": fmt_lagna_time(jd_end)
+        })
     return lagnas
 
 def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_idx):
