@@ -47,18 +47,18 @@ DASHA_YEARS = {"Ketu": 7, "Venus": 20, "Sun": 6, "Moon": 10, "Mars": 7, "Rahu": 
 DASHA_ORDER = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]
 
 FAV_POINTS = {
-    0: {"num": 9, "day": "Tuesday", "color": "Red", "stone": "Red Coral", "substone": "Red Carnelian", "deity": "Subramanya / Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
-    1: {"num": 6, "day": "Friday", "color": "White", "stone": "Diamond", "substone": "Opal, White Topaz", "deity": "Mahalakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
-    2: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Green Tourmaline", "deity": "Maha Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
-    3: {"num": 2, "day": "Monday", "color": "White / Pearl", "stone": "Pearl", "substone": "Moonstone", "deity": "Gauri / Shiva", "metal": "Silver", "mantra": "Om Som Somaya Namah"},
-    4: {"num": 1, "day": "Sunday", "color": "Orange / Red", "stone": "Ruby", "substone": "Red Garnet", "deity": "Surya / Shiva", "metal": "Gold", "mantra": "Om Hram Hrim Hraum Sah Suryaya Namah"},
-    5: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Peridot, Onyx", "deity": "Maha Vishnu", "metal": "Bronze", "mantra": "Om Bum Budhaya Namah"},
-    6: {"num": 6, "day": "Friday", "color": "White / Light Blue", "stone": "Diamond", "substone": "White Zircon, Opal", "deity": "Mahalakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
-    7: {"num": 9, "day": "Tuesday", "color": "Red / Maroon", "stone": "Red Coral", "substone": "Red Jasper", "deity": "Subramanya / Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
-    8: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Topaz, Citrine", "deity": "Dakshinamurthy / Datta", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"},
-    9: {"num": 8, "day": "Saturday", "color": "Blue / Black", "stone": "Blue Sapphire", "substone": "Lapis Lazuli", "deity": "Shani / Hanuman", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
-    10: {"num": 8, "day": "Saturday", "color": "Blue / Black", "stone": "Blue Sapphire", "substone": "Amethyst, Turquoise", "deity": "Shani / Shiva", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
-    11: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Golden Topaz", "deity": "Dakshinamurthy / Vishnu", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"}
+    0: {"num": 9, "day": "Tuesday", "color": "Dark Red / Maroon", "stone": "Red Coral", "substone": "Red Cornelian", "deity": "Lord Hanuman / Kartikeya", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    1: {"num": 6, "day": "Friday", "color": "White / Pink", "stone": "Diamond", "substone": "Opal, White Zircon", "deity": "Goddess Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    2: {"num": 5, "day": "Wednesday", "color": "Green", "stone": "Emerald", "substone": "Green Onyx, Peridot", "deity": "Lord Vishnu / Ganesha", "metal": "Gold / Bronze", "mantra": "Om Bum Budhaya Namah"},
+    3: {"num": 2, "day": "Monday", "color": "White / Cream", "stone": "Pearl", "substone": "Moonstone", "deity": "Lord Shiva / Gauri", "metal": "Silver", "mantra": "Om Som Somaya Namah"},
+    4: {"num": 1, "day": "Sunday", "color": "Gold / Orange", "stone": "Ruby", "substone": "Red Garnet, Red Spinel", "deity": "Lord Surya / Shiva", "metal": "Gold / Copper", "mantra": "Om Hram Hrim Hraum Sah Suryaya Namah"},
+    5: {"num": 5, "day": "Wednesday", "color": "Green / Light Green", "stone": "Emerald", "substone": "Peridot, Green Tourmaline", "deity": "Lord Ganesha / Vishnu", "metal": "Gold", "mantra": "Om Bum Budhaya Namah"},
+    6: {"num": 6, "day": "Friday", "color": "White / Light Blue", "stone": "Diamond", "substone": "White Sapphire, Opal", "deity": "Goddess Lakshmi", "metal": "Silver", "mantra": "Om Shum Shukraya Namah"},
+    7: {"num": 9, "day": "Tuesday", "color": "Red / Rust", "stone": "Red Coral", "substone": "Red Jasper", "deity": "Lord Hanuman", "metal": "Copper", "mantra": "Om Ang Angarkaya Namah"},
+    8: {"num": 3, "day": "Thursday", "color": "Yellow / Golden", "stone": "Yellow Sapphire", "substone": "Yellow Topaz, Citrine", "deity": "Lord Vishnu / Dakshinamurthy", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"},
+    9: {"num": 8, "day": "Saturday", "color": "Blue / Black", "stone": "Blue Sapphire", "substone": "Lapis Lazuli, Amethyst", "deity": "Lord Shani / Hanuman", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    10: {"num": 8, "day": "Saturday", "color": "Black / Dark Blue", "stone": "Blue Sapphire", "substone": "Turquoise, Amethyst", "deity": "Lord Shani / Shiva", "metal": "Iron", "mantra": "Om Sham Shanaishcharaya Namah"},
+    11: {"num": 3, "day": "Thursday", "color": "Yellow", "stone": "Yellow Sapphire", "substone": "Golden Topaz", "deity": "Lord Vishnu / Dattatreya", "metal": "Gold", "mantra": "Om Brim Brihaspataye Namah"}
 }
 
 NAMA_AKSHARA = [
@@ -117,6 +117,12 @@ RASHI_ICONS = {"Mesha": "♈", "Vrishabha": "♉", "Mithuna": "♊", "Karka": "�
 TITHI_ICONS = {"Shukla Pratipada": "🌒", "Shukla Dwitiya": "🌒", "Shukla Tritiya": "🌓", "Shukla Chaturthi": "🌓", "Shukla Panchami": "🌔", "Shukla Shashthi": "🌔", "Shukla Saptami": "🌔", "Shukla Ashtami": "🌓", "Shukla Navami": "🌔", "Shukla Dashami": "🌔", "Shukla Ekadashi": "🌔", "Shukla Dwadashi": "🌖", "Shukla Trayodashi": "🌖", "Shukla Chaturdashi": "🌖", "Purnima": "🌕", "Krishna Pratipada": "🌖", "Krishna Dwitiya": "🌖", "Krishna Tritiya": "🌗", "Krishna Chaturthi": "🌗", "Krishna Panchami": "🌗", "Krishna Shashthi": "🌘", "Krishna Saptami": "🌘", "Krishna Ashtami": "🌗", "Krishna Navami": "🌘", "Krishna Dashami": "🌘", "Krishna Ekadashi": "🌘", "Krishna Dwadashi": "🌘", "Krishna Trayodashi": "🌘", "Krishna Chaturdashi": "🌘", "Amavasya": "🌑"}
 NAK_ICONS = {"Ashwini": "🐴", "Bharani": "🐘", "Krittika": "🔥", "Rohini": "🐍", "Mrigashira": "🦌", "Ardra": "💧", "Punarvasu": "🏹", "Pushya": "🌸", "Ashlesha": "🐍", "Magha": "👑", "Purva Phalguni": "🛋️", "Uttara Phalguni": "🛏️", "Hasta": "🖐️", "Chitra": "✨", "Swati": "🌬️", "Vishakha": "⚖️", "Anuradha": "🌸", "Jyeshtha": "🌂", "Mula": "🌿", "Purva Ashadha": "🌊", "Uttara Ashadha": "🐘", "Shravana": "👂", "Dhanishta": "🥁", "Shatabhisha": "⭕", "Purva Bhadrapada": "🦁", "Uttara Bhadrapada": "🐮", "Revati": "🐟"}
 
+PLANET_ICONS = {
+    "Sun": "☉", "Moon": "☾", "Mars": "♂", "Mercury": "☿", "Jupiter": "♃", 
+    "Venus": "♀", "Saturn": "♄", "Rahu": "☊", "Ketu": "☋", 
+    "Uranus": "♅", "Neptune": "♆", "Pluto": "♇", "Ascendant": "Asc"
+} 
+
 # --- SAMVATSARA NAMES ---
 SAMVATSARA_NAMES = ["Prabhava", "Vibhava", "Shukla", "Pramoda", "Prajapati", "Angirasa", "Shrimukha", "Bhava", "Yuva", "Dhatri", "Ishvara", "Bahudhanya", "Pramathi", "Vikrama", "Vrishapraja", "Chitrabhanu", "Subhanu", "Tarana", "Parthiva", "Vyaya", "Sarvajit", "Sarvadhari", "Virodhi", "Vikriti", "Khara", "Nandana", "Vijaya", "Jaya", "Manmatha", "Durmukha", "Hevilambi", "Vilambi", "Vikari", "Sharvari", "Plava", "Shubhakrit", "Shobhakrit", "Krodhi", "Vishvavasu", "Parabhava", "Plavanga", "Kilaka", "Saumya", "Sadharana", "Virodhikrit", "Paridhavi", "Pramadicha", "Ananda", "Rakshasa", "Nala", "Pingala", "Kalayukti", "Siddharthi", "Raudra", "Durmati", "Dundubhi", "Rudhirodgari", "Raktakshi", "Krodhana", "Akshaya"]
 
@@ -161,6 +167,177 @@ def dt_from_jd(jd, tz):
     try:
         return datetime(int(y), int(m), int(d), h, mi, sec, tzinfo=pytz.utc).astimezone(tz)
     except: return None
+
+# ================= SHODASHVARGA CALCULATIONS =================
+def get_varga_sign(degree, rashi_idx, varga_num):
+    """
+    Calculates the sign index (0-11) for a planet in a specific Varga (Divisional Chart)
+    based on Parashara Light rules.
+    degree: Planet degree within the sign (0.0 to 30.0)
+    rashi_idx: Sign index of the planet (0=Aries, 1=Taurus... 11=Pisces)
+    varga_num: The division number (e.g., 9 for Navamsa)
+    """
+    
+    # helper for Movable/Fixed/Dual
+    # 0=Movable (Aries, Cancer, Libra, Cap)
+    # 1=Fixed (Taurus, Leo, Scorpio, Aqu)
+    # 2=Dual (Gemini, Virgo, Sag, Pisces)
+    quality = rashi_idx % 3 
+    is_odd = (rashi_idx % 2 == 0) # Aries(0) is Odd, Taurus(1) is Even
+
+    # D1: Rashi
+    if varga_num == 1:
+        return rashi_idx
+
+    # D2: Hora (Wealth) - 1/2
+    if varga_num == 2:
+        # Parashara: Odd signs -> Sun(Leo-4) 1st half, Moon(Can-3) 2nd half
+        # Even signs -> Moon(Can-3) 1st half, Sun(Leo-4) 2nd half
+        first_half = (degree < 15)
+        if is_odd:
+            return 4 if first_half else 3
+        else:
+            return 3 if first_half else 4
+
+    # D3: Drekkana (Siblings) - 1/3
+    if varga_num == 3:
+        # 1st part -> Same sign
+        # 2nd part -> 5th from sign
+        # 3rd part -> 9th from sign
+        part = int(degree / 10) # 0, 1, 2
+        return (rashi_idx + (part * 4)) % 12
+
+    # D4: Chaturthamsha (Destiny) - 1/4
+    if varga_num == 4:
+        # 1st part -> Same sign
+        # 2nd part -> 4th from sign
+        # 3rd part -> 7th from sign
+        # 4th part -> 10th from sign
+        part = int(degree / 7.5) # 0, 1, 2, 3
+        return (rashi_idx + (part * 3)) % 12
+
+    # D7: Saptamsha (Progeny) - 1/7
+    if varga_num == 7:
+        # Odd: Starts from same sign
+        # Even: Starts from 7th sign
+        part = int(degree / (30/7))
+        start_sign = rashi_idx if is_odd else (rashi_idx + 6)
+        return (start_sign + part) % 12
+
+    # D9: Navamsa (Spouse) - 1/9
+    if varga_num == 9:
+        # Movable: Starts from same sign
+        # Fixed: Starts from 9th sign
+        # Dual: Starts from 5th sign
+        part = int(degree / (30/9))
+        if quality == 0: start = rashi_idx
+        elif quality == 1: start = (rashi_idx + 8) % 12
+        else: start = (rashi_idx + 4) % 12
+        return (start + part) % 12
+
+    # D10: Dashamsha (Career) - 1/10
+    if varga_num == 10:
+        # Odd: Starts from same sign
+        # Even: Starts from 9th sign
+        part = int(degree / 3)
+        start = rashi_idx if is_odd else (rashi_idx + 8)
+        return (start + part) % 12
+
+    # D12: Dwadashamsha (Parents) - 1/12
+    if varga_num == 12:
+        # Starts from same sign
+        part = int(degree / 2.5)
+        return (rashi_idx + part) % 12
+
+    # D16: Shodashamsha (Vehicles) - 1/16
+    if varga_num == 16:
+        # Movable: Starts from Aries(0)
+        # Fixed: Starts from Leo(4)
+        # Dual: Starts from Sag(8)
+        part = int(degree / (30/16))
+        if quality == 0: start = 0
+        elif quality == 1: start = 4
+        else: start = 8
+        return (start + part) % 12
+
+    # D20: Vimshamsha (Spiritual) - 1/20
+    if varga_num == 20:
+        # Movable: From Aries(0)
+        # Fixed: From Sag(8)
+        # Dual: From Leo(4) -- Wait, standard is M->Aries, F->Sag, D->Leo
+        part = int(degree / (30/20))
+        if quality == 0: start = 0
+        elif quality == 1: start = 8
+        else: start = 4
+        return (start + part) % 12
+
+    # D24: Chaturvimshamsha (Knowledge) - 1/24
+    if varga_num == 24:
+        # Odd: From Leo(4)
+        # Even: From Cancer(3)
+        part = int(degree / (30/24))
+        start = 4 if is_odd else 3
+        # Note: D24 sequence is continuous? No, standard is start point + part
+        return (start + part) % 12
+
+    # D27: Saptavimshamsha (Strength) - 1/27
+    if varga_num == 27:
+        # Odd: From Aries(0)
+        # Even: From Cancer(3)
+        part = int(degree / (30/27))
+        start = 0 if is_odd else 3
+        return (start + part) % 12
+
+    # D30: Trimshamsha (Misfortune) - 1/30
+    if varga_num == 30:
+        # Specific degrees mapping
+        # Odd: 0-5 Mars(0), 5-10 Sat(10), 10-18 Jup(8), 18-25 Mer(2), 25-30 Ven(6)
+        # Even: 0-5 Ven(1), 5-12 Mer(5), 12-20 Jup(11), 20-25 Sat(9), 25-30 Mars(7)
+        d = degree
+        if is_odd:
+            if d < 5: return 0 # Aries
+            elif d < 10: return 10 # Aquarius
+            elif d < 18: return 8 # Sagittarius
+            elif d < 25: return 2 # Gemini
+            else: return 6 # Libra
+        else:
+            if d < 5: return 1 # Taurus
+            elif d < 12: return 5 # Virgo
+            elif d < 20: return 11 # Pisces
+            elif d < 25: return 9 # Capricorn
+            else: return 7 # Scorpio
+
+    # D40: Khavedamsha (Aus/Inaus) - 1/40
+    if varga_num == 40:
+        # Odd: From Aries(0)
+        # Even: From Libra(6)
+        part = int(degree / (30/40))
+        start = 0 if is_odd else 6
+        return (start + part) % 12
+
+    # D45: Akshavedamsha (General) - 1/45
+    if varga_num == 45:
+        # Movable: From Aries(0)
+        # Fixed: From Leo(4)
+        # Dual: From Sag(8)
+        part = int(degree / (30/45))
+        if quality == 0: start = 0
+        elif quality == 1: start = 4
+        else: start = 8
+        return (start + part) % 12
+
+    # D60: Shashtiamsha (Karma) - 1/60
+    if varga_num == 60:
+        # From the sign itself (some variations exist, usually just wrap 1-12)
+        # Standard: Each part is 0.5 deg. Count from current sign? 
+        # Actually standard Parashara: Ignore current sign, count from it?
+        # "To be counted from the sign occupied by the planet"
+        # Wait, D60 is often "Count parts from the sign occupied".
+        # Yes, so if in 1st part (0-0.5) of Aries, count 1 from Aries = Aries.
+        part = int(degree / 0.5)
+        return (rashi_idx + part) % 12
+
+    return rashi_idx # Default to Rashi if not handled
 
 # ================= CALCULATORS =================
 def calc_sun_rise_set(jd, lat, lon):
@@ -950,10 +1127,21 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
 
     moon_long = 0
     lnak, lpada, lnak_idx = get_nak(lagna_deg)
+    
+    lagna_vargas = {}
+    for v_num in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]:
+        v_sign_idx = get_varga_sign(lagna_deg % 30, lagna_rashi, v_num)
+        lagna_vargas[f"D{v_num}"] = {
+            "sign": RASHIS[v_sign_idx], 
+            "sign_id": v_sign_idx
+        }
+
     planetary_positions.append({
-        "planet": "Ascendant", "symbol": "As", "is_retro": "No", "position": deg_to_dms(lagna_deg), "degree": deg_to_dms(lagna_deg % 30),
+        "planet": "Ascendant", "icon": "Asc", "symbol": "As", "is_retro": False, "position": deg_to_dms(lagna_deg), "degree": deg_to_dms(lagna_deg % 30),
         "rasi": RASHIS[lagna_rashi], "rasi_lord": RASI_LORDS_MAP[lagna_rashi],
-        "nakshatra": f"{lnak} ({lpada})", "nak_lord": NAK_LORDS[lnak_idx % 9], "house": 1
+        "nakshatra": f"{lnak} ({lpada})", "nak_lord": NAK_LORDS[lnak_idx % 9], "house": 1,
+        "relationship": "-",
+        "vargas": lagna_vargas
     })
 
     p_names = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Uranus", "Neptune", "Pluto"]
@@ -965,8 +1153,8 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         deg = res[0][0]
         speed = res[0][3]
         
-        is_retro = "Yes" if speed < 0 else "No"
-        if i in [7, 8]: is_retro = "Yes" 
+        is_retro = True if speed < 0 else False
+        if i in [7, 8]: is_retro = True 
         
         if i == 8: deg = (deg + 180) % 360 # Ketu
         if i == 1: moon_long = deg
@@ -982,10 +1170,20 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         nak, pada, nak_idx = get_nak(deg)
         house_num = (rashi - lagna_rashi + 12) % 12 + 1
         
+        vargas = {}
+        for v_num in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]:
+            v_sign_idx = get_varga_sign(deg % 30, rashi, v_num)
+            vargas[f"D{v_num}"] = {
+                "sign": RASHIS[v_sign_idx], 
+                "sign_id": v_sign_idx
+            }
+
         planetary_positions.append({
-            "planet": p_name, "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30),
+            "planet": p_name, "icon": PLANET_ICONS.get(p_name, ""), "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30),
             "rasi": RASHIS[rashi], "rasi_lord": RASI_LORDS_MAP[rashi],
-            "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx % 9], "house": house_num
+            "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx % 9], "house": house_num,
+            "relationship": get_planet_relationship(p_name, RASI_LORDS_MAP[rashi], rashi),
+            "vargas": vargas
         })
         
     moon_rashi_idx = int(moon_long / 30)
@@ -1120,7 +1318,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     sign_lord = RASI_LORDS_MAP[moon_rashi_idx]
     lagna_lord = RASI_LORDS_MAP[lagna_rashi] # Ascendant Lord
     
-    fav_data = FAV_POINTS.get(moon_rashi_idx, {})
+    fav_data = FAV_POINTS.get(lagna_rashi, {})
     num_data = get_numerology(dt, name)
     fav_data.update(num_data)
     lagna_prediction = KUNDLI_PREDICTIONS.get(lagna_rashi, {"general": "", "career": "", "health": "", "marriage": ""})
@@ -1144,6 +1342,47 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         "timings": timings # NEW
     }
 
+    # KUNDALI TABLE GENERATION
+    kundali_table = []
+    for h in range(1, 13):
+        # Determine Rashi for this house
+        rashi_idx = (lagna_rashi + h - 1) % 12
+        r_name = RASHIS[rashi_idx]
+        r_lord = RASI_LORDS_MAP[rashi_idx]
+        
+        # Find planets in this house
+        planets_in_house = [p for p in planetary_positions if p['house'] == h]
+        
+        kundali_table.append({
+            "house": h,
+            "rashi": r_name,
+            "lord": r_lord,
+            "planets": planets_in_house
+        })
+    
+    # CALCULATE SHODASHVARGA CHART DATA
+    shodashvarga_charts = {f"D{v}": {i: [] for i in range(12)} for v in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]}
+    
+    # Add planets to charts
+    for p in planetary_positions:
+        p_symbol = p['symbol']
+        p_vargas = p.get('vargas', {})
+        
+        for v_key, v_data in p_vargas.items():
+            # v_key is like "D9", v_data is {"sign": "Aries", "sign_id": 0}
+            if v_key in shodashvarga_charts:
+                sign_idx = v_data['sign_id']
+                shodashvarga_charts[v_key][sign_idx].append(p_symbol)
+
+    # Add chart titles mapping
+    varga_titles = {
+        "D1": "Rashi (D1)", "D2": "Hora (D2)", "D3": "Drekkana (D3)", "D4": "Chaturthamsha (D4)",
+        "D7": "Saptamsha (D7)", "D9": "Navamsa (D9)", "D10": "Dashamsha (D10)", "D12": "Dwadashamsha (D12)",
+        "D16": "Shodashamsha (D16)", "D20": "Vimshamsha (D20)", "D24": "Chaturvimshamsha (D24)",
+        "D27": "Saptavimshamsha (D27)", "D30": "Trimshamsha (D30)", "D40": "Khavedamsha (D40)",
+        "D45": "Akshavedamsha (D45)", "D60": "Shashtiamsha (D60)"
+    }
+
     return {
         "chart": chart_data, 
         "navamsa_chart": navamsa_chart_data,
@@ -1153,15 +1392,18 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         "nakshatra": nak_str, 
         "ayanamsa_val": ayan_str,
         "planetary_positions": planetary_positions,
+        "kundali_table": kundali_table, # New Data
         "kundli_details": kundli_details,
         "dasha_periods": dasha_periods,
         "dosha_details": dosha_details,
-        "samvat": samvat_details, # New
+        "samvat": samvat_details, 
         "lagna_lord": lagna_lord, # New
         "sunrise": sunrise_str,   # New
         "sunset": sunset_str,     # New
         "timezone": tz.zone,      # Useful for reference
-        "sudarshana": sudarshana_data # New
+        "sudarshana": sudarshana_data, # New
+        "shodashvarga_charts": shodashvarga_charts, # Added
+        "varga_titles": varga_titles               # Added
     }
 
 # --- MUHURTHA CALCULATOR ---
@@ -1383,3 +1625,37 @@ def fetch_month_day_data(loc, date_str):
         "festival_names": festival_names,
         "lunar_month": lunar_month_name
     }
+# NATURAL PLANETARY RELATIONSHIPS (Naisargika Mitra)
+PLANET_RELATIONSHIPS = {
+    'Sun': {'Friends': ['Moon', 'Mars', 'Jupiter'], 'Neutral': ['Mercury'], 'Enemies': ['Venus', 'Saturn']},
+    'Moon': {'Friends': ['Sun', 'Mercury'], 'Neutral': ['Mars', 'Jupiter', 'Venus', 'Saturn'], 'Enemies': []},
+    'Mars': {'Friends': ['Sun', 'Moon', 'Jupiter'], 'Neutral': ['Venus', 'Saturn'], 'Enemies': ['Mercury']},
+    'Mercury': {'Friends': ['Sun', 'Venus'], 'Neutral': ['Mars', 'Jupiter', 'Saturn'], 'Enemies': ['Moon']},
+    'Jupiter': {'Friends': ['Sun', 'Moon', 'Mars'], 'Neutral': ['Saturn'], 'Enemies': ['Mercury', 'Venus']},
+    'Venus': {'Friends': ['Mercury', 'Saturn'], 'Neutral': ['Mars', 'Jupiter'], 'Enemies': ['Sun', 'Moon']},
+    'Saturn': {'Friends': ['Mercury', 'Venus'], 'Neutral': ['Jupiter'], 'Enemies': ['Sun', 'Moon', 'Mars']},
+    'Rahu': {'Friends': ['Venus', 'Saturn'], 'Neutral': ['Mercury', 'Jupiter'], 'Enemies': ['Sun', 'Moon', 'Mars']},
+    'Ketu': {'Friends': ['Mars', 'Venus'], 'Neutral': ['Mercury', 'Jupiter', 'Saturn'], 'Enemies': ['Sun', 'Moon']}
+}
+
+def get_planet_relationship(planet_name, rasi_lord, rasi_idx):
+    if planet_name == 'Ascendant': return '-'
+    if planet_name not in PLANET_RELATIONSHIPS: return 'Neutral'
+    
+    # Check for Own Sign / Exalted / Debilitated first
+    # (Simplified logic for Own Sign)
+    own_signs = {
+        'Sun': [4], 'Moon': [3], 'Mars': [0, 7], 'Mercury': [2, 5],
+        'Jupiter': [8, 11], 'Venus': [1, 6], 'Saturn': [9, 10],
+        'Rahu': [10], 'Ketu': [7] # Variant views exist
+    }
+    
+    if rasi_idx in own_signs.get(planet_name, []):
+        return 'Own Sign'
+        
+    # Check Friend/Neutral/Enemy
+    rels = PLANET_RELATIONSHIPS[planet_name]
+    if rasi_lord in rels['Friends']: return 'Friend'
+    if rasi_lord in rels['Enemies']: return 'Enemy'
+    return 'Neutral'
+

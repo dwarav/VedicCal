@@ -258,372 +258,789 @@
 <div class="horoscope-wrapper">
     <div class="result-card">
 
-        <h3 class="text-center mb-4" style="font-family: 'Playfair Display'; color: #b71c1c;">Birth Details</h3>
-
-        <table class="bio-table">
-            <tbody>
-                <tr>
-                    <td class="bio-label">Name</td>
-                    <td class="bio-val">{{ bio.Name }}</td>
-                    <td class="bio-label">Gender</td>
-                    <td class="bio-val">{{ bio.Gender }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Birth Date</td>
-                    <td class="bio-val">{{ bio['Birth Date'] }}</td>
-                    <td class="bio-label">Weekday</td>
-                    <td class="bio-val">{{ bio['Weekday'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Birth Time</td>
-                    <td class="bio-val">{{ bio['Birth Time'] }}</td>
-                    <td class="bio-label">Tithi</td>
-                    <td class="bio-val fw-bold text-danger">{{ bio['Tithi'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Sunrise</td>
-                    <td class="bio-val">{{ bio['Sunrise'] }}</td>
-                    <td class="bio-label">Sunset</td>
-                    <td class="bio-val">{{ bio['Sunset'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Place</td>
-                    <td class="bio-val" colspan="3">{{ bio['Place of Birth'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Nakshatra</td>
-                    <td class="bio-val fw-bold text-danger">
-                        {{ data.nakshatra }}
-                        <br><span style="font-size: 0.75rem; color: #555;">{{
-                            data.kundli_details.timings.nak_start }} - {{ data.kundli_details.timings.nak_end
-                            }}</span>
-                    </td>
-                    <td class="bio-label">Nak Lord</td>
-                    <td class="bio-val">{{ data.kundli_details.nak_lord }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Charan</td>
-                    <td class="bio-val">{{ data.nakshatra.split('(')[1].replace(')','') }}</td>
-                    <td class="bio-label">Yoga</td>
-                    <td class="bio-val">{{ bio['Yoga'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Karana</td>
-                    <td class="bio-val">{{ bio['Karana'] }}</td>
-                    <td class="bio-label">Vikram Samvat</td>
-                    <td class="bio-val">{{ bio['Vikram Samvat'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Rasi</td>
-                    <td class="bio-val fw-bold text-danger">
-                        {{ data.moon_sign }}
-                        <br><span style="font-size: 0.75rem; color: #555;">{{
-                            data.kundli_details.timings.moon_sign_start }} - {{
-                            data.kundli_details.timings.moon_sign_end }}</span>
-                    </td>
-                    <td class="bio-label">Rasi Lord</td>
-                    <td class="bio-val">{{ bio['Rasi Lord'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Ascendant</td>
-                    <td class="bio-val">{{ bio['Ascendant'] }}</td>
-                    <td class="bio-label">Asc Lord</td>
-                    <td class="bio-val">{{ bio['Ascendant Lord'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Gothram</td>
-                    <td class="bio-val">{{ bio['Gothram'] }}</td>
-                    <td class="bio-label">Bhutham</td>
-                    <td class="bio-val">{{ bio['Bhutham'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Animal Sign</td>
-                    <td class="bio-val">{{ bio['Animal Sign'] }}</td>
-                    <td class="bio-label">Deity (God)</td>
-                    <td class="bio-val">{{ bio['God'] }}</td>
-                </tr>
-                <tr>
-                    <td class="bio-label">Ayanamsa</td>
-                    <td class="bio-val" colspan="3">{{ bio.Ayanamsa }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Sudarshana Chakra
-        </h4>
-        <div style="text-align: center; margin: 20px auto; max-width: 600px;">
-            <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"
-                style="background-color:#fff; border: 1px solid #ddd; border-radius: 50%;">
-                <!-- Definitions for text paths if needed, or simple rotation -->
-
-                <!-- OUTER RING: SUN CHART -->
-                <g id="sun-ring">
-                    <circle cx="250" cy="250" r="240" fill="#fdf2e9" stroke="#d35400" stroke-width="2" />
-                    <circle cx="250" cy="250" r="180" fill="none" stroke="#d35400" stroke-width="2" />
-                    <!-- Sectors -->
-                    {% for i in range(1, 13) %}
-                    <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
-                        <line x1="250" y1="10" x2="250" y2="70" stroke="#d35400" stroke-width="1" opacity="0.5" />
-                    </g>
-                    <!-- House Number & Planets -->
-                    <g transform="rotate({{ (i-1)*30 }} 250 250)">
-                        <text x="250" y="30" font-size="10" text-anchor="middle" fill="#d35400" font-weight="bold">H{{ i
-                            }}</text>
-                        <text x="250" y="50" font-size="10" text-anchor="middle" fill="#333" font-weight="bold">
-                            {{ data.sudarshana.sun_chart[i|string] | join(' ') }}
-                        </text>
-                    </g>
-                    {% endfor %}
-                    <text x="250" y="240" font-size="10" text-anchor="middle" fill="#d35400"
-                        transform="translate(0, -175)">SURYA</text>
-                </g>
-
-                <!-- MIDDLE RING: MOON CHART -->
-                <g id="moon-ring">
-                    <circle cx="250" cy="250" r="180" fill="#f4f6f7" stroke="#2980b9" stroke-width="2" />
-                    <circle cx="250" cy="250" r="120" fill="none" stroke="#2980b9" stroke-width="2" />
-                    {% for i in range(1, 13) %}
-                    <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
-                        <line x1="250" y1="70" x2="250" y2="130" stroke="#2980b9" stroke-width="1" opacity="0.5" />
-                    </g>
-                    <g transform="rotate({{ (i-1)*30 }} 250 250)">
-                        <text x="250" y="90" font-size="10" text-anchor="middle" fill="#2980b9" font-weight="bold">H{{ i
-                            }}</text>
-                        <text x="250" y="110" font-size="10" text-anchor="middle" fill="#333" font-weight="bold">
-                            {{ data.sudarshana.moon_chart[i|string] | join(' ') }}
-                        </text>
-                    </g>
-                    {% endfor %}
-                    <text x="250" y="115" font-size="10" text-anchor="middle" fill="#2980b9"
-                        transform="translate(0, -175)">CHANDRA</text>
-                </g>
-
-                <!-- INNER RING: LAGNA CHART -->
-                <g id="lagna-ring">
-                    <circle cx="250" cy="250" r="120" fill="#e8f8f5" stroke="#16a085" stroke-width="2" />
-                    <circle cx="250" cy="250" r="60" fill="none" stroke="#16a085" stroke-width="2" />
-                    {% for i in range(1, 13) %}
-                    <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
-                        <line x1="250" y1="130" x2="250" y2="190" stroke="#16a085" stroke-width="1" opacity="0.5" />
-                    </g>
-                    <g transform="rotate({{ (i-1)*30 }} 250 250)">
-                        <text x="250" y="150" font-size="10" text-anchor="middle" fill="#16a085" font-weight="bold">H{{
-                            i }}</text>
-                        <text x="250" y="170" font-size="10" text-anchor="middle" fill="#333" font-weight="bold">
-                            {{ data.sudarshana.lagna_chart[i|string] | join(' ') }}
-                        </text>
-                    </g>
-                    {% endfor %}
-                    <text x="250" y="250" font-size="12" text-anchor="middle" fill="#16a085"
-                        font-weight="bold">LAGNA</text>
-                </g>
-
-            </svg>
-        </div>
-
-        <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Divisional Charts
-        </h4>
-        <ul class="nav nav-pills justify-content-center mb-3" id="charts-tab" role="tablist">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill"
-                    data-bs-target="#chart-lagna">Lagna (D1)</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#chart-navamsa">Navamsa
-                    (D9)</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#chart-moon">Moon
-                    Chart</button></li>
+        <!-- MAIN TABS -->
+        <ul class="nav nav-tabs nav-justified mb-4" id="horoscopeTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-basic" data-bs-toggle="tab" data-bs-target="#content-basic"
+                    type="button" role="tab"><i class="fas fa-user me-2"></i>Basic Details</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-charts" data-bs-toggle="tab" data-bs-target="#content-charts"
+                    type="button" role="tab"><i class="fas fa-chart-pie me-2"></i>Charts</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-planets" data-bs-toggle="tab" data-bs-target="#content-planets"
+                    type="button" role="tab"><i class="fas fa-globe me-2"></i>Planetary Positions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-kundali" data-bs-toggle="tab" data-bs-target="#content-kundali"
+                    type="button" role="tab"><i class="fas fa-table me-2"></i>Kundali Table</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-fav" data-bs-toggle="tab" data-bs-target="#content-fav" type="button"
+                    role="tab"><i class="fas fa-star me-2"></i>Favourable Points</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-dasha" data-bs-toggle="tab" data-bs-target="#content-dasha"
+                    type="button" role="tab"><i class="fas fa-hourglass-half me-2"></i>Vimshottari Dasha</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-predictions" data-bs-toggle="tab" data-bs-target="#content-predictions"
+                    type="button" role="tab"><i class="fas fa-bullseye me-2"></i>Lagna Phal & Dosha</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-varga" data-bs-toggle="tab" data-bs-target="#content-varga"
+                    type="button" role="tab"><i class="fas fa-th me-2"></i>Shodashvarga</button>
+            </li>
         </ul>
 
-        <div class="tab-content" id="charts-tabContent">
-            <div class="tab-pane fade show active" id="chart-lagna">
-                <div class="chart-grid">
-                    <div class="chart-cell" data-rashi="Meena">
-                        <div class="planet-text">{% for p in data.chart[11] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mesha">
-                        <div class="planet-text">{% for p in data.chart[0] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishabha">
-                        <div class="planet-text">{% for p in data.chart[1] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mithuna">
-                        <div class="planet-text">{% for p in data.chart[2] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kumbha">
-                        <div class="planet-text">{% for p in data.chart[10] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-center"><i class="fas fa-om fa-2x mb-2"></i>
-                        <div>Lagna Chart</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Karka">
-                        <div class="planet-text">{% for p in data.chart[3] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Makara">
-                        <div class="planet-text">{% for p in data.chart[9] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Simha">
-                        <div class="planet-text">{% for p in data.chart[4] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Dhanu">
-                        <div class="planet-text">{% for p in data.chart[8] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishchika">
-                        <div class="planet-text">{% for p in data.chart[7] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Tula">
-                        <div class="planet-text">{% for p in data.chart[6] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kanya">
-                        <div class="planet-text">{% for p in data.chart[5] %}{{ p }}<br>{% endfor %}</div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="chart-navamsa">
-                <div class="chart-grid">
-                    <div class="chart-cell" data-rashi="Meena">
-                        <div class="planet-text">{% for p in data.navamsa_chart[11] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mesha">
-                        <div class="planet-text">{% for p in data.navamsa_chart[0] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishabha">
-                        <div class="planet-text">{% for p in data.navamsa_chart[1] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mithuna">
-                        <div class="planet-text">{% for p in data.navamsa_chart[2] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kumbha">
-                        <div class="planet-text">{% for p in data.navamsa_chart[10] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-center"><i class="fas fa-star fa-2x mb-2"></i>
-                        <div>Navamsa</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Karka">
-                        <div class="planet-text">{% for p in data.navamsa_chart[3] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Makara">
-                        <div class="planet-text">{% for p in data.navamsa_chart[9] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Simha">
-                        <div class="planet-text">{% for p in data.navamsa_chart[4] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Dhanu">
-                        <div class="planet-text">{% for p in data.navamsa_chart[8] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishchika">
-                        <div class="planet-text">{% for p in data.navamsa_chart[7] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Tula">
-                        <div class="planet-text">{% for p in data.navamsa_chart[6] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kanya">
-                        <div class="planet-text">{% for p in data.navamsa_chart[5] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="tab-pane fade" id="chart-moon">
-                <div class="chart-grid">
-                    <div class="chart-cell" data-rashi="Meena">
-                        <div class="planet-text">{% for p in data.chandra_chart[11] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mesha">
-                        <div class="planet-text">{% for p in data.chandra_chart[0] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishabha">
-                        <div class="planet-text">{% for p in data.chandra_chart[1] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Mithuna">
-                        <div class="planet-text">{% for p in data.chandra_chart[2] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kumbha">
-                        <div class="planet-text">{% for p in data.chandra_chart[10] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-center"><i class="fas fa-moon fa-2x mb-2"></i>
-                        <div>Moon Chart</div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Karka">
-                        <div class="planet-text">{% for p in data.chandra_chart[3] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Makara">
-                        <div class="planet-text">{% for p in data.chandra_chart[9] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Simha">
-                        <div class="planet-text">{% for p in data.chandra_chart[4] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Dhanu">
-                        <div class="planet-text">{% for p in data.chandra_chart[8] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Vrishchika">
-                        <div class="planet-text">{% for p in data.chandra_chart[7] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Tula">
-                        <div class="planet-text">{% for p in data.chandra_chart[6] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                    <div class="chart-cell" data-rashi="Kanya">
-                        <div class="planet-text">{% for p in data.chandra_chart[5] %}{{ p }}<br>{% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="tab-content" id="horoscopeTabsContent">
 
-        <div class="planet-table-container">
-            <h4 class="text-center" style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Graha
-                Sthithi
-                (Planetary Positions)</h4>
-            <div style="overflow-x:auto;">
-                <table class="planet-table">
-                    <thead>
-                        <tr>
-                            <th>Sym</th>
-                            <th>Planet</th>
-                            <th>R</th>
-                            <th>Sign</th>
-                            <th>Sign Lord</th>
-                            <th>Degree</th>
-                            <th>Nakshatra</th>
-                            <th>Nak Lord</th>
-                            <th>House</th>
-                        </tr>
-                    </thead>
+            <!-- TAB 1: BASIC DETAILS -->
+            <div class="tab-pane fade show active" id="content-basic" role="tabpanel">
+                <h3 class="text-center mb-4" style="font-family: 'Playfair Display'; color: #b71c1c;">Birth Details</h3>
+
+                <table class="bio-table">
                     <tbody>
-                        {% for planet in data.kundli_details.planets %}
                         <tr>
-                            <td>{{ planet.icon }}</td>
-                            <td>{{ planet.name }}</td>
-                            <td>{% if planet.is_retro %} <span style="color:red; font-weight:bold;">(R)</span> {%
-                                else %} - {% endif %}</td>
-                            <td>{{ planet.sign }}</td>
-                            <td>{{ planet.sign_lord }}</td>
-                            <td>{{ planet.norm_deg_str }}</td>
-                            <td>{{ planet.nakshatra }}</td>
-                            <td>{{ planet.nak_lord }}</td>
-                            <td>{{ planet.house }}</td>
+                            <td class="bio-label">Name</td>
+                            <td class="bio-val">{{ bio.Name }}</td>
+                            <td class="bio-label">Gender</td>
+                            <td class="bio-val">{{ bio.Gender }}</td>
                         </tr>
-                        {% endfor %}
+                        <tr>
+                            <td class="bio-label">Birth Date</td>
+                            <td class="bio-val">{{ bio['Birth Date'] }}</td>
+                            <td class="bio-label">Weekday</td>
+                            <td class="bio-val">{{ bio['Weekday'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Birth Time</td>
+                            <td class="bio-val">{{ bio['Birth Time'] }}</td>
+                            <td class="bio-label">Tithi</td>
+                            <td class="bio-val fw-bold text-danger">{{ bio['Tithi'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Sunrise</td>
+                            <td class="bio-val">{{ bio['Sunrise'] }}</td>
+                            <td class="bio-label">Sunset</td>
+                            <td class="bio-val">{{ bio['Sunset'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Place</td>
+                            <td class="bio-val" colspan="3">{{ bio['Place of Birth'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Nakshatra</td>
+                            <td class="bio-val fw-bold text-danger">
+                                {{ data.nakshatra }}
+                                <br><span style="font-size: 0.75rem; color: #555;">{{
+                                    data.kundli_details.timings.nak_start }} - {{ data.kundli_details.timings.nak_end
+                                    }}</span>
+                            </td>
+                            <td class="bio-label">Nak Lord</td>
+                            <td class="bio-val">{{ data.kundli_details.nak_lord }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Charan</td>
+                            <td class="bio-val">{{ data.nakshatra.split('(')[1].replace(')','') }}</td>
+                            <td class="bio-label">Yoga</td>
+                            <td class="bio-val">{{ bio['Yoga'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Karana</td>
+                            <td class="bio-val">{{ bio['Karana'] }}</td>
+                            <td class="bio-label">Vikram Samvat</td>
+                            <td class="bio-val">{{ bio['Vikram Samvat'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Rasi</td>
+                            <td class="bio-val fw-bold text-danger">
+                                {{ data.moon_sign }}
+                                <br><span style="font-size: 0.75rem; color: #555;">{{
+                                    data.kundli_details.timings.moon_sign_start }} - {{
+                                    data.kundli_details.timings.moon_sign_end }}</span>
+                            </td>
+                            <td class="bio-label">Rasi Lord</td>
+                            <td class="bio-val">{{ bio['Rasi Lord'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Ascendant</td>
+                            <td class="bio-val">{{ bio['Ascendant'] }}</td>
+                            <td class="bio-label">Asc Lord</td>
+                            <td class="bio-val">{{ bio['Ascendant Lord'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Gothram</td>
+                            <td class="bio-val">{{ bio['Gothram'] }}</td>
+                            <td class="bio-label">Bhutham</td>
+                            <td class="bio-val">{{ bio['Bhutham'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Animal Sign</td>
+                            <td class="bio-val">{{ bio['Animal Sign'] }}</td>
+                            <td class="bio-label">Deity (God)</td>
+                            <td class="bio-val">{{ bio['God'] }}</td>
+                        </tr>
+                        <tr>
+                            <td class="bio-label">Ayanamsa</td>
+                            <td class="bio-val" colspan="3">{{ bio.Ayanamsa }}</td>
+                        </tr>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- TAB 2: CHARTS -->
+            <div class="tab-pane fade" id="content-charts" role="tabpanel">
+                <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Sudarshana Chakra
+                </h4>
+                <div style="text-align: center; margin: 20px auto; max-width: 600px;">
+                    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"
+                        style="background-color:#fff; border: 1px solid #ddd; border-radius: 50%;">
+                        <!-- Definitions for text paths if needed, or simple rotation -->
+
+                        <!-- OUTER RING: SUN CHART -->
+                        <g id="sun-ring">
+                            <circle cx="250" cy="250" r="240" fill="#fdf2e9" stroke="#d35400" stroke-width="2" />
+                            <circle cx="250" cy="250" r="180" fill="none" stroke="#d35400" stroke-width="2" />
+                            <!-- Sectors -->
+                            {% for i in range(1, 13) %}
+                            <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
+                                <line x1="250" y1="10" x2="250" y2="70" stroke="#d35400" stroke-width="1"
+                                    opacity="0.5" />
+                            </g>
+                            <!-- House Number & Planets -->
+                            <g transform="rotate({{ (i-1)*30 }} 250 250)">
+                                <text x="250" y="30" font-size="10" text-anchor="middle" fill="#d35400"
+                                    font-weight="bold">H{{ i
+                                    }}</text>
+                                <text x="250" y="50" font-size="10" text-anchor="middle" fill="#333" font-weight="bold">
+                                    {{ data.sudarshana.sun_chart[i|string] | join(' ') }}
+                                </text>
+                            </g>
+                            {% endfor %}
+                            <text x="250" y="240" font-size="10" text-anchor="middle" fill="#d35400"
+                                transform="translate(0, -175)">SURYA</text>
+                        </g>
+
+                        <!-- MIDDLE RING: MOON CHART -->
+                        <g id="moon-ring">
+                            <circle cx="250" cy="250" r="180" fill="#f4f6f7" stroke="#2980b9" stroke-width="2" />
+                            <circle cx="250" cy="250" r="120" fill="none" stroke="#2980b9" stroke-width="2" />
+                            {% for i in range(1, 13) %}
+                            <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
+                                <line x1="250" y1="70" x2="250" y2="130" stroke="#2980b9" stroke-width="1"
+                                    opacity="0.5" />
+                            </g>
+                            <g transform="rotate({{ (i-1)*30 }} 250 250)">
+                                <text x="250" y="90" font-size="10" text-anchor="middle" fill="#2980b9"
+                                    font-weight="bold">H{{ i
+                                    }}</text>
+                                <text x="250" y="110" font-size="10" text-anchor="middle" fill="#333"
+                                    font-weight="bold">
+                                    {{ data.sudarshana.moon_chart[i|string] | join(' ') }}
+                                </text>
+                            </g>
+                            {% endfor %}
+                            <text x="250" y="115" font-size="10" text-anchor="middle" fill="#2980b9"
+                                transform="translate(0, -175)">CHANDRA</text>
+                        </g>
+
+                        <!-- INNER RING: LAGNA CHART -->
+                        <g id="lagna-ring">
+                            <circle cx="250" cy="250" r="120" fill="#e8f8f5" stroke="#16a085" stroke-width="2" />
+                            <circle cx="250" cy="250" r="60" fill="none" stroke="#16a085" stroke-width="2" />
+                            {% for i in range(1, 13) %}
+                            <g transform="rotate({{ (i-1)*30 - 15 }} 250 250)">
+                                <line x1="250" y1="130" x2="250" y2="190" stroke="#16a085" stroke-width="1"
+                                    opacity="0.5" />
+                            </g>
+                            <g transform="rotate({{ (i-1)*30 }} 250 250)">
+                                <text x="250" y="150" font-size="10" text-anchor="middle" fill="#16a085"
+                                    font-weight="bold">H{{
+                                    i }}</text>
+                                <text x="250" y="170" font-size="10" text-anchor="middle" fill="#333"
+                                    font-weight="bold">
+                                    {{ data.sudarshana.lagna_chart[i|string] | join(' ') }}
+                                </text>
+                            </g>
+                            {% endfor %}
+                            <text x="250" y="250" font-size="12" text-anchor="middle" fill="#16a085"
+                                font-weight="bold">LAGNA</text>
+                        </g>
+
+                    </svg>
+                </div>
+
+                <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Divisional Charts
+                </h4>
+                <ul class="nav nav-pills justify-content-center mb-3" id="charts-tab" role="tablist">
+                    <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill"
+                            data-bs-target="#chart-lagna">Lagna (D1)</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#chart-navamsa">Navamsa
+                            (D9)</button></li>
+                    <li class="nav-item"><button class="nav-link" data-bs-toggle="pill"
+                            data-bs-target="#chart-moon">Moon
+                            Chart</button></li>
+                </ul>
+
+                <div class="tab-content" id="charts-tabContent">
+                    <div class="tab-pane fade show active" id="chart-lagna">
+                        <div class="chart-grid">
+                            <div class="chart-cell" data-rashi="Meena">
+                                <div class="planet-text">{% for p in data.chart[11] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mesha">
+                                <div class="planet-text">{% for p in data.chart[0] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishabha">
+                                <div class="planet-text">{% for p in data.chart[1] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mithuna">
+                                <div class="planet-text">{% for p in data.chart[2] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kumbha">
+                                <div class="planet-text">{% for p in data.chart[10] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-center"><i class="fas fa-om fa-2x mb-2"></i>
+                                <div>Lagna Chart</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Karka">
+                                <div class="planet-text">{% for p in data.chart[3] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Makara">
+                                <div class="planet-text">{% for p in data.chart[9] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Simha">
+                                <div class="planet-text">{% for p in data.chart[4] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Dhanu">
+                                <div class="planet-text">{% for p in data.chart[8] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishchika">
+                                <div class="planet-text">{% for p in data.chart[7] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Tula">
+                                <div class="planet-text">{% for p in data.chart[6] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kanya">
+                                <div class="planet-text">{% for p in data.chart[5] %}{{ p }}<br>{% endfor %}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="chart-navamsa">
+                        <div class="chart-grid">
+                            <div class="chart-cell" data-rashi="Meena">
+                                <div class="planet-text">{% for p in data.navamsa_chart[11] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mesha">
+                                <div class="planet-text">{% for p in data.navamsa_chart[0] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishabha">
+                                <div class="planet-text">{% for p in data.navamsa_chart[1] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mithuna">
+                                <div class="planet-text">{% for p in data.navamsa_chart[2] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kumbha">
+                                <div class="planet-text">{% for p in data.navamsa_chart[10] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-center"><i class="fas fa-star fa-2x mb-2"></i>
+                                <div>Navamsa</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Karka">
+                                <div class="planet-text">{% for p in data.navamsa_chart[3] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Makara">
+                                <div class="planet-text">{% for p in data.navamsa_chart[9] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Simha">
+                                <div class="planet-text">{% for p in data.navamsa_chart[4] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Dhanu">
+                                <div class="planet-text">{% for p in data.navamsa_chart[8] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishchika">
+                                <div class="planet-text">{% for p in data.navamsa_chart[7] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Tula">
+                                <div class="planet-text">{% for p in data.navamsa_chart[6] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kanya">
+                                <div class="planet-text">{% for p in data.navamsa_chart[5] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="chart-moon">
+                        <div class="chart-grid">
+                            <div class="chart-cell" data-rashi="Meena">
+                                <div class="planet-text">{% for p in data.chandra_chart[11] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mesha">
+                                <div class="planet-text">{% for p in data.chandra_chart[0] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishabha">
+                                <div class="planet-text">{% for p in data.chandra_chart[1] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Mithuna">
+                                <div class="planet-text">{% for p in data.chandra_chart[2] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kumbha">
+                                <div class="planet-text">{% for p in data.chandra_chart[10] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-center"><i class="fas fa-moon fa-2x mb-2"></i>
+                                <div>Moon Chart</div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Karka">
+                                <div class="planet-text">{% for p in data.chandra_chart[3] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Makara">
+                                <div class="planet-text">{% for p in data.chandra_chart[9] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Simha">
+                                <div class="planet-text">{% for p in data.chandra_chart[4] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Dhanu">
+                                <div class="planet-text">{% for p in data.chandra_chart[8] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Vrishchika">
+                                <div class="planet-text">{% for p in data.chandra_chart[7] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Tula">
+                                <div class="planet-text">{% for p in data.chandra_chart[6] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                            <div class="chart-cell" data-rashi="Kanya">
+                                <div class="planet-text">{% for p in data.chandra_chart[5] %}{{ p }}<br>{% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PLANETARY POSITIONS -->
+            <div class="tab-pane fade" id="content-planets" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">Graha
+                        Sthithi
+                        (Planetary Positions)</h4>
+                    <div style="overflow-x:auto;">
+                        <table class="planet-table">
+                            <thead>
+                                <tr>
+                                    <th>Planets</th>
+                                    <th>Positions</th>
+                                    <th>Degrees</th>
+                                    <th>Rasi</th>
+                                    <th>Rasi Lord</th>
+                                    <th>Relation</th>
+                                    <th>Nakshatra</th>
+                                    <th>Nakshatra Lord</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for planet in data.planetary_positions %}
+                                <tr>
+                                    <td style="white-space: nowrap;">
+                                        {{ planet.icon }} {{ planet.planet }}
+                                        {% if planet.is_retro %}
+                                        <span
+                                            style="color:red; font-weight:bold; font-size: 0.8em; margin-left:2px;">(R)</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ planet.house }}</td>
+                                    <td>{{ planet.degree }}</td>
+                                    <td>{{ planet.rasi }}</td>
+                                    <td>{{ planet.rasi_lord }}</td>
+                                    <td>
+                                        {% if planet.relationship == 'Friend' or planet.relationship == 'Own Sign' or
+                                        planet.relationship == 'Exalted' %}
+                                        <span class="badge bg-success">{{ planet.relationship }}</span>
+                                        {% elif planet.relationship == 'Enemy' or planet.relationship == 'Debilitated'
+                                        %}
+                                        <span class="badge bg-danger">{{ planet.relationship }}</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">{{ planet.relationship }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ planet.nakshatra }}</td>
+                                    <td>{{ planet.nak_lord }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: KUNDALI TABLE -->
+            <div class="tab-pane fade" id="content-kundali" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Kundali Table (Bhava Details)
+                    </h4>
+                    <div style="overflow-x:auto;">
+                        <table class="planet-table">
+                            <thead>
+                                <tr>
+                                    <th>House</th>
+                                    <th>Sign</th>
+                                    <th>Sign Lord</th>
+                                    <th>Planets in House</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in data.kundali_table %}
+                                <tr>
+                                    <td>{{ row.house }}</td>
+                                    <td>{{ row.rashi }}</td>
+                                    <td>{{ row.lord }}</td>
+                                    <td>
+                                        {% if row.planets %}
+                                        {% for p in row.planets %}
+                                        <span style="display:inline-block; margin-right:5px;">
+                                            {{ p.icon }} {{ p.planet }}{% if p.is_retro %}<span
+                                                style="color:red; font-weight:bold; font-size: 0.8em;">(R)</span>{%
+                                            endif %}
+                                        </span>
+                                        {% if not loop.last %}, {% endif %}
+                                        {% endfor %}
+                                        {% else %}
+                                        -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 5: FAVOURABLE POINTS -->
+            <div class="tab-pane fade" id="content-fav" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Favourable Points
+                    </h4>
+                    <div style="overflow-x:auto;">
+                        <table class="planet-table">
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Favourable Factor</th>
+                                    <th>Category</th>
+                                    <th>Favourable Factor</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if data.kundli_details.fav %}
+                                {% for row in data.kundli_details.fav.items() | batch(2) %}
+                                <tr>
+                                    {% for key, value in row %}
+                                    <td style="text-transform: capitalize; font-weight: bold;">
+                                        {{ key | replace('_', ' ') }}
+                                    </td>
+                                    <td>{{ value }}</td>
+                                    {% endfor %}
+                                    {% if row|length < 2 %} <td>
+                                        </td>
+                                        <td></td>
+                                        {% endif %}
+                                </tr>
+                                {% endfor %}
+                                {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center">No favourable points data available.</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: VIMSHOTTARI DASHA -->
+            <div class="tab-pane fade" id="content-dasha" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Vimshottari Dasha
+                    </h4>
+                    <div class="accordion" id="dashaAccordion">
+                        {% for dasha in data.dasha_periods %}
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="heading{{ loop.index }}">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                    data-bs-target="#collapse{{ loop.index }}" aria-expanded="false"
+                                    aria-controls="collapse{{ loop.index }}">
+                                    <strong>{{ dasha.lord }} Mahadasha</strong> &nbsp; ({{ dasha.start }} - {{ dasha.end
+                                    }})
+                                </button>
+                            </h2>
+                            <div id="collapse{{ loop.index }}" class="accordion-collapse collapse"
+                                aria-labelledby="heading{{ loop.index }}" data-bs-parent="#dashaAccordion">
+                                <div class="accordion-body">
+                                    <div style="overflow-x:auto;">
+                                        <table class="planet-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Antardasha Lord</th>
+                                                    <th>Start Date</th>
+                                                    <th>End Date</th>
+                                                    <th>Duration</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for sub in dasha.antardashas %}
+                                                <tr>
+                                                    <td>{{ sub.lord }}</td>
+                                                    <td>{{ sub.start }}</td>
+                                                    <td>{{ sub.end }}</td>
+                                                    <td>{{ sub.duration }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: PREDICTIONS & DOSHA -->
+            <div class="tab-pane fade" id="content-predictions" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Lagna Phal (Life Predictions)
+                    </h4>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger"><i class="fas fa-user-circle me-2"></i>General
+                                    </h5>
+                                    <p class="card-text">{{ data.kundli_details.prediction.general }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger"><i class="fas fa-briefcase me-2"></i>Career</h5>
+                                    <p class="card-text">{{ data.kundli_details.prediction.career }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger"><i class="fas fa-heartbeat me-2"></i>Health</h5>
+                                    <p class="card-text">{{ data.kundli_details.prediction.health }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="card-title text-danger"><i class="fas fa-ring me-2"></i>Marriage</h5>
+                                    <p class="card-text">{{ data.kundli_details.prediction.marriage }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px; margin-top: 40px;">
+                        Dosha Analysis
+                    </h4>
+                    <div class="row g-3">
+                        {% for dosha in data.dosha_details %}
+                        <div class="col-md-6">
+                            <div class="card h-100 shadow-sm border-0">
+                                <div class="card-body">
+                                    <h5 class="card-title text-uppercase fw-bold" style="color: #444;">{{ dosha.name }}
+                                    </h5>
+                                    {% if dosha.status == 'Present' %}
+                                    <div class="alert alert-danger mb-0">
+                                        <strong><i class="fas fa-exclamation-triangle me-2"></i>Present</strong>
+                                        <p class="mb-0 mt-1 small">{{ dosha.desc }}</p>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-success mb-0">
+                                        <strong><i class="fas fa-check-circle me-2"></i>Absent</strong>
+                                        <p class="mb-0 mt-1 small">{{ dosha.desc }}</p>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: SHODASHVARGA -->
+            <div class="tab-pane fade" id="content-varga" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Shodashvarga (16 Divisional Charts)
+                    </h4>
+                    <div style="overflow-x:auto;">
+                        <table class="planet-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Chart</th>
+                                    <th>D1</th>
+                                    <th>D2</th>
+                                    <th>D3</th>
+                                    <th>D4</th>
+                                    <th>D7</th>
+                                    <th>D9</th>
+                                    <th>D10</th>
+                                    <th>D12</th>
+                                    <th>D16</th>
+                                    <th>D20</th>
+                                    <th>D24</th>
+                                    <th>D27</th>
+                                    <th>D30</th>
+                                    <th>D40</th>
+                                    <th>D45</th>
+                                    <th>D60</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for planet in data.planetary_positions %}
+                                {% if planet.planet != 'Uranus' and planet.planet != 'Neptune' and planet.planet !=
+                                'Pluto' %}
+                                <tr>
+                                    <td class="fw-bold">{{ planet.planet }}</td>
+                                    <td>{{ planet.vargas.D1.sign }}</td>
+                                    <td>{{ planet.vargas.D2.sign }}</td>
+                                    <td>{{ planet.vargas.D3.sign }}</td>
+                                    <td>{{ planet.vargas.D4.sign }}</td>
+                                    <td>{{ planet.vargas.D7.sign }}</td>
+                                    <td>{{ planet.vargas.D9.sign }}</td>
+                                    <td>{{ planet.vargas.D10.sign }}</td>
+                                    <td>{{ planet.vargas.D12.sign }}</td>
+                                    <td>{{ planet.vargas.D16.sign }}</td>
+                                    <td>{{ planet.vargas.D20.sign }}</td>
+                                    <td>{{ planet.vargas.D24.sign }}</td>
+                                    <td>{{ planet.vargas.D27.sign }}</td>
+                                    <td>{{ planet.vargas.D30.sign }}</td>
+                                    <td>{{ planet.vargas.D40.sign }}</td>
+                                    <td>{{ planet.vargas.D45.sign }}</td>
+                                    <td>{{ planet.vargas.D60.sign }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 16 CHARTS GRID -->
+                <div class="row mt-5">
+                    {% for v_key, v_title in data.varga_titles.items() %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-0 text-center">
+                                <h6 class="mb-0 fw-bold" style="color: #b71c1c;">{{ v_title }}</h6>
+                            </div>
+                            <div class="card-body p-2">
+                                <div class="chart-grid small-chart">
+                                    <div class="chart-cell" data-rashi="Meena">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][11] %}{{
+                                            data.shodashvarga_charts[v_key][11]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Mesha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][0] %}{{
+                                            data.shodashvarga_charts[v_key][0]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Vrishabha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][1] %}{{
+                                            data.shodashvarga_charts[v_key][1]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Mithuna">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][2] %}{{
+                                            data.shodashvarga_charts[v_key][2]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Kumbha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][10] %}{{
+                                            data.shodashvarga_charts[v_key][10]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-center">
+                                        <div style="font-size:0.8rem;">{{ v_key }}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Karka">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][3] %}{{
+                                            data.shodashvarga_charts[v_key][3]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Makara">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][9] %}{{
+                                            data.shodashvarga_charts[v_key][9]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Simha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][4] %}{{
+                                            data.shodashvarga_charts[v_key][4]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Dhanu">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][8] %}{{
+                                            data.shodashvarga_charts[v_key][8]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Vrishchika">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][7] %}{{
+                                            data.shodashvarga_charts[v_key][7]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Tula">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][6] %}{{
+                                            data.shodashvarga_charts[v_key][6]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Kanya">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][5] %}{{
+                                            data.shodashvarga_charts[v_key][5]|join(',') }}{% endif %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
