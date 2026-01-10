@@ -213,6 +213,96 @@
             padding: 6px;
         }
     }
+
+    /* PDF GENERATION STYLES */
+    .pdf-mode .tab-pane {
+        display: block !important;
+        opacity: 1 !important;
+        page-break-inside: avoid;
+        margin-bottom: 30px;
+        border-bottom: 1px dashed #ddd;
+        padding-bottom: 20px;
+    }
+
+    .pdf-mode .tab-pane:last-child {
+        border-bottom: none;
+    }
+
+    /* Force page break before major sections in PDF */
+    .pdf-mode #content-sudarshana,
+    .pdf-mode #content-divisional,
+    .pdf-mode #content-kundali,
+    .pdf-mode #content-dasha,
+    .pdf-mode #content-varga {
+        page-break-before: always;
+    }
+
+    .pdf-mode .planet-table {
+        font-size: 10pt;
+    }
+
+    .pdf-mode h3,
+    .pdf-mode h4,
+    .pdf-mode h5 {
+        color: #b71c1c !important;
+        margin-top: 10px;
+    }
+
+    /* Optimize table width for Landscape */
+    .pdf-mode .planet-table {
+        font-size: 9pt;
+        /* Slightly smaller to ensure 17 cols fit */
+        width: 100% !important;
+        table-layout: fixed;
+        /* Optional: forces equal width or specific width handling */
+    }
+
+    .pdf-mode .planet-table th,
+    .pdf-mode .planet-table td {
+        padding: 4px;
+        /* Tighter padding */
+        overflow-wrap: break-word;
+        /* Prevent overflow */
+    }
+
+    .pdf-mode .nav-tabs,
+    .pdf-mode .btn,
+    .pdf-mode .share-fab {
+        display: none !important;
+    }
+
+    /* Fix for Sudarshana SVG in PDF */
+    .pdf-mode .sudarshana-container {
+        max-width: 500px !important;
+        /* Force fixed width */
+        margin: 0 auto !important;
+    }
+
+    .pdf-mode .sudarshana-container svg {
+        width: 500px !important;
+        height: 500px !important;
+        page-break-inside: avoid;
+        border: 1px solid #ddd;
+        /* Ensure borders are visible */
+        margin-bottom: 10px;
+    }
+
+    /* Force 2 charts per page for Shodashvarga in PDF */
+    .pdf-mode .varga-chart-col {
+        width: 50% !important;
+        flex: 0 0 50% !important;
+        max-width: 50% !important;
+        margin-bottom: 30px !important;
+    }
+
+    .pdf-mode .varga-chart-col:nth-child(even) {
+        page-break-after: always;
+    }
+
+    /* Ensure the last one doesn't create an unnecessary blank page if it's even */
+    .pdf-mode .varga-chart-col:last-child {
+        page-break-after: auto;
+    }
 </style>
 {% endblock %}
 
@@ -259,14 +349,24 @@
     <div class="result-card">
 
         <!-- MAIN TABS -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 style="font-family: 'Playfair Display'; color: #b71c1c; margin: 0;">Horoscope Report</h3>
+            <button onclick="downloadPDF()" class="btn btn-danger"><i class="fas fa-file-pdf me-2"></i>Download
+                PDF</button>
+        </div>
+
         <ul class="nav nav-tabs nav-justified mb-4" id="horoscopeTabs" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="tab-basic" data-bs-toggle="tab" data-bs-target="#content-basic"
                     type="button" role="tab"><i class="fas fa-user me-2"></i>Basic Details</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-charts" data-bs-toggle="tab" data-bs-target="#content-charts"
-                    type="button" role="tab"><i class="fas fa-chart-pie me-2"></i>Charts</button>
+                <button class="nav-link" id="tab-sudarshana" data-bs-toggle="tab" data-bs-target="#content-sudarshana"
+                    type="button" role="tab"><i class="fas fa-dharmachakra me-2"></i>Sudarshana</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-divisional" data-bs-toggle="tab" data-bs-target="#content-divisional"
+                    type="button" role="tab"><i class="fas fa-chart-pie me-2"></i>Divisional Charts</button>
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-planets" data-bs-toggle="tab" data-bs-target="#content-planets"
@@ -285,12 +385,12 @@
                     type="button" role="tab"><i class="fas fa-hourglass-half me-2"></i>Vimshottari Dasha</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tab-predictions" data-bs-toggle="tab" data-bs-target="#content-predictions"
-                    type="button" role="tab"><i class="fas fa-bullseye me-2"></i>Lagna Phal & Dosha</button>
-            </li>
-            <li class="nav-item" role="presentation">
                 <button class="nav-link" id="tab-varga" data-bs-toggle="tab" data-bs-target="#content-varga"
                     type="button" role="tab"><i class="fas fa-th me-2"></i>Shodashvarga</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-predictions" data-bs-toggle="tab" data-bs-target="#content-predictions"
+                    type="button" role="tab"><i class="fas fa-bullseye me-2"></i>Lagna Phal & Dosha</button>
             </li>
         </ul>
 
@@ -390,13 +490,14 @@
                 </table>
             </div>
 
-            <!-- TAB 2: CHARTS -->
-            <div class="tab-pane fade" id="content-charts" role="tabpanel">
+            <!-- TAB 2a: SUDARSHANA CHAKRA -->
+            <div class="tab-pane fade" id="content-sudarshana" role="tabpanel">
                 <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Sudarshana Chakra
                 </h4>
-                <div style="text-align: center; margin: 20px auto; max-width: 600px;">
-                    <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"
-                        style="background-color:#fff; border: 1px solid #ddd; border-radius: 50%;">
+                <div class="sudarshana-container" style="text-align: center; margin: 20px auto; max-width: 600px;">
+                    <!-- Added width/height for html2canvas compatibility -->
+                    <svg width="500" height="500" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"
+                        style="background-color:#fff; border: 1px solid #ddd; border-radius: 50%; max-width: 100%; height: auto;">
                         <!-- Definitions for text paths if needed, or simple rotation -->
 
                         <!-- OUTER RING: SUN CHART -->
@@ -471,7 +572,10 @@
 
                     </svg>
                 </div>
+            </div>
 
+            <!-- TAB 2b: DIVISIONAL CHARTS -->
+            <div class="tab-pane fade" id="content-divisional" role="tabpanel">
                 <h4 class="text-center mt-4" style="color: #b71c1c; font-family: 'Playfair Display';">Divisional Charts
                 </h4>
                 <ul class="nav nav-pills justify-content-center mb-3" id="charts-tab" role="tablist">
@@ -838,7 +942,139 @@
                 </div>
             </div>
 
-            <!-- TAB 7: PREDICTIONS & DOSHA -->
+            <!-- TAB 7: SHODASHVARGA -->
+            <div class="tab-pane fade" id="content-varga" role="tabpanel">
+                <div class="planet-table-container">
+                    <h4 class="text-center"
+                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
+                        Shodashvarga (16 Divisional Charts)
+                    </h4>
+                    <div style="overflow-x:auto;">
+                        <table class="planet-table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Chart</th>
+                                    <th>D1</th>
+                                    <th>D2</th>
+                                    <th>D3</th>
+                                    <th>D4</th>
+                                    <th>D7</th>
+                                    <th>D9</th>
+                                    <th>D10</th>
+                                    <th>D12</th>
+                                    <th>D16</th>
+                                    <th>D20</th>
+                                    <th>D24</th>
+                                    <th>D27</th>
+                                    <th>D30</th>
+                                    <th>D40</th>
+                                    <th>D45</th>
+                                    <th>D60</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for planet in data.planetary_positions %}
+                                {% if planet.planet != 'Uranus' and planet.planet != 'Neptune' and planet.planet !=
+                                'Pluto' %}
+                                <tr>
+                                    <td class="fw-bold">{{ planet.planet }}</td>
+                                    <td>{{ planet.vargas.D1.sign }}</td>
+                                    <td>{{ planet.vargas.D2.sign }}</td>
+                                    <td>{{ planet.vargas.D3.sign }}</td>
+                                    <td>{{ planet.vargas.D4.sign }}</td>
+                                    <td>{{ planet.vargas.D7.sign }}</td>
+                                    <td>{{ planet.vargas.D9.sign }}</td>
+                                    <td>{{ planet.vargas.D10.sign }}</td>
+                                    <td>{{ planet.vargas.D12.sign }}</td>
+                                    <td>{{ planet.vargas.D16.sign }}</td>
+                                    <td>{{ planet.vargas.D20.sign }}</td>
+                                    <td>{{ planet.vargas.D24.sign }}</td>
+                                    <td>{{ planet.vargas.D27.sign }}</td>
+                                    <td>{{ planet.vargas.D30.sign }}</td>
+                                    <td>{{ planet.vargas.D40.sign }}</td>
+                                    <td>{{ planet.vargas.D45.sign }}</td>
+                                    <td>{{ planet.vargas.D60.sign }}</td>
+                                </tr>
+                                {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 16 CHARTS GRID -->
+                <div class="row mt-5">
+                    {% for v_key, v_title in data.varga_titles.items() %}
+                    <div class="col-md-6 col-lg-4 mb-4 varga-chart-col">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-header bg-transparent border-0 text-center">
+                                <h6 class="mb-0 fw-bold" style="color: #b71c1c;">{{ v_title }}</h6>
+                            </div>
+                            <div class="card-body p-2">
+                                <div class="chart-grid small-chart">
+                                    <div class="chart-cell" data-rashi="Meena">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][11] %}{{
+                                            data.shodashvarga_charts[v_key][11]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Mesha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][0] %}{{
+                                            data.shodashvarga_charts[v_key][0]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Vrishabha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][1] %}{{
+                                            data.shodashvarga_charts[v_key][1]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Mithuna">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][2] %}{{
+                                            data.shodashvarga_charts[v_key][2]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Kumbha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][10] %}{{
+                                            data.shodashvarga_charts[v_key][10]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-center">
+                                        <div style="font-size:0.8rem;">{{ v_key }}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Karka">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][3] %}{{
+                                            data.shodashvarga_charts[v_key][3]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Makara">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][9] %}{{
+                                            data.shodashvarga_charts[v_key][9]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Simha">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][4] %}{{
+                                            data.shodashvarga_charts[v_key][4]|join(',') }}{% endif %}</div>
+                                    </div>
+
+                                    <div class="chart-cell" data-rashi="Dhanu">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][8] %}{{
+                                            data.shodashvarga_charts[v_key][8]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Vrishchika">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][7] %}{{
+                                            data.shodashvarga_charts[v_key][7]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Tula">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][6] %}{{
+                                            data.shodashvarga_charts[v_key][6]|join(',') }}{% endif %}</div>
+                                    </div>
+                                    <div class="chart-cell" data-rashi="Kanya">
+                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][5] %}{{
+                                            data.shodashvarga_charts[v_key][5]|join(',') }}{% endif %}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- TAB 8: PREDICTIONS & DOSHA -->
             <div class="tab-pane fade" id="content-predictions" role="tabpanel">
                 <div class="planet-table-container">
                     <h4 class="text-center"
@@ -908,138 +1144,6 @@
                         </div>
                         {% endfor %}
                     </div>
-                </div>
-            </div>
-
-            <!-- TAB 7: SHODASHVARGA -->
-            <div class="tab-pane fade" id="content-varga" role="tabpanel">
-                <div class="planet-table-container">
-                    <h4 class="text-center"
-                        style="color: #b71c1c; font-family: 'Playfair Display'; margin-bottom: 20px;">
-                        Shodashvarga (16 Divisional Charts)
-                    </h4>
-                    <div style="overflow-x:auto;">
-                        <table class="planet-table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Chart</th>
-                                    <th>D1</th>
-                                    <th>D2</th>
-                                    <th>D3</th>
-                                    <th>D4</th>
-                                    <th>D7</th>
-                                    <th>D9</th>
-                                    <th>D10</th>
-                                    <th>D12</th>
-                                    <th>D16</th>
-                                    <th>D20</th>
-                                    <th>D24</th>
-                                    <th>D27</th>
-                                    <th>D30</th>
-                                    <th>D40</th>
-                                    <th>D45</th>
-                                    <th>D60</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for planet in data.planetary_positions %}
-                                {% if planet.planet != 'Uranus' and planet.planet != 'Neptune' and planet.planet !=
-                                'Pluto' %}
-                                <tr>
-                                    <td class="fw-bold">{{ planet.planet }}</td>
-                                    <td>{{ planet.vargas.D1.sign }}</td>
-                                    <td>{{ planet.vargas.D2.sign }}</td>
-                                    <td>{{ planet.vargas.D3.sign }}</td>
-                                    <td>{{ planet.vargas.D4.sign }}</td>
-                                    <td>{{ planet.vargas.D7.sign }}</td>
-                                    <td>{{ planet.vargas.D9.sign }}</td>
-                                    <td>{{ planet.vargas.D10.sign }}</td>
-                                    <td>{{ planet.vargas.D12.sign }}</td>
-                                    <td>{{ planet.vargas.D16.sign }}</td>
-                                    <td>{{ planet.vargas.D20.sign }}</td>
-                                    <td>{{ planet.vargas.D24.sign }}</td>
-                                    <td>{{ planet.vargas.D27.sign }}</td>
-                                    <td>{{ planet.vargas.D30.sign }}</td>
-                                    <td>{{ planet.vargas.D40.sign }}</td>
-                                    <td>{{ planet.vargas.D45.sign }}</td>
-                                    <td>{{ planet.vargas.D60.sign }}</td>
-                                </tr>
-                                {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- 16 CHARTS GRID -->
-                <div class="row mt-5">
-                    {% for v_key, v_title in data.varga_titles.items() %}
-                    <div class="col-md-6 col-lg-4 mb-4">
-                        <div class="card h-100 border-0 shadow-sm">
-                            <div class="card-header bg-transparent border-0 text-center">
-                                <h6 class="mb-0 fw-bold" style="color: #b71c1c;">{{ v_title }}</h6>
-                            </div>
-                            <div class="card-body p-2">
-                                <div class="chart-grid small-chart">
-                                    <div class="chart-cell" data-rashi="Meena">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][11] %}{{
-                                            data.shodashvarga_charts[v_key][11]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Mesha">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][0] %}{{
-                                            data.shodashvarga_charts[v_key][0]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Vrishabha">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][1] %}{{
-                                            data.shodashvarga_charts[v_key][1]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Mithuna">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][2] %}{{
-                                            data.shodashvarga_charts[v_key][2]|join(',') }}{% endif %}</div>
-                                    </div>
-
-                                    <div class="chart-cell" data-rashi="Kumbha">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][10] %}{{
-                                            data.shodashvarga_charts[v_key][10]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-center">
-                                        <div style="font-size:0.8rem;">{{ v_key }}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Karka">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][3] %}{{
-                                            data.shodashvarga_charts[v_key][3]|join(',') }}{% endif %}</div>
-                                    </div>
-
-                                    <div class="chart-cell" data-rashi="Makara">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][9] %}{{
-                                            data.shodashvarga_charts[v_key][9]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Simha">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][4] %}{{
-                                            data.shodashvarga_charts[v_key][4]|join(',') }}{% endif %}</div>
-                                    </div>
-
-                                    <div class="chart-cell" data-rashi="Dhanu">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][8] %}{{
-                                            data.shodashvarga_charts[v_key][8]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Vrishchika">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][7] %}{{
-                                            data.shodashvarga_charts[v_key][7]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Tula">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][6] %}{{
-                                            data.shodashvarga_charts[v_key][6]|join(',') }}{% endif %}</div>
-                                    </div>
-                                    <div class="chart-cell" data-rashi="Kanya">
-                                        <div class="planet-text">{% if data.shodashvarga_charts[v_key][5] %}{{
-                                            data.shodashvarga_charts[v_key][5]|join(',') }}{% endif %}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -1117,5 +1221,98 @@
     document.addEventListener('click', function (e) {
         if (e.target !== input && e.target !== list) { list.style.display = 'none'; }
     });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+    function downloadPDF() {
+        const element = document.querySelector('.result-card');
+        const btn = document.querySelector('.btn-danger'); // Download button
+
+        // 1. Enter PDF Mode
+        element.classList.add('pdf-mode');
+
+        // Hide navigation and button for PDF
+        // (CSS handles this now via .pdf-mode, but keeping JS for safety/smoothness)
+        const navTabs = element.querySelector('.nav-tabs');
+        if (navTabs) navTabs.style.display = 'none';
+        btn.style.display = 'none';
+
+        // 2. Inject Header and Footer
+        const header = document.createElement('div');
+        header.id = 'pdf-header';
+        header.style.textAlign = 'center';
+        header.style.marginBottom = '20px';
+        header.style.borderBottom = '2px solid #b71c1c';
+        header.style.paddingBottom = '10px';
+        header.innerHTML = '<h1 style="color: #b71c1c; font-family: Playfair Display; margin-bottom: 5px;">Dwara\'s Vedic Calendar</h1><p style="margin:0; font-weight:bold; color: #555;">Horoscope Report</p>';
+        element.prepend(header);
+
+        const footer = document.createElement('div');
+        footer.id = 'pdf-footer';
+        footer.style.textAlign = 'center';
+        footer.style.marginTop = '30px';
+        footer.style.borderTop = '1px solid #ddd';
+        footer.style.fontSize = '0.8rem';
+        footer.style.paddingTop = '10px';
+        footer.style.color = '#777';
+        footer.innerHTML = '<p>&copy; 2026 Dwara\'s Vedic Calendar | Generated on ' + new Date().toLocaleDateString() + ' | www.dwaravedic.com</p>';
+        element.append(footer);
+
+        // 3. Expand Tabs & Accordions
+        const tabContents = element.querySelectorAll('.tab-pane');
+        tabContents.forEach(tab => {
+            tab.classList.add('show', 'active');
+        });
+
+        // Expand Dasha Accordions
+        const accordions = element.querySelectorAll('.accordion-collapse');
+        accordions.forEach(acc => {
+            acc.classList.add('show');
+            // Optional: hide the toggle icon or styling if needed, but usually fine
+        });
+
+        // 4. Generate PDF
+        const opt = {
+            margin: [0.3, 0.3],
+            filename: 'Horoscope_Report.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            // 5. Restore UI
+            element.classList.remove('pdf-mode');
+
+            const h = document.getElementById('pdf-header');
+            const f = document.getElementById('pdf-footer');
+            if (h) h.remove();
+            if (f) f.remove();
+
+            if (navTabs) navTabs.style.display = 'flex';
+            btn.style.display = 'inline-block';
+
+            // Collapse Accordions
+            accordions.forEach(acc => {
+                acc.classList.remove('show');
+            });
+
+            // Reset tabs to original state (Active Basic, others hidden)
+            tabContents.forEach(tab => {
+                if (tab.id !== 'content-basic') {
+                    tab.classList.remove('show', 'active');
+                } else {
+                    tab.classList.add('show', 'active');
+                }
+            });
+            // Also reset nav links active state
+            const navLinks = element.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.id === 'tab-basic') link.classList.add('active');
+                else link.classList.remove('active');
+            });
+        });
+    }
 </script>
 {% endblock %}
