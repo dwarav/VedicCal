@@ -188,33 +188,33 @@ GREGORIAN_FESTIVALS = {
     (12, 25): "Christmas"
 }
 FESTIVAL_IMAGES_STATIC = {
-    "Ugadi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ugadi_Pachadi.jpg/320px-Ugadi_Pachadi.jpg", 
-    "Rama Navami": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rama_Pattabhishekam.jpg/320px-Rama_Pattabhishekam.jpg", 
-    "Hanuman": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Hanuman_idol.jpg/320px-Hanuman_idol.jpg", 
-    "Akshaya Tritiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Goddess_Lakshmi.jpg/320px-Goddess_Lakshmi.jpg", 
-    "Guru Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Veda_Vyasa.jpg/320px-Veda_Vyasa.jpg", 
-    "Raksha Bandhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rakhi.jpg/320px-Rakhi.jpg", 
-    "Janmashtami": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg", 
-    "Ganesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
-    "Vinayaka": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
-    "Sankashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
-    "Sankashta": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg",
-    "Navratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", 
-    "Durga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", 
-    "Dussehra": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg", 
-    "Vijaya": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg",
-    "Diwali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg", 
-    "Deepavali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg",
-    "Shivaratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shiva_lingam.jpg/320px-Shiva_lingam.jpg", 
-    "Holi": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Holi_Dahan.jpg/320px-Holi_Dahan.jpg", 
+    "Ugadi": "/static/images/ugadi.jpg", 
+    "Rama Navami": "/static/images/rama_navami.jpg", 
+    "Hanuman": "/static/images/hanuman.jpg", 
+    "Akshaya Tritiya": "/static/images/akshaya_tritiya.jpg", 
+    "Guru Purnima": "/static/images/guru_purnima.jpg", 
+    "Raksha Bandhan": "/static/images/raksha_bandhan.jpg", 
+    "Janmashtami": "/static/images/janmashtami.jpg", 
+    "Ganesh": "/static/images/ganesh.jpg", 
+    "Vinayaka": "/static/images/vinayaka.jpg", 
+    "Sankashti": "/static/images/sankashti.jpg", 
+    "Sankashta": "/static/images/sankashta.jpg",
+    "Navratri": "/static/images/navratri.jpg", 
+    "Durga": "/static/images/durga.jpg", 
+    "Dussehra": "/static/images/dussehra.jpg", 
+    "Vijaya": "/static/images/vijaya.jpg",
+    "Diwali": "/static/images/diwali.jpg", 
+    "Deepavali": "/static/images/deepavali.jpg",
+    "Shivaratri": "/static/images/shivaratri.jpg", 
+    "Holi": "/static/images/holi.jpg", 
     "Ekadashi": "/static/images/vishnu_ekadashi.png", 
-    "Pradosh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Nandi_bull.jpg/320px-Nandi_bull.jpg", 
+    "Pradosh": "/static/images/pradosh.jpg", 
     "Sankranti": "/static/images/makara_sankranti.png", 
     "Pongal": "/static/images/makara_sankranti.png",
-    "Christmas": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Christmas_tree.jpg/320px-Christmas_tree.jpg", 
-    "Republic": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", 
-    "Independence": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", 
-    "Yoga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Yoga_class_Rishikesh.jpg/320px-Yoga_class_Rishikesh.jpg"
+    "Christmas": "/static/images/christmas.jpg", 
+    "Republic": "/static/images/republic.jpg", 
+    "Independence": "/static/images/independence.jpg", 
+    "Yoga": "/static/images/yoga.jpg"
 }
 
 
@@ -921,8 +921,22 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
 def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_idx):
     festivals = []
     def get_image_url(name):
+        # 1. Check Static Mapping
         for key, url in FESTIVAL_IMAGES_STATIC.items():
-            if key in name: return url
+            if key in name: 
+                # If it's a local file, verify it exists
+                if url.startswith("/static"):
+                    # Remove leading / for os.path.join
+                    rel_path = url.lstrip("/")
+                    # Construct absolute path assuming this file is in project root
+                    abs_path = os.path.join(os.path.dirname(__file__), rel_path)
+                    if os.path.exists(abs_path):
+                        return url
+                    # If file doesn't exist, FALLTHROUGH to dynamic
+                else:
+                    return url # External URL (if any lef)
+        
+        # 2. Dynamic Generation Fallback
         seed = sum(ord(c) for c in name)
         safe_name = urllib.parse.quote(name)
         return f"https://image.pollinations.ai/prompt/Hindu%20festival%20{safe_name}%20devotional%20art?width=300&height=200&nologo=true&seed={seed}"
