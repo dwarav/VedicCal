@@ -133,9 +133,89 @@ YAMA_KEY = {0: 4, 1: 3, 2: 2, 3: 1, 4: 7, 5: 6, 6: 5}
 GULI_KEY = {0: 6, 1: 5, 2: 4, 3: 3, 4: 2, 5: 1, 6: 7}
 
 # ... (Keep FESTIVAL_DB, GREGORIAN_FESTIVALS, FESTIVAL_IMAGES_STATIC) ...
-FESTIVAL_DB = {(0, 0, 0): "Ugadi / Gudi Padwa", (0, 0, 8): "Rama Navami", (0, 0, 14): "Hanuman Jayanti", (1, 0, 2): "Akshaya Tritiya", (1, 0, 14): "Buddha Purnima", (2, 0, 9): "Ganga Dussehra", (2, 0, 14): "Vat Savitri Vrat", (3, 0, 1): "Jagannath Rath Yatra", (3, 0, 10): "Devshayani Ekadashi", (3, 0, 14): "Guru Purnima", (4, 0, 4): "Nag Panchami", (4, 0, 14): "Raksha Bandhan", (4, 1, 7): "Janmashtami", (5, 0, 3): "Ganesh Chaturthi", (5, 0, 13): "Anant Chaturdashi", (5, 1, 14): "Mahalaya Amavasya", (6, 0, 0): "Navratri Ghatasthapana", (6, 0, 9): "Dussehra", (6, 0, 14): "Sharad Purnima", (6, 1, 3): "Karwa Chauth", (6, 1, 12): "Dhanteras", (6, 1, 14): "Diwali", (7, 0, 0): "Govardhan Puja", (7, 0, 1): "Bhai Dooj", (7, 0, 10): "Tulsi Vivah", (7, 0, 14): "Kartik Purnima", (8, 0, 10): "Gita Jayanti", (8, 0, 14): "Dattatreya Jayanti", (10, 0, 4): "Vasant Panchami", (10, 0, 6): "Ratha Saptami", (10, 1, 13): "Maha Shivaratri", (11, 0, 14): "Holi"}
-GREGORIAN_FESTIVALS = {(1, 1): "New Year's Day", (1, 14): "Makara Sankranti", (1, 26): "Republic Day India", (2, 14): "Valentine's Day", (3, 8): "Women's Day", (4, 14): "Ambedkar Jayanti", (5, 1): "Labor Day", (6, 21): "International Yoga Day", (8, 15): "Independence Day India", (10, 2): "Gandhi Jayanti", (11, 14): "Children's Day", (12, 25): "Christmas"}
-FESTIVAL_IMAGES_STATIC = {"Ugadi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ugadi_Pachadi.jpg/320px-Ugadi_Pachadi.jpg", "Rama Navami": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rama_Pattabhishekam.jpg/320px-Rama_Pattabhishekam.jpg", "Hanuman": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Hanuman_idol.jpg/320px-Hanuman_idol.jpg", "Akshaya Tritiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Goddess_Lakshmi.jpg/320px-Goddess_Lakshmi.jpg", "Guru Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Veda_Vyasa.jpg/320px-Veda_Vyasa.jpg", "Raksha Bandhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rakhi.jpg/320px-Rakhi.jpg", "Janmashtami": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg", "Ganesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Vinayaka": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Sankashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", "Navratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", "Durga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", "Dussehra": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg", "Diwali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg", "Shivaratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shiva_lingam.jpg/320px-Shiva_lingam.jpg", "Holi": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Holi_Dahan.jpg/320px-Holi_Dahan.jpg", "Ekadashi": "/static/images/vishnu_ekadashi.png", "Pradosh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Nandi_bull.jpg/320px-Nandi_bull.jpg", "Sankranti": "/static/images/makara_sankranti.png", "Christmas": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Christmas_tree.jpg/320px-Christmas_tree.jpg", "Republic": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", "Independence": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", "Yoga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Yoga_class_Rishikesh.jpg/320px-Yoga_class_Rishikesh.jpg"}
+FESTIVAL_DB = {
+    (0, 0, 0): "Ugadi / Gudi Padwa", 
+    (0, 0, 8): "Sri Rama Navami", 
+    (0, 0, 14): "Hanuman Jayanti", 
+    (1, 0, 2): "Akshaya Tritiya", 
+    (1, 0, 14): "Buddha Purnima", 
+    (2, 0, 9): "Ganga Dussehra", 
+    (2, 0, 14): "Vat Savitri Vrat", 
+    (3, 0, 1): "Jagannath Rath Yatra", 
+    (3, 0, 10): "Toli Ekadashi (Devshayani)", 
+    (3, 0, 14): "Guru Purnima", 
+    (4, 0, 4): "Nagula Panchami", 
+    (4, 0, 14): "Raksha Bandhan", 
+    (4, 1, 7): "Sri Krishna Janmashtami", 
+    (5, 0, 3): "Vinayaka Chavithi", 
+    (5, 0, 13): "Anant Chaturdashi", 
+    (5, 1, 14): "Mahalaya Amavasya", 
+    (6, 0, 0): "Devi Navaratri Start", 
+    (6, 0, 9): "Vijaya Dashami", 
+    (6, 0, 14): "Sharad Purnima", 
+    (6, 1, 2): "Atla Tadde",
+    (6, 1, 3): "Karwa Chauth", 
+    (6, 1, 12): "Dhanteras", 
+    (6, 1, 13): "Naraka Chaturdashi",
+    (6, 1, 14): "Deepavali", 
+    (7, 0, 0): "Govardhan Puja", 
+    (7, 0, 1): "Bhai Dooj", 
+    (7, 0, 3): "Nagula Chavithi (Start)",
+    (7, 0, 10): "Utthana Dwadashi / Tulsi Vivah", 
+    (7, 0, 14): "Kartika Purnima", 
+    (8, 0, 10): "Mukkoti Ekadashi / Gita Jayanti", 
+    (8, 0, 14): "Dattatreya Jayanti", 
+    (10, 0, 4): "Vasant Panchami", 
+    (10, 0, 6): "Ratha Saptami", 
+    (10, 0, 10): "Bhishma Ekadashi",
+    (10, 1, 13): "Maha Shivaratri", 
+    (11, 0, 14): "Holi / Kamadahan"
+}
+GREGORIAN_FESTIVALS = {
+    (1, 1): "New Year's Day", 
+    (1, 13): "Bhogi",
+    (1, 14): "Makara Sankranti / Pongal", 
+    (1, 15): "Kanuma",
+    (1, 26): "Republic Day India", 
+    (2, 14): "Valentine's Day", 
+    (3, 8): "Women's Day", 
+    (4, 14): "Ambedkar Jayanti", 
+    (5, 1): "Labor Day", 
+    (6, 21): "International Yoga Day", 
+    (8, 15): "Independence Day India", 
+    (10, 2): "Gandhi Jayanti", 
+    (11, 14): "Children's Day", 
+    (12, 25): "Christmas"
+}
+FESTIVAL_IMAGES_STATIC = {
+    "Ugadi": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Ugadi_Pachadi.jpg/320px-Ugadi_Pachadi.jpg", 
+    "Rama Navami": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Rama_Pattabhishekam.jpg/320px-Rama_Pattabhishekam.jpg", 
+    "Hanuman": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Hanuman_idol.jpg/320px-Hanuman_idol.jpg", 
+    "Akshaya Tritiya": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Goddess_Lakshmi.jpg/320px-Goddess_Lakshmi.jpg", 
+    "Guru Purnima": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Veda_Vyasa.jpg/320px-Veda_Vyasa.jpg", 
+    "Raksha Bandhan": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Rakhi.jpg/320px-Rakhi.jpg", 
+    "Janmashtami": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Krishna_holding_Govardhan.jpg/320px-Krishna_holding_Govardhan.jpg", 
+    "Ganesh": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
+    "Vinayaka": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
+    "Sankashti": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg", 
+    "Sankashta": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Lalbaugcha_Raja.jpg/320px-Lalbaugcha_Raja.jpg",
+    "Navratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", 
+    "Durga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Durga_Puja_pandal.jpg/320px-Durga_Puja_pandal.jpg", 
+    "Dussehra": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg", 
+    "Vijaya": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Ravana_effigy.jpg/320px-Ravana_effigy.jpg",
+    "Diwali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg", 
+    "Deepavali": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Diwali_lamps.jpg/320px-Diwali_lamps.jpg",
+    "Shivaratri": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Shiva_lingam.jpg/320px-Shiva_lingam.jpg", 
+    "Holi": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/Holi_Dahan.jpg/320px-Holi_Dahan.jpg", 
+    "Ekadashi": "/static/images/vishnu_ekadashi.png", 
+    "Pradosh": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Nandi_bull.jpg/320px-Nandi_bull.jpg", 
+    "Sankranti": "/static/images/makara_sankranti.png", 
+    "Pongal": "/static/images/makara_sankranti.png",
+    "Christmas": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Christmas_tree.jpg/320px-Christmas_tree.jpg", 
+    "Republic": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", 
+    "Independence": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/India_Gate.jpg/320px-India_Gate.jpg", 
+    "Yoga": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Yoga_class_Rishikesh.jpg/320px-Yoga_class_Rishikesh.jpg"
+}
 
 
 # ================= CORE FUNCTIONS =================
@@ -839,10 +919,6 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
     return lagnas
 
 def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_idx):
-    paksha_code = 0 if tithi_idx < 15 else 1
-    tithi_in_paksha = tithi_idx % 15
-    sun_sign_idx = int(sun_long / 30)
-    lunar_month_idx = (sun_sign_idx + 1) % 12 
     festivals = []
     def get_image_url(name):
         for key, url in FESTIVAL_IMAGES_STATIC.items():
@@ -853,22 +929,38 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
     def add_fest(name):
         if not any(f['name'] == name for f in festivals):
             festivals.append({"name": name, "image_url": get_image_url(name)})
-    key = (lunar_month_idx, paksha_code, tithi_in_paksha)
-    if key in FESTIVAL_DB: add_fest(FESTIVAL_DB[key])
+    
+    # Gregorian Festivals (Date based)
     greg_key = (dt_obj.month, dt_obj.day)
     if greg_key in GREGORIAN_FESTIVALS: add_fest(GREGORIAN_FESTIVALS[greg_key])
-    if paksha_code == 0 and tithi_in_paksha == 3: add_fest("Vinayaka Chaturthi")
-    if paksha_code == 1 and tithi_in_paksha == 3: add_fest("Sankashti Chaturthi")
-    if paksha_code == 0 and tithi_in_paksha == 5: add_fest("Skanda Sashti")
-    if paksha_code == 0 and tithi_in_paksha == 7: add_fest("Masik Durgashtami")
-    if paksha_code == 1 and tithi_in_paksha == 7: add_fest("Kalashtami")
-    if tithi_in_paksha == 10: prefix = "Shukla" if paksha_code == 0 else "Krishna"; add_fest(f"{prefix} Ekadashi")
-    if tithi_in_paksha == 12: add_fest("Pradosh Vrat")
-    if paksha_code == 1 and tithi_in_paksha == 13: add_fest("Masik Shivaratri")
-    if paksha_code == 1 and tithi_in_paksha == 14: add_fest("Amavasya")
-    if paksha_code == 0 and tithi_in_paksha == 14: add_fest("Purnima")
-    if nak_idx == 2: add_fest("Masik Karthigai")
-    if nak_idx == 3: add_fest("Rohini Vrat")
+    
+    # Tithi Based Festivals
+    if tithi_idx >= 0:
+        paksha_code = 0 if tithi_idx < 15 else 1
+        tithi_in_paksha = tithi_idx % 15
+        
+        # Improved Lunar Month Calculation
+        sun_rashi_at_new_moon = int((sun_long - (tithi_idx * 0.9856)) / 30)
+        lunar_month_idx = (sun_rashi_at_new_moon + 1) % 12 
+        
+        key = (lunar_month_idx, paksha_code, tithi_in_paksha)
+        if key in FESTIVAL_DB: add_fest(FESTIVAL_DB[key])
+        
+        if paksha_code == 0 and tithi_in_paksha == 3: add_fest("Vinayaka Chavithi (Masik)")
+        if paksha_code == 1 and tithi_in_paksha == 3: add_fest("Sankashta Hara Chavithi")
+        if paksha_code == 0 and tithi_in_paksha == 5: add_fest("Subrahmanya Shashti")
+        if paksha_code == 0 and tithi_in_paksha == 7: add_fest("Durgashtami")
+        if paksha_code == 1 and tithi_in_paksha == 7: add_fest("Kalashtami")
+        if tithi_in_paksha == 10: prefix = "Shukla" if paksha_code == 0 else "Krishna"; add_fest(f"{prefix} Ekadashi")
+        if tithi_in_paksha == 12: add_fest("Pradosham")
+        if paksha_code == 1 and tithi_in_paksha == 13: add_fest("Masik Shivaratri")
+        if paksha_code == 1 and tithi_in_paksha == 14: add_fest("Amavasya")
+        if paksha_code == 0 and tithi_in_paksha == 14: add_fest("Purnima")
+
+    # Nakshatra Based Festivals
+    if nak_idx >= 0:
+        if nak_idx == 2: add_fest("Krittika (Karthigai)")
+        if nak_idx == 3: add_fest("Rohini Vratam")
     return festivals
 
 # --- NUMEROLOGY & HOROSCOPE CALCULATION ---
@@ -1599,7 +1691,34 @@ def fetch_month_day_data(loc, date_str):
     tithi_events = get_events(rise, rise_next, fn_tithi, TITHIS, 30)
     nak_events = get_events(rise, rise_next, fn_nak, NAKSHATRAS, 27)
     
-    festivals = get_festivals_details(rise, tithi_at_sunrise_idx, sun_long, dt, nak_idx_sunrise, moon_rashi_idx)
+    # Collect all unique Tithis and Nakshatras for the day to check for festivals
+    tithis_to_check = {tithi_at_sunrise_idx}
+    for e in tithi_events: tithis_to_check.add(e['index'])
+    
+    naks_to_check = {nak_idx_sunrise}
+    for e in nak_events: naks_to_check.add(e['index'])
+    
+    all_festivals = []
+    seen_fest_names = set()
+    
+    # Check Tithi-based festivals
+    for t_idx in tithis_to_check:
+        fests = get_festivals_details(rise, t_idx, sun_long, dt, -1, moon_rashi_idx)
+        for f in fests:
+            if f['name'] not in seen_fest_names:
+                all_festivals.append(f)
+                seen_fest_names.add(f['name'])
+                
+    # Check Nakshatra-based festivals
+    for n_idx in naks_to_check:
+        fests = get_festivals_details(rise, -1, sun_long, dt, n_idx, moon_rashi_idx)
+        for f in fests:
+            if f['name'] not in seen_fest_names:
+                all_festivals.append(f)
+                seen_fest_names.add(f['name'])
+    
+    # Use full list
+    festivals = all_festivals
     
     def fmt_dt(jd): 
         d = dt_from_jd(jd, tz)
