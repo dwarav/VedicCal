@@ -237,3 +237,75 @@ body {
     box-shadow: 0 0 0 0.25rem rgba(212, 172, 13, 0.25);
 }
 
+
+/* --- GOOGLE TRANSLATE WIDGET --- */
+#google_translate_element {
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 0;
+}
+
+/* Hide the Google Branding Banner */
+.goog-te-banner-frame.skiptranslate {
+    display: none !important;
+}
+body {
+    top: 0px !important;
+}
+
+/* Additional Hiding for newer Google Translate versions */
+.skiptranslate iframe {
+    display: none !important; 
+    visibility: hidden !important;
+}
+
+/* Ensure body doesn't get pushed down */
+body {
+    position: static !important;
+    top: 0px !important;
+}
+
+/* Hide tooltips that might appear */
+.goog-te-balloon-frame {
+    display: none !important;
+}
+
+
+/* Customize the Dropdown */
+.goog-te-gadget-simple {
+    background-color: #8e1616 !important;
+    border: 1px solid #d4ac0d !important;
+    padding: 4px 8px !important;
+    border-radius: 4px !important;
+    font-size: 0.9rem !important;
+    line-height: 2 !important;
+    display: flex !important;
+    align-items: center !important;
+    color: #fff !important;
+}
+
+.goog-te-gadget-simple a {
+    color: #fff !important;
+    text-decoration: none !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+    color: #fff !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span {
+    color: #fff !important;
+    border-left: none !important; /* Remove separator */
+}
+
+/* Hide the Google Icon if desired for cleaner look, or style it */
+.goog-te-gadget-icon {
+    display: none !important;
+}
+
+/* Hover effect */
+.goog-te-gadget-simple:hover {
+    background-color: #a31a1a !important;
+    border-color: #f9e79f !important;
+}
+
