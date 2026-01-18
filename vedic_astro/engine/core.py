@@ -650,25 +650,48 @@ def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz):
 
     return {"chandrabalam": {"good_rashis": good_rashis, "ashtama_chandra": ["Ashtama Chandra check required"]}, "tarabalam": periods}
 
-def get_panchaka_rahita_details(lagnas, tithi_idx, nak_idx, weekday_idx):
+def get_panchaka_rahita_details(lagnas, tithi_events, nak_events, weekday_idx):
     """Calculates Panchaka Rahita Muhurtha (Good/Bad Panchaka) based on Lagna timings."""
     panchaka_list = []
     V_WEEKDAY = {6:1, 0:2, 1:3, 2:4, 3:5, 4:6, 5:7}
     v_wd = V_WEEKDAY[weekday_idx]
-    tithi_num = tithi_idx + 1
-    nak_num = nak_idx + 1
+    
+    # Helper to find index at a given JD
+    def get_idx_at(jd_target, events):
+        for e in events:
+             start = e.get('start') or 0 # handle None
+             end = e.get('end') or 99999999
+             if start <= jd_target <= end:
+                 return e['index']
+        return events[0]['index'] # fallback
+
     for lagna in lagnas:
         rashi_name = lagna['name']
+        
+        # Calculate Midpoint JD
+        mid_jd = (lagna['start_jd'] + lagna['end_jd']) / 2
+        
+        # Find Tithi and Nakshatra at this midpoint
+        tithi_idx = get_idx_at(mid_jd, tithi_events)
+        nak_idx = get_idx_at(mid_jd, nak_events)
+
+        tithi_num = tithi_idx + 1 # 1-based
+        nak_num = nak_idx + 1 # 1-based
+
+        lagna_num = 1
         for i, r in enumerate(RASHIS):
             if r.startswith(rashi_name): lagna_num = i + 1; break
+            
         total = tithi_num + v_wd + nak_num + lagna_num
         remainder = total % 9
+        
         if remainder == 1: status, label = False, "Mrityu Panchaka"
         elif remainder == 2: status, label = False, "Agni Panchaka"
         elif remainder == 4: status, label = False, "Raja Panchaka"
         elif remainder == 6: status, label = False, "Chora Panchaka"
         elif remainder == 8: status, label = False, "Roga Panchaka"
         else: status, label = True, "Good Muhurta"
+        
         panchaka_list.append({"label": label, "times": f"{lagna['start']} to {lagna['end']}", "is_good": status})
     return panchaka_list
 
@@ -697,7 +720,7 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
             if last_sign_idx != -1 and curr_sign_idx != last_sign_idx:
                 rashi_name = RASHIS[last_sign_idx]
                 icon = RASHI_ICONS.get(rashi_name, "")
-                lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(curr_jd)})
+                lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(curr_jd), "start_jd": lagna_start_jd, "end_jd": curr_jd})
                 lagna_start_jd = curr_jd
             last_sign_idx = curr_sign_idx
         except: pass
@@ -705,7 +728,7 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
     if last_sign_idx != -1:
         rashi_name = RASHIS[last_sign_idx]
         icon = RASHI_ICONS.get(rashi_name, "")
-        lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(jd_end)})
+        lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(jd_end), "start_jd": lagna_start_jd, "end_jd": jd_end})
     return lagnas
 
 def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_idx):
@@ -880,7 +903,7 @@ def fetch_panchang(loc_str_or_dict, date_str):
     epoch = get_epoch_details(jd_noon, dt)
     chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
-    panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_idx, nak_idx, w_idx)
+    panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_events, nak_events, w_idx)
     festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)
     dinamana = fmt_duration(rise, set_)
     ratrimana = fmt_duration(set_, rise_next)
