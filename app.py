@@ -1,6 +1,9 @@
 import calendar
 from flask import Flask, render_template, request
-from panchang_engine import fetch_panchang, get_location, fetch_month_day_data, get_monthly_muhurthas, get_horoscope_by_birth_details, get_location
+from vedic_astro.engine.core import fetch_panchang, fetch_month_day_data
+from vedic_astro.engine.horoscope import get_horoscope_by_birth_details
+from vedic_astro.engine.muhurtha import get_monthly_muhurthas
+from vedic_astro.engine.geo import get_location
 from datetime import datetime
 import pytz
 
@@ -160,7 +163,7 @@ def muhurtha_view():
 
 
 # ... (Keep existing imports) ...
-from panchang_engine import get_horoscope_by_birth_details, get_location
+
 
 @app.route('/horoscope', methods=['GET', 'POST'])
 def horoscope_view():
