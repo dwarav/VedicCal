@@ -856,11 +856,39 @@ def fetch_panchang(loc_str_or_dict, date_str):
         return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
     def fmt_range(start, end): return f"{fmt_dt(start)} - {fmt_dt(end)}"
     calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
-    nk_start = nak_events[0]['start'] if nak_events else rise
-    v_s = nk_start + (VARJYAM_STARTS[nak_idx]/60.0)
-    varjyam_time = fmt_range(v_s, v_s + 4/60.0)
-    a_s = nk_start + (AMRIT_STARTS[nak_idx]/60.0)
-    amrit_time = fmt_range(a_s, a_s + 4/60.0)
+    # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
+    def get_special_timing(events, start_offsets, duration_mins=96):
+        # duration_mins: 4 ghatis = 4 * 24 = 96 mins
+        timings = []
+        duration_days = duration_mins / (24 * 60)
+        
+        for n in events:
+            idx = n['index']
+            # If start is None (e.g. started way before), fallback to rise but that's risky.
+            # Ideally 'start' is populated by get_events even if it was before.
+            # get_events looks back 1.5 days, so usually we have the start.
+            if n['start'] is None: continue 
+            
+            offset_ghati = start_offsets[idx]
+            offset_days = offset_ghati / 60.0
+            
+            s_jd = n['start'] + offset_days
+            e_jd = s_jd + duration_days
+            
+            # Check overlap with "Today" (Sunrise to Next Sunrise or 24h)
+            # We want to show it if it happens "Today".
+            # If it happened yesterday, ignore.
+            if e_jd < rise: continue
+            if s_jd > rise_next: continue 
+            
+            s_fmt = fmt_dt(s_jd)
+            e_fmt = fmt_dt(e_jd)
+            timings.append(f"{s_fmt} - {e_fmt}")
+            
+        return " | ".join(timings) if timings else "None"
+
+    varjyam_time = get_special_timing(nak_events, VARJYAM_STARTS)
+    amrit_time = get_special_timing(nak_events, AMRIT_STARTS)
     def get_sign_entry_exit_daily(jd_current, body_id, current_sign_idx, tz):
         target_next = (current_sign_idx + 1) % 12
         def check_sign_idx(t):
