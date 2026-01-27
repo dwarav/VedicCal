@@ -219,6 +219,14 @@
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
                     <span class="time-badge secondary"><i class="fas fa-sun time-icon"></i> Abhijit: {{ item.abhijit
                         }}</span>
+                    {% if item.warnings %}
+                    {% for w in item.warnings %}
+                    <span class="bad-badge"
+                        style="background-color: #c62828; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; display: block; margin-top: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> {{ w }}
+                    </span>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -242,6 +250,14 @@
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
                     <span class="time-badge secondary"><i class="fas fa-sun time-icon"></i> Abhijit: {{ item.abhijit
                         }}</span>
+                    {% if item.warnings %}
+                    {% for w in item.warnings %}
+                    <span class="bad-badge"
+                        style="background-color: #c62828; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; display: block; margin-top: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> {{ w }}
+                    </span>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -265,6 +281,14 @@
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
                     <span class="time-badge secondary"><i class="fas fa-sun time-icon"></i> Abhijit: {{ item.abhijit
                         }}</span>
+                    {% if item.warnings %}
+                    {% for w in item.warnings %}
+                    <span class="bad-badge"
+                        style="background-color: #c62828; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; display: block; margin-top: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> {{ w }}
+                    </span>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
@@ -288,6 +312,14 @@
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
                     <span class="time-badge secondary"><i class="fas fa-sun time-icon"></i> Abhijit: {{ item.abhijit
                         }}</span>
+                    {% if item.warnings %}
+                    {% for w in item.warnings %}
+                    <span class="bad-badge"
+                        style="background-color: #c62828; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; display: block; margin-top: 5px;">
+                        <i class="fas fa-exclamation-triangle"></i> {{ w }}
+                    </span>
+                    {% endfor %}
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}
