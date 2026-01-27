@@ -219,50 +219,81 @@
         display: block !important;
         opacity: 1 !important;
         page-break-inside: avoid;
-        margin-bottom: 30px;
+        margin-bottom: 20px;
+        /* Reduced from 30px */
         border-bottom: 1px dashed #ddd;
-        padding-bottom: 20px;
+        padding-bottom: 10px;
+        /* Reduced from 20px */
     }
 
     .pdf-mode .tab-pane:last-child {
         border-bottom: none;
     }
 
-    /* Force page break before major sections in PDF */
+    /* Reset Bootstrap Grid for PDF to prevent alignment issues */
+    .pdf-mode .row {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    .pdf-mode .col-md-6,
+    .pdf-mode .col-lg-4 {
+        padding-right: 5px !important;
+        padding-left: 5px !important;
+    }
+
+    /* REMOVED FORCED PAGE BREAKS FOR CONTINUOUS FLOW */
     .pdf-mode #content-sudarshana,
     .pdf-mode #content-divisional,
     .pdf-mode #content-kundali,
     .pdf-mode #content-dasha,
     .pdf-mode #content-varga {
-        page-break-before: always;
-    }
-
-    .pdf-mode .planet-table {
-        font-size: 10pt;
+        page-break-before: auto;
+        /* Changed from always */
+        margin-top: 15px;
     }
 
     .pdf-mode h3,
     .pdf-mode h4,
-    .pdf-mode h5 {
-        color: #b71c1c !important;
-        margin-top: 10px;
+    .pdf-mode h5,
+    .pdf-mode h6,
+    .pdf-mode tr,
+    .pdf-mode td,
+    .pdf-mode th,
+    .pdf-mode p,
+    .pdf-mode li,
+    .pdf-mode label,
+    .pdf-mode .planet-text,
+    .pdf-mode .card,
+    .pdf-mode .card-header,
+    .pdf-mode .varga-chart-col {
+
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
-    /* Optimize table width for Landscape */
+    .pdf-mode h3,
+    .pdf-mode h4,
+    .pdf-mode h5,
+    .pdf-mode h6 {
+        color: #b71c1c !important;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    /* Optimize table width for Portrait */
     .pdf-mode .planet-table {
-        font-size: 9pt;
-        /* Slightly smaller to ensure 17 cols fit */
+        font-size: 8pt;
+        /* Smaller font for Portrait */
         width: 100% !important;
         table-layout: fixed;
-        /* Optional: forces equal width or specific width handling */
     }
 
     .pdf-mode .planet-table th,
     .pdf-mode .planet-table td {
-        padding: 4px;
-        /* Tighter padding */
+        padding: 3px;
+        /* Tighter */
         overflow-wrap: break-word;
-        /* Prevent overflow */
     }
 
     .pdf-mode .nav-tabs,
@@ -273,36 +304,34 @@
 
     /* Fix for Sudarshana SVG in PDF */
     .pdf-mode .sudarshana-container {
-        max-width: 500px !important;
-        /* Force fixed width */
+        max-width: 400px !important;
+        /* Smaller for Portrait */
         margin: 0 auto !important;
     }
 
     .pdf-mode .sudarshana-container svg {
-        width: 500px !important;
-        height: 500px !important;
+        width: 400px !important;
+        height: 400px !important;
         page-break-inside: avoid;
         border: 1px solid #ddd;
-        /* Ensure borders are visible */
-        margin-bottom: 10px;
+        margin-bottom: 5px;
     }
 
-    /* Force 2 charts per page for Shodashvarga in PDF */
+    /* Compact Shodashvarga Grid - 2 per row */
     .pdf-mode .varga-chart-col {
         width: 50% !important;
         flex: 0 0 50% !important;
         max-width: 50% !important;
-        margin-bottom: 30px !important;
+        margin-bottom: 20px !important;
+        page-break-inside: avoid;
     }
 
-    .pdf-mode .varga-chart-col:nth-child(even) {
+    /* Force page break after every 4th chart (2 rows of 2) */
+    .pdf-mode .varga-chart-col:nth-child(4n) {
         page-break-after: always;
     }
 
-    /* Ensure the last one doesn't create an unnecessary blank page if it's even */
-    .pdf-mode .varga-chart-col:last-child {
-        page-break-after: auto;
-    }
+    /* Removed nth-child page-break-after rule to allow flow */
 </style>
 {% endblock %}
 
@@ -1235,25 +1264,41 @@
         btn.style.display = 'none';
 
         // 2. Inject Header and Footer
-        const header = document.createElement('div');
-        header.id = 'pdf-header';
-        header.style.textAlign = 'center';
-        header.style.marginBottom = '20px';
-        header.style.borderBottom = '2px solid #b71c1c';
-        header.style.paddingBottom = '10px';
-        header.innerHTML = '<h1 style="color: #b71c1c; font-family: Playfair Display; margin-bottom: 5px;">Dwara\'s Vedic Calendar</h1><p style="margin:0; font-weight:bold; color: #555;">Horoscope Report</p>';
-        element.prepend(header);
+        // 2. Inject Header and Footer
+        const originalHeader = document.querySelector('.brand-header');
+        let header = null;
+        if (originalHeader) {
+            header = originalHeader.cloneNode(true);
+            header.id = 'pdf-header';
+            header.style.marginBottom = '20px';
+            // Ensure images load by forcing width if needed, but usually default is fine
+            // Center content just in case flex behaves differently
+            header.style.display = 'flex';
+            header.style.justifyContent = 'center';
+            header.style.alignItems = 'center';
+            header.style.gap = '20px';
+            element.prepend(header);
+        } else {
+            // Fallback if not found
+            header = document.createElement('div');
+            header.id = 'pdf-header';
+            header.innerHTML = '<h1>Dwara\'s Vedic Calendar</h1>';
+            element.prepend(header);
+        }
 
-        const footer = document.createElement('div');
-        footer.id = 'pdf-footer';
-        footer.style.textAlign = 'center';
-        footer.style.marginTop = '30px';
-        footer.style.borderTop = '1px solid #ddd';
-        footer.style.fontSize = '0.8rem';
-        footer.style.paddingTop = '10px';
-        footer.style.color = '#777';
-        footer.innerHTML = '<p>&copy; 2026 Dwara\'s Vedic Calendar | Generated on ' + new Date().toLocaleDateString() + ' | www.dwaravedic.com</p>';
-        element.append(footer);
+        const originalFooter = document.querySelector('footer');
+        let footer = null;
+        if (originalFooter) {
+            footer = originalFooter.cloneNode(true);
+            footer.id = 'pdf-footer';
+            footer.style.marginTop = '30px';
+            element.append(footer);
+        } else {
+            footer = document.createElement('div');
+            footer.id = 'pdf-footer';
+            footer.innerHTML = '<p>www.dwaravedic.com</p>';
+            element.append(footer);
+        }
 
         // 3. Expand Tabs & Accordions
         const tabContents = element.querySelectorAll('.tab-pane');
@@ -1274,7 +1319,7 @@
             filename: 'Horoscope_Report.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0 },
-            jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' },
             pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
         };
 
