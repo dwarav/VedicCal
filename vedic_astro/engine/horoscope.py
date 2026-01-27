@@ -364,12 +364,12 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         
         rashi = int(deg / 30)
         p_name = p_names[i]
-        chart_data[rashi].append(p_name[:3])
+        chart_data[rashi].append(p_name)
         
         # Navamsa
         total_minutes = deg * 60
         navamsa_rashi_idx = int(total_minutes / 200) % 12
-        navamsa_chart_data[navamsa_rashi_idx].append(p_name[:3])
+        navamsa_chart_data[navamsa_rashi_idx].append(p_name)
         
         nak, pada, nak_idx = get_nak(deg)
         house_num = (rashi - lagna_rashi + 12) % 12 + 1
@@ -497,12 +497,12 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     
     shodashvarga_charts = {f"D{v}": {i: [] for i in range(12)} for v in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]}
     for p in planetary_positions:
-        p_symbol = p['symbol']
+        p_name_display = p['planet']
         p_vargas = p.get('vargas', {})
         for v_key, v_data in p_vargas.items():
             if v_key in shodashvarga_charts:
                 sign_idx = v_data['sign_id']
-                shodashvarga_charts[v_key][sign_idx].append(p_symbol)
+                shodashvarga_charts[v_key][sign_idx].append(p_name_display)
     
     varga_titles = {"D1": "Rashi (D1)", "D2": "Hora (D2)", "D3": "Drekkana (D3)", "D4": "Chaturthamsha (D4)", "D7": "Saptamsha (D7)", "D9": "Navamsa (D9)", "D10": "Dashamsha (D10)", "D12": "Dwadashamsha (D12)", "D16": "Shodashamsha (D16)", "D20": "Vimshamsha (D20)", "D24": "Chaturvimshamsha (D24)", "D27": "Saptavimshamsha (D27)", "D30": "Trimshamsha (D30)", "D40": "Khavedamsha (D40)", "D45": "Akshavedamsha (D45)", "D60": "Shashtiamsha (D60)"}
     
