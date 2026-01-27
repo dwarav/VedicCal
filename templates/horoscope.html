@@ -974,28 +974,25 @@
                             </thead>
                             <tbody>
                                 {% for planet in data.planetary_positions %}
-                                {% if planet.planet != 'Uranus' and planet.planet != 'Neptune' and planet.planet !=
-                                'Pluto' %}
                                 <tr>
                                     <td class="fw-bold">{{ planet.planet }}</td>
-                                    <td>{{ planet.vargas.D1.sign }}</td>
-                                    <td>{{ planet.vargas.D2.sign }}</td>
-                                    <td>{{ planet.vargas.D3.sign }}</td>
-                                    <td>{{ planet.vargas.D4.sign }}</td>
-                                    <td>{{ planet.vargas.D7.sign }}</td>
-                                    <td>{{ planet.vargas.D9.sign }}</td>
-                                    <td>{{ planet.vargas.D10.sign }}</td>
-                                    <td>{{ planet.vargas.D12.sign }}</td>
-                                    <td>{{ planet.vargas.D16.sign }}</td>
-                                    <td>{{ planet.vargas.D20.sign }}</td>
-                                    <td>{{ planet.vargas.D24.sign }}</td>
-                                    <td>{{ planet.vargas.D27.sign }}</td>
-                                    <td>{{ planet.vargas.D30.sign }}</td>
-                                    <td>{{ planet.vargas.D40.sign }}</td>
-                                    <td>{{ planet.vargas.D45.sign }}</td>
-                                    <td>{{ planet.vargas.D60.sign }}</td>
+                                    <td title="{{ planet.vargas.D1.sign }}">{{ planet.vargas.D1.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D2.sign }}">{{ planet.vargas.D2.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D3.sign }}">{{ planet.vargas.D3.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D4.sign }}">{{ planet.vargas.D4.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D7.sign }}">{{ planet.vargas.D7.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D9.sign }}">{{ planet.vargas.D9.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D10.sign }}">{{ planet.vargas.D10.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D12.sign }}">{{ planet.vargas.D12.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D16.sign }}">{{ planet.vargas.D16.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D20.sign }}">{{ planet.vargas.D20.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D24.sign }}">{{ planet.vargas.D24.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D27.sign }}">{{ planet.vargas.D27.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D30.sign }}">{{ planet.vargas.D30.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D40.sign }}">{{ planet.vargas.D40.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D45.sign }}">{{ planet.vargas.D45.sign_id + 1 }}</td>
+                                    <td title="{{ planet.vargas.D60.sign }}">{{ planet.vargas.D60.sign_id + 1 }}</td>
                                 </tr>
-                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>

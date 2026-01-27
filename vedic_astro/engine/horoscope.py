@@ -35,10 +35,13 @@ def get_varga_sign(degree, rashi_idx, varga_num):
     is_odd = (rashi_idx % 2 == 0) # 0=Aries (Odd), 1=Taurus (Even)
     
     if varga_num == 1: return rashi_idx
-    if varga_num == 2: # Hora
-        first_half = (degree < 15)
-        if is_odd: return 4 if first_half else 3 # Sun/Moon
-        else: return 3 if first_half else 4 # Moon/Sun
+    if varga_num == 2: # Hora (Parivritti / Cyclic)
+        # Each sign has 2 Horas of 15 degrees each.
+        # They cycle continuously from Aries.
+        hora_idx = 0 if degree < 15 else 1
+        # Formula: (Sign Index * 2) + Hora Index
+        start_sign = (rashi_idx * 2) + hora_idx
+        return start_sign % 12
     if varga_num == 3: # Drekkana
         part = int(degree / 10) 
         return (rashi_idx + (part * 4)) % 12
@@ -376,7 +379,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
             v_sign_idx = get_varga_sign(deg % 30, rashi, v_num)
             vargas[f"D{v_num}"] = {"sign": RASHIS[v_sign_idx], "sign_id": v_sign_idx}
         planetary_positions.append({"planet": p_name, "icon": PLANET_ICONS.get(p_name, ""), "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30), "rasi": RASHIS[rashi], "rasi_lord": RASI_LORDS_MAP[rashi], "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx % 9], "house": house_num, "relationship": get_planet_relationship(p_name, RASI_LORDS_MAP[rashi], rashi), "vargas": vargas})
-    
+
     # Moon Chart
     moon_rashi_idx = int(moon_long / 30)
     chandra_chart_data = copy.deepcopy(chart_data)
