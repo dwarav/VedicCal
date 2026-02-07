@@ -2,7 +2,7 @@ import calendar
 from flask import Flask, render_template, request
 from vedic_astro.engine.core import fetch_panchang, fetch_month_day_data
 from vedic_astro.engine.horoscope import get_horoscope_by_birth_details
-from vedic_astro.engine.muhurtha import get_monthly_muhurthas
+from vedic_astro.engine.muhurtha import get_monthly_muhurthas, filter_marriage_muhurthas, get_nak_idx
 from vedic_astro.engine.geo import get_location
 from datetime import datetime
 import pytz
@@ -150,12 +150,66 @@ def muhurtha_view():
             if found_loc:
                 loc_data = found_loc
 
-    # Calculate Muhurthas
+    # Calculate Muhurthas (Standard)
     muhurtha_data = get_monthly_muhurthas(loc_data, year, month)
     month_name = calendar.month_name[month]
 
+    personalized_data = []
+    bride_details = {}
+    groom_details = {}
+
+    if request.method == 'POST' and request.form.get('bride_name'):
+        b_name = request.form.get('bride_name')
+        b_date = request.form.get('bride_date')
+        b_time = request.form.get('bride_time')
+        b_loc_name = request.form.get('bride_location')
+
+        g_name = request.form.get('groom_name')
+        g_date = request.form.get('groom_date')
+        g_time = request.form.get('groom_time')
+        g_loc_name = request.form.get('groom_location')
+        
+        bride_details = {"name": b_name, "date": b_date, "time": b_time, "location": b_loc_name}
+        groom_details = {"name": g_name, "date": g_date, "time": g_time, "location": g_loc_name}
+        
+        b_loc = get_location(b_loc_name)
+        g_loc = get_location(g_loc_name)
+        
+        if b_loc and g_loc and b_date and b_time and g_date and g_time:
+            # Need to calc Nakshatras
+            try:
+                b_data = get_nak_idx(b_loc, b_date, b_time)
+                g_data = get_nak_idx(g_loc, g_date, g_time)
+
+                # Iterate for 12 months starting from selected year/month
+                curr_y, curr_m = year, month
+                for _ in range(12):
+                    # Get monthly data
+                    m_data_loop = get_monthly_muhurthas(loc_data, curr_y, curr_m)
+                    
+                    # Filter
+                    filtered = filter_marriage_muhurthas(m_data_loop.get('marriage', []), b_data, g_data)
+                    
+                    if filtered:
+                        personalized_data.append({
+                            "month": calendar.month_name[curr_m],
+                            "year": curr_y,
+                            "dates": filtered
+                        })
+                    
+                    # Increment month
+                    curr_m += 1
+                    if curr_m > 12:
+                        curr_m = 1
+                        curr_y += 1
+            except Exception as e:
+                print(f"Error calculating dates: {e}")
+
     return render_template('muhurtha.html', 
                            muhurtha_data=muhurtha_data, 
+                           personalized_data=personalized_data,
+                           bride_details=bride_details,
+                           groom_details=groom_details,
                            month_name=month_name, 
                            year=year, 
                            location=loc_name, 

@@ -189,8 +189,10 @@
     <h2 class="section-title">Auspicious Dates in {{ month_name }} {{ year }}</h2>
 
     <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
-        <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill"
-                data-bs-target="#pills-marriage">Marriage</button></li>
+        <li class="nav-item"><button class="nav-link {% if not bride_details.name %}active{% endif %}"
+                data-bs-toggle="pill" data-bs-target="#pills-marriage">General Marriage</button></li>
+        <li class="nav-item"><button class="nav-link {% if bride_details.name %}active{% endif %}" data-bs-toggle="pill"
+                data-bs-target="#pills-personal">Personalized Marriage</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#pills-gruha">House
                 Warming</button></li>
         <li class="nav-item"><button class="nav-link" data-bs-toggle="pill"
@@ -201,7 +203,7 @@
 
     <div class="tab-content">
 
-        <div class="tab-pane fade show active" id="pills-marriage">
+        <div class="tab-pane fade {% if not bride_details.name %}show active{% endif %}" id="pills-marriage">
             {% if not muhurtha_data.marriage %}<div class="alert alert-warning text-center">No standard Marriage
                 Muhurthas found.</div>{% endif %}
             {% for item in muhurtha_data.marriage %}
@@ -230,6 +232,95 @@
                 </div>
             </div>
             {% endfor %}
+        </div>
+
+        <div class="tab-pane fade {% if bride_details.name %}show active{% endif %}" id="pills-personal">
+            <div class="card p-3 mb-4 border-0 shadow-sm" style="background-color: #fff9c4;">
+                <h5 class="text-center mb-3 text-danger"><i class="fas fa-heart"></i> Calculate Compatibility & Muhurtha
+                </h5>
+                <form method="POST">
+                    <input type="hidden" name="location" value="{{ location }}">
+                    <input type="hidden" name="month_year" value="{{ current_ym }}">
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <h6 class="text-muted"><i class="fas fa-female"></i> Bride Details</h6>
+                            <input type="text" name="bride_name" class="form-control form-control-sm mb-2"
+                                placeholder="Full Name" value="{{ bride_details.name }}">
+                            <div class="row g-1">
+                                <div class="col-6"><input type="date" name="bride_date"
+                                        class="form-control form-control-sm" value="{{ bride_details.date }}" required>
+                                </div>
+                                <div class="col-6"><input type="time" name="bride_time"
+                                        class="form-control form-control-sm" value="{{ bride_details.time }}" required>
+                                </div>
+                            </div>
+                            <input type="text" name="bride_location" class="form-control form-control-sm mt-2"
+                                placeholder="Birth City" value="{{ bride_details.location }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-muted"><i class="fas fa-male"></i> Groom Details</h6>
+                            <input type="text" name="groom_name" class="form-control form-control-sm mb-2"
+                                placeholder="Full Name" value="{{ groom_details.name }}">
+                            <div class="row g-1">
+                                <div class="col-6"><input type="date" name="groom_date"
+                                        class="form-control form-control-sm" value="{{ groom_details.date }}" required>
+                                </div>
+                                <div class="col-6"><input type="time" name="groom_time"
+                                        class="form-control form-control-sm" value="{{ groom_details.time }}" required>
+                                </div>
+                            </div>
+                            <input type="text" name="groom_location" class="form-control form-control-sm mt-2"
+                                placeholder="Birth City" value="{{ groom_details.location }}" required>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-danger btn-sm px-4">Find Compatible Muhurthas</button>
+                    </div>
+                </form>
+            </div>
+
+            {% if personalized_data %}
+            <div class="alert alert-success text-center">Found Auspicious Dates for Next 12 Months!</div>
+
+            {% for month_block in personalized_data %}
+            <h5 class="mt-4 mb-3 text-secondary ps-2 border-start border-4 border-danger">{{ month_block.month }} {{
+                month_block.year }}</h5>
+
+            {% for item in month_block.dates %}
+            <div class="muhurtha-card" style="border-left: 5px solid #2e7d32;">
+                <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
+                <div class="m-details">
+                    <div class="m-tithi">🌙 {{ item.tithi }}</div>
+                    <div class="validity-info"><i class="fas fa-hourglass-start"></i> {{ item.tithi_start }} - {{
+                        item.tithi_end }}</div>
+                    <div class="m-nak mt-2">✨ {{ item.nakshatra }}</div>
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
+
+                    <!-- Compatibility Badge -->
+                    <div class="mt-2 p-2 rounded" style="background: #e8f5e9; font-size: 0.8rem;">
+                        <strong>Tara Bala:</strong><br>
+                        Bride: <span class="text-success">{{ item.compatibility.bride_tara }}</span><br>
+                        Groom: <span class="text-success">{{ item.compatibility.groom_tara }}</span><br>
+                        <strong class="mt-2 d-block">Chandra Bala:</strong>
+                        Bride: <span class="text-success">{{ item.compatibility.bride_chandra }}</span><br>
+                        Groom: <span class="text-success">{{ item.compatibility.groom_chandra }}</span>
+                    </div>
+                </div>
+                <div class="m-time-box">
+                    <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
+                    <span class="time-badge secondary"><i class="fas fa-sun time-icon"></i> Abhijit: {{ item.abhijit
+                        }}</span>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+            {% elif bride_details.name %}
+            <div class="alert alert-danger text-center">No standard muhurthas match favorable Tara Bala for both. Try
+                another month.</div>
+            {% else %}
+            <div class="text-center text-muted">Enter birth details above to find personalized dates.</div>
+            {% endif %}
         </div>
 
         <div class="tab-pane fade" id="pills-gruha">

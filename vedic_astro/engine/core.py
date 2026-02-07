@@ -832,6 +832,8 @@ def fetch_month_day_data(loc, date_str):
         "tithi": tithi_name, "tithi_icon": tithi_icon,
         "tithi_start": tithi_start, "tithi_end": tithi_end,
         "nakshatra": nak_name, "nak_end": nak_end,
+        "nakshatra_idx": n_item['index'],
+        "moon_rashi_idx": moon_rashi_idx,
         "is_festival": len(festivals) > 0,
         "festival_names": festival_names,
         "lunar_month": lunar_month_name,

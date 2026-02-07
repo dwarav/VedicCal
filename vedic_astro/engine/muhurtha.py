@@ -147,6 +147,8 @@ def get_monthly_muhurthas(loc, year, month):
                             "nak_end": lite_data['nak_end'],
                             "amrit": full_data['timings']['amrit'], 
                             "abhijit": full_data['timings']['abhijit'],
+                            "nakshatra_idx": lite_data['nakshatra_idx'],
+                            "moon_rashi_idx": lite_data['moon_rashi_idx'],
                             "warnings": warnings 
                         })
             except Exception as e:
@@ -154,3 +156,104 @@ def get_monthly_muhurthas(loc, year, month):
                 continue
             
     return results
+
+def get_nak_idx(loc_data, date_str, time_str):
+    """
+    Calculates Nakshatra Index for a given date/time/location.
+    """
+    dt_str = f"{date_str} {time_str}"
+    try:
+        dt = datetime.strptime(dt_str, "%Y-%m-%d %H:%M")
+    except ValueError:
+        return 0 # Handle error gracefully? or throw
+        
+    tz = loc_data['tz']
+    # If dt is naive, localize it? 
+    # Usually inputs are naive "Wall Time" at that location.
+    local_dt = tz.localize(dt)
+    jd = jd_from_dt(local_dt)
+    setup_swisseph()
+    moon_long = swe.calc_ut(jd, swe.MOON, swe.FLG_SIDEREAL)[0][0]
+    return int(moon_long / 13.333333333), int(moon_long / 30)
+
+def check_tarabala(birth_nak_idx, day_nak_idx):
+    """
+    Checks Tara Bala strength.
+    """
+    # Count from Birth Nak to Day Nak
+    count = (day_nak_idx - birth_nak_idx) % 27 + 1
+    rem = count % 9
+    if rem == 0: rem = 9
+    
+    # 1=Janma (Bad), 2=Sampat (Good), 3=Vipat (Bad), 4=Kshema (Good), 
+    # 5=Pratyak (Bad), 6=Sadhana (Good), 7=Naidhana (Bad), 8=Mitra (Good), 9=Parama Mitra (Good)
+    
+    TARA_NAMES = {
+        1: "Janma (Birth) - Avoid",
+        2: "Sampat (Wealth) - Good",
+        3: "Vipat (Danger) - Avoid",
+        4: "Kshema (Well-being) - Good",
+        5: "Pratyak (Obstacles) - Avoid",
+        6: "Sadhana (Achievement) - Good",
+        7: "Naidhana (Death/Loss) - Avoid",
+        8: "Mitra (Friend) - Good",
+        9: "Parama Mitra (Best Friend) - Good"
+    }
+    
+    is_good = rem in [2, 4, 6, 8, 9]
+    return is_good, TARA_NAMES[rem]
+
+def check_chandrabala(birth_rashi_idx, day_rashi_idx):
+    """
+    Checks Chandra Bala (Moon Sign Strength).
+    Avoid 6, 8, 12 from Birth Rashi.
+    """
+    count = (day_rashi_idx - birth_rashi_idx) % 12 + 1
+    
+    # 6=Roga (Bad), 8=Ashtama (Bad), 12=Vyaya (Bad)
+    # Some also avoid 1 (Janma), but we'll focus on the strict negatives.
+    # Good: 1, 2, 3, 4, 5, 7, 9, 10, 11
+    
+    is_good = count not in [6, 8, 12]
+    
+    status_msg = f"{count}th from Moon - "
+    if count in [6, 8, 12]: status_msg += "Bad (Avoid)"
+    else: status_msg += "Good"
+    
+    return is_good, status_msg
+
+def filter_marriage_muhurthas(marriage_dates, bride_data, groom_data):
+    """
+    Filters using Tara Bala AND Chandra Bala.
+    bride_data/groom_data = (nak_idx, rashi_idx)
+    """
+    b_nak, b_rashi = bride_data
+    g_nak, g_rashi = groom_data
+    
+    personalized = []
+    for item in marriage_dates:
+        day_nak = item.get('nakshatra_idx')
+        day_rashi = item.get('moon_rashi_idx')
+        
+        if day_nak is None or day_rashi is None: continue
+        
+        # Tara Bala
+        bt_good, bt_msg = check_tarabala(b_nak, day_nak)
+        gt_good, gt_msg = check_tarabala(g_nak, day_nak)
+        
+        # Chandra Bala
+        bc_good, bc_msg = check_chandrabala(b_rashi, day_rashi)
+        gc_good, gc_msg = check_chandrabala(g_rashi, day_rashi)
+        
+        if bt_good and gt_good and bc_good and gc_good:
+            # Add to list
+            item_copy = item.copy()
+            item_copy['compatibility'] = {
+                "bride_tara": bt_msg,
+                "groom_tara": gt_msg,
+                "bride_chandra": bc_msg,
+                "groom_chandra": gc_msg
+            }
+            personalized.append(item_copy)
+            
+    return personalized
