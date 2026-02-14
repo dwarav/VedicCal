@@ -161,12 +161,12 @@ def get_events(start_jd, end_jd, func, names, count, is_karana=False):
     except: pass
     return events
 
-def find_trans(start, func, target):
+def find_trans(start, func, target, limit=2.0):
     """
     Binary search implementation to find the exact time when an astrological value changes.
     Used for finding Tithi end times, Nakshatra changes, etc.
     """
-    t1, t2 = start, start + 2.0
+    t1, t2 = start, start + limit
     curr = t1
     found = False
     while curr < t2:
@@ -207,16 +207,63 @@ def fmt_duration(jd_start, jd_end):
     return f"{hours:02d} Hours {minutes:02d} Mins {seconds:02d} Secs"
 
 # --- HELPER: GET ENTRY/EXIT TIMES ---
+# --- HELPER: GET ENTRY/EXIT TIMES ---
 def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
     """Calculates when a planet enters and exits a specific angular division (sign/nakshatra)."""
-    target_next = int(current_val + 1)
+    # Current value is 'current_val'. 
+    # Entry time = End of (current_val - 1)
+    # Exit time = End of (current_val)
+    
+    target_entry = current_val # We want to find when it BECAME current_val
+    target_exit = current_val # We want to find when it LEAVES current_val
+    
+    # Check function for transitions
     def check_idx(t):
         pos = swe.calc_ut(t, body_id, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
         return int(pos / span_deg)
-    exit_jd = find_trans(jd_ref, check_idx, target_next) 
-    days_back = 35 if body_id == swe.SUN else 4
+
+    # Determine search limits based on body
+    limit = 2.0
+    if body_id == swe.SUN: limit = 60.0
+    elif body_id == swe.MOON: limit = 10.0
+    
+    # Find Exit (When it becomes next sign)
+    exit_jd = find_trans(jd_ref, check_idx, target_exit, limit=limit) 
+    
+    # Find Entry (When it BECAME current sign, i.e., was prev sign before)
+    # We search backwards for the transition from (current-1) to current.
+    # find_trans logic: "find time T where func(T) == target".
+    # But find_trans finds when it *switches* to target? 
+    # "if val != val_next and val == target" -> This means at T it IS target, but at T+dt it calculates... wait.
+    # line 177: if val != val_next and val == target:
+    # This means at 'curr' it has value 'target', and at 'curr+1h' it has 'val_next' (implied different).
+    # So it finds the END of 'target'.
+    
+    # So to find Entry of Current (Start of Current), we want to find END of Previous.
+    # target for find_trans shoud be (current_val - 1)
+    
+    # Handle wrap around for signs (0-11) or Nakshatras (0-26)
+    # If current is 0, prev is Max. 
+    # Actually check_idx returns simple integer division.
+    # For signs 0..11.
+    # Use modulo logic inside check_idx? No, check_idx returns 0..11.
+    
+    prev_val = (current_val - 1) 
+    if body_id == swe.MOON and span_deg == 13.333333: # Nakshatra
+         if prev_val < 0: prev_val = 26
+    elif span_deg == 30: # Sign
+         if prev_val < 0: prev_val = 11
+            
+    days_back = 35 if body_id == swe.SUN else 5
     search_start = jd_ref - days_back
-    entry_jd = find_trans(search_start, check_idx, current_val)
+    
+    # We want to find when "Previous" ended. i.e. when check_idx(t) was prev_val and changed.
+    # find_trans returns the T where check_idx(T) == target (prev_val) AND check_idx(T+dt) != target.
+    # So exactly what we want.
+    
+    # Search range for entry should also be large enough
+    entry_jd = find_trans(search_start, check_idx, prev_val, limit=days_back + 2.0)
+    
     entry_str = "---"
     exit_str = "---"
     if entry_jd:
@@ -226,6 +273,15 @@ def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
         dt_ex = dt_from_jd(exit_jd, tz)
         if dt_ex: exit_str = dt_ex.strftime("%d %b, %I:%M %p")
     return entry_str, exit_str
+
+# ... (Helper functions remain) ...
+
+# ... inside fetch_panchang (around line 961) ...
+
+    # Fixed Logic: Use module-level helper
+    moon_rashi_start, moon_rashi_end = get_entry_exit_times(jd_noon, swe.MOON, moon_rashi_idx, 30, tz)
+    sun_rashi_start, sun_rashi_end = get_entry_exit_times(jd_noon, swe.SUN, sun_rashi_idx, 30, tz)
+
 
 # ================= HELPER CALCULATORS =================
 def get_tamil_yoga(weekday_idx, nak_idx):
@@ -881,7 +937,16 @@ def fetch_panchang(loc_str_or_dict, date_str):
     yama_time = get_kalam(YAMA_KEY)
     guli_time = get_kalam(GULI_KEY)
     samvat = get_samvat_details(dt)
-    lunar_month_idx_calc = (int(sun_long / 30) + 1) % 12
+    # Correct Chandramasa Calculation (Amanta): Month is determined by the Sun's Rashi at the moment of the *previous* New Moon.
+    # Calculate tithi at sunrise first to backtrack
+    tithi_at_sunrise_idx = int(((moon_long - sun_long) % 360) / 12)
+    
+    # Backtrack Sun's position to New Moon (approx 1 degree per tithi)
+    # sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 0.9856)) / 30)
+    # Actually, simpler approximation often used suggests:
+    sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 1.0)) / 30)
+    
+    lunar_month_idx_calc = (sun_rashi_new_moon + 1) % 12
     current_chandramasa = MONTHS[lunar_month_idx_calc]
     samvat["chandramasa"] = current_chandramasa
     ritu_ayana = get_ritu_ayana_details(rise)
@@ -949,19 +1014,8 @@ def fetch_panchang(loc_str_or_dict, date_str):
 
     varjyam_time = get_special_timing(nak_events, VARJYAM_STARTS)
     amrit_time = get_special_timing(nak_events, AMRIT_STARTS)
-    def get_sign_entry_exit_daily(jd_current, body_id, current_sign_idx, tz):
-        target_next = (current_sign_idx + 1) % 12
-        def check_sign_idx(t):
-            pos = swe.calc_ut(t, body_id, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
-            return int(pos / 30)
-        exit_jd = find_trans(jd_current, check_sign_idx, target_next)
-        search_start = jd_current - (35 if body_id == swe.SUN else 4)
-        entry_jd = find_trans(search_start, check_sign_idx, current_sign_idx)
-        entry_str = dt_from_jd(entry_jd, tz).strftime("%d %b, %I:%M %p") if entry_jd else "---"
-        exit_str = dt_from_jd(exit_jd, tz).strftime("%d %b, %I:%M %p") if exit_jd else "---"
-        return entry_str, exit_str
-    moon_rashi_start, moon_rashi_end = get_sign_entry_exit_daily(jd_noon, swe.MOON, moon_rashi_idx, tz)
-    sun_rashi_start, sun_rashi_end = get_sign_entry_exit_daily(jd_noon, swe.SUN, sun_rashi_idx, tz)
+    moon_rashi_start, moon_rashi_end = get_entry_exit_times(jd_noon, swe.MOON, moon_rashi_idx, 30, tz)
+    sun_rashi_start, sun_rashi_end = get_entry_exit_times(jd_noon, swe.SUN, sun_rashi_idx, 30, tz)
     data = {"meta": {"location": loc['name'], "date": dt_from_jd(rise, tz).strftime("%A, %d %B %Y"), "sunrise": fmt_dt(rise), "sunset": fmt_dt(set_), "moonrise": fmt_dt(moon_rise), "moonset": fmt_dt(moon_set)}, "details": {"moonsign": RASHIS[moon_rashi_idx], "sunsign": RASHIS[sun_rashi_idx], "samvat": samvat, "ritu_ayana": ritu_ayana, "dinamana": dinamana, "ratrimana": ratrimana, "madhyahna": fmt_dt(madhyahna_jd), "nivas_shool": nivas_shool, "epoch": epoch, "chandrabalam_tarabalam": chandrabalam_tarabalam, "panchaka_rahita": panchaka_rahita, "udaya_lagna": udaya_lagna, "festivals": festivals, "moonsign_start": moon_rashi_start, "moonsign_end": moon_rashi_end, "sunsign_start": sun_rashi_start, "sunsign_end": sun_rashi_end}, "tithi": tithi_events, "nakshatra": nak_events, "yoga": get_events(rise, rise_next, fn_yoga, YOGAS, 27), "karana": get_events(rise, rise_next, fn_karana, [], 60, True), "moon_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 3.333333333), 0), PADA_NAMES, 108), "sun_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[0] / 3.333333333), 0), PADA_NAMES, 108), "timings": {"brahma": fmt_range(*muhurtas["brahma"]), "pratah": fmt_range(*muhurtas["pratah"]), "vijaya": fmt_range(*muhurtas["vijaya"]), "godhuli": fmt_range(*muhurtas["godhuli"]), "sayahna": fmt_range(*muhurtas["sayahna"]), "nishita": fmt_range(*muhurtas["nishita"]), "dur_day": ", ".join([fmt_range(s, e) for s, e in muhurtas["dur_day"]]), "sarvartha": calc_timings["sarvartha"], "baana": calc_timings["baana"], "vidaal": calc_timings["vidaal"], "anandadi": calc_timings["anandadi"], "tamil": calc_timings["tamil"], "jeevanama": calc_timings["jeevanama"], "netrama": calc_timings["netrama"], "tripushkara": calc_timings["tripushkara"], "rahu": rahu_time, "yama": yama_time, "guli": guli_time, "varjyam": varjyam_time, "amrit": amrit_time}}
     if isinstance(muhurtas["abhijit"], tuple): data["timings"]["abhijit"] = fmt_range(*muhurtas["abhijit"])
     else: data["timings"]["abhijit"] = muhurtas["abhijit"]
