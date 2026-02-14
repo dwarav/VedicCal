@@ -422,11 +422,29 @@ def calculate_muhurtas(rise, set_, rise_next, weekday_idx):
     sayahna_end = set_ + one_muhurta_night
     nishita_start = set_ + (7 * one_muhurta_night)
     nishita_end = set_ + (8 * one_muhurta_night)
-    DUR_MAP = {6: [14], 0: [8, 9], 1: [2, 4], 2: [8], 3: [5, 12], 4: [4, 9], 5: [1]}
+    # Durmuhurtham Offsets (0-based fractional start from Sunrise)
+    # Alignment with Gantala Panchangam:
+    # Sun: 16:24 (13.0)
+    # Mon: 12:48 (8.5)
+    # Tue: 08:48 (3.5)
+    # Wed: 11:36 (7.0)
+    # Thu: 10:00 (5.0)
+    # Fri: 08:48 (3.5) & 12:48 (8.5)
+    # Sat: 07:36 (2.0)
+    DUR_OFFSETS = {
+        6: [13.0], 
+        0: [8.5], 
+        1: [3.5], 
+        2: [7.0], 
+        3: [5.0], 
+        4: [3.5, 8.5], 
+        5: [2.0]
+    }
     dur_times = []
-    for seg in DUR_MAP[weekday_idx]:
-        s = rise + ((seg-1)*one_muhurta_day)
-        e = rise + (seg)*one_muhurta_day
+    for offset in DUR_OFFSETS[weekday_idx]:
+        s = rise + (offset * one_muhurta_day)
+        # Durmuhurtham is typically 1 Muhurtha (48 mins approx)
+        e = s + one_muhurta_day 
         dur_times.append((s, e))
     return {"brahma": (brahma_start, brahma_end), "pratah": (pratah_start, pratah_end), "abhijit": abhijit_res, "vijaya": (vijaya_start, vijaya_end), "godhuli": (godhuli_start, godhuli_end), "sayahna": (sayahna_start, sayahna_end), "nishita": (nishita_start, nishita_end), "dur_day": dur_times}
 
@@ -982,27 +1000,54 @@ def fetch_panchang(loc_str_or_dict, date_str):
     def fmt_range(start, end): return f"{fmt_dt(start)} - {fmt_dt(end)}"
     calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
     # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
+    # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
     def get_special_timing(events, start_offsets, duration_mins=96):
-        # duration_mins: 4 ghatis = 4 * 24 = 96 mins
         timings = []
         duration_days = duration_mins / (24 * 60)
         
+        # Helper to find exact Nakshatra Entry (True Start)
+        def get_true_start(nak_idx, ref_jd):
+            # Target Longitude for this Nakshatra Start
+            target_long = nak_idx * 13.333333333
+            
+            # Function to check if Moon is >= target_long (handling wrap-around 0/360)
+            def check_long(t):
+                 l = swe.calc_ut(t, swe.MOON, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
+                 return (int(l / 13.333333333), 0)
+            
+            # We want when it *became* nak_idx. (Transition (nak_idx-1) -> nak_idx)
+            prev = (nak_idx - 1) % 27
+            limit = 2.0 # Look back 2 days max
+            
+            # If Nakshatra is 0 (Ashwini), we look for transition 26 -> 0
+            # find_trans finds when func becomes target.
+            # No, find_trans finds when val == target and next != target (End of Target).
+            # So to find Start of Curr, we find End of Prev.
+            
+            t_start = find_trans(ref_jd - limit, check_long, prev, limit=limit)
+            return t_start
+
         for n in events:
             idx = n['index']
-            # If start is None (e.g. started way before), fallback to rise but that's risky.
-            # Ideally 'start' is populated by get_events even if it was before.
-            # get_events looks back 1.5 days, so usually we have the start.
-            if n['start'] is None: continue 
             
+            # Always recalculate true start for precision, or if clamp suspected
+            # Use 'end' as reference to look back from, or 'start' + 1 if available
+            ref = n['end'] if n['end'] else (n['start'] + 0.5 if n['start'] else rise)
+            
+            true_start = get_true_start(idx, ref)
+            if not true_start: 
+                 # Fallback to provided start if search fails (unlikely)
+                 true_start = n['start']
+            
+            if not true_start: continue
+
             offset_ghati = start_offsets[idx]
-            offset_days = offset_ghati / 60.0
+            offset_days = offset_ghati * (24/60.0) / 24.0 # Ghati to Days: X * 24mins / (24*60 mins) = X / 60.0
             
-            s_jd = n['start'] + offset_days
+            s_jd = true_start + offset_days
             e_jd = s_jd + duration_days
             
-            # Check overlap with "Today" (Sunrise to Next Sunrise or 24h)
-            # We want to show it if it happens "Today".
-            # If it happened yesterday, ignore.
+            # Check overlap with "Today"
             if e_jd < rise: continue
             if s_jd > rise_next: continue 
             
