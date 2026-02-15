@@ -320,8 +320,12 @@ def get_tripushkara_yoga(tithi_events, nak_events, weekday_idx, start_jd, end_jd
                     latest_start = max(t_s, n_s)
                     earliest_end = min(t_e, n_e)
                     if latest_start < earliest_end:
-                        s_str = dt_from_jd(latest_start, tz).strftime('%I:%M %p')
-                        e_str = dt_from_jd(earliest_end, tz).strftime('%I:%M %p')
+                        s_dt = dt_from_jd(latest_start, tz)
+                        e_dt = dt_from_jd(earliest_end, tz)
+                        base_date = dt_from_jd(start_jd, tz).date()
+                        
+                        s_str = s_dt.strftime('%b %d, %I:%M %p') if s_dt.date() != base_date else s_dt.strftime('%I:%M %p')
+                        e_str = e_dt.strftime('%b %d, %I:%M %p') if e_dt.date() != base_date else e_dt.strftime('%I:%M %p')
                         timings.append(f"{s_str} - {e_str}")
     return ", ".join(timings) if timings else "None"
 
@@ -347,12 +351,16 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
     """Aggregates various special yoga timings (Anandadi, Tamil, Sarvartha, etc.)."""
     ANANDADI_YOGAS = ["Ananda", "Kaladanda", "Dhumra", "Prajapati", "Soumya", "Dhwalka", "Dhwaja", "Srivatsa", "Vajra", "Mudgara", "Chhatra", "Mitra", "Manasa", "Padma", "Lumba", "Utpata", "Mrityu", "Kana", "Siddhi", "Shubha", "Amrita", "Musala", "Gada", "Matanga", "Rakshasa", "Chara", "Sthira", "Pravardhamana"]
     ananda_offset = {6:0, 0:22, 1:18, 2:14, 3:10, 4:6, 5:2}
+    base_date = dt_from_jd(start_jd, tz).date()
     def fmt_event(ev_list, type_fn):
         res = []
         for e in ev_list:
             val = type_fn(e['index'])
             d_end = dt_from_jd(e['end'], tz)
-            end_t = d_end.strftime('%b %d, %I:%M %p') if d_end and e['end'] else "Full Night"
+            if d_end and e['end']:
+                end_t = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != base_date else d_end.strftime('%I:%M %p')
+            else:
+                end_t = "Full Night"
             res.append(f"{val} upto {end_t}")
         return " | ".join(res)
     anandadi_str = fmt_event(nak_events, lambda idx: ANANDADI_YOGAS[(idx + ananda_offset[weekday_idx]) % 28])
@@ -363,9 +371,16 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
     vidaal_found = []
     for e in nak_events:
         d_start = dt_from_jd(e['start'], tz)
-        start_t = d_start.strftime('%I:%M %p') if d_start else "..."
+        if d_start:
+             start_t = d_start.strftime('%b %d, %I:%M %p') if d_start.date() != base_date else d_start.strftime('%I:%M %p')
+        else:
+             start_t = "..."
+             
         d_end = dt_from_jd(e['end'], tz)
-        end_t = d_end.strftime('%I:%M %p') if d_end and e['end'] else "Full Night"
+        if d_end and e['end']:
+             end_t = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != base_date else d_end.strftime('%I:%M %p')
+        else:
+             end_t = "Full Night"
         if get_sarvartha_siddhi(weekday_idx, e['index']): ss_found.append(f"{start_t} - {end_t}")
         if get_vidaal_yoga(weekday_idx, e['index']): vidaal_found.append(f"{start_t} - {end_t}")
     sarvartha_str = ", ".join(ss_found) if ss_found else "None"
@@ -681,7 +696,7 @@ def get_epoch_details(jd, dt):
     ahargana = int(jd - 588465.5)
     return {"kaliyuga": f"{kaliyuga_year} Years", "ayanamsha": f"{ayanamsha:.6f}", "kali_ahargana": f"{ahargana} Days", "rata_die": f"{int(jd - 1721424.5)}", "julian_date": dt.strftime("%B %d, %Y CE"), "julian_day": f"{jd:.2f}", "civil_date": f"{dt.strftime('%d %B')}, {shaka_year} Shaka", "mjd": f"{mjd:.2f}", "nirayana_date": f"{dt.strftime('%d %B')}, {shaka_year} Shaka"}
 
-def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz):
+def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz, base_jd):
     """Calculates daily strength of Moon and constellations for the user (Period 1 & 2)."""
     # Chandrabalam: Good transits are 1, 3, 6, 7, 10, 11 from Birth Moon
     good_rashis = []
@@ -706,14 +721,17 @@ def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz):
         # Format time label
         d_start = dt_from_jd(event['start'], tz)
         d_end = dt_from_jd(event['end'], tz)
+        base_date = dt_from_jd(base_jd, tz).date()
         
         # Nicer label
         label = "Whole Day"
         if len(nak_events) > 1:
             if not d_start: s_s = "..."
-            else: s_s = d_start.strftime('%I:%M %p')
+            else: s_s = d_start.strftime('%b %d, %I:%M %p') if d_start.date() != base_date else d_start.strftime('%I:%M %p')
+            
             if not d_end: e_s = "..." 
-            else: e_s = d_end.strftime('%I:%M %p')
+            else: e_s = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != base_date else d_end.strftime('%I:%M %p')
+            
             label = f"{s_s} to {e_s}"
             
         periods[f"period_{i+1}"] = {"time": label, "nakshatras": good_naks}
@@ -986,7 +1004,7 @@ def fetch_panchang(loc_str_or_dict, date_str):
     nivas_shool = get_daily_nivas_details(rise, rise_next, w_idx, tithi_events, nak_events, moon_rashi_idx, sun_rashi_idx, sun_long, tz)
     
     epoch = get_epoch_details(jd_noon, dt)
-    chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz)
+    chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz, rise)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
     panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_events, nak_events, w_idx)
     festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)
