@@ -696,20 +696,44 @@ def get_epoch_details(jd, dt):
     ahargana = int(jd - 588465.5)
     return {"kaliyuga": f"{kaliyuga_year} Years", "ayanamsha": f"{ayanamsha:.6f}", "kali_ahargana": f"{ahargana} Days", "rata_die": f"{int(jd - 1721424.5)}", "julian_date": dt.strftime("%B %d, %Y CE"), "julian_day": f"{jd:.2f}", "civil_date": f"{dt.strftime('%d %B')}, {shaka_year} Shaka", "mjd": f"{mjd:.2f}", "nirayana_date": f"{dt.strftime('%d %B')}, {shaka_year} Shaka"}
 
-def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz, base_jd):
+def get_chandrabalam_tarabalam_details(rashi_events, nak_events, tz, base_jd):
     """Calculates daily strength of Moon and constellations for the user (Period 1 & 2)."""
-    # Chandrabalam: Good transits are 1, 3, 6, 7, 10, 11 from Birth Moon
-    good_rashis = []
-    for r_idx, r_name in enumerate(RASHIS):
-        # diff = (Current Moon - Birth Moon) % 12 + 1
-        # Checks if Current Moon is in X pos from Birth Moon.
-        # So diff is position of Current Moon relative to r_idx.
-        diff = (moon_rashi_idx - r_idx) % 12 + 1
-        if diff in [1, 3, 6, 7, 10, 11]: 
-             good_rashis.append({"name": r_name.split(' ')[0], "icon": RASHI_ICONS.get(r_name, "")})
     
-    # Tarabalam: Good Taras are 2, 4, 6, 8, 9
-    periods = {}
+    # --- CHANDRABALAM (Moon Strength) ---
+    # Good transits are 1, 3, 6, 7, 10, 11 from Birth Moon
+    chandra_periods = {}
+    
+    for i, event in enumerate(rashi_events):
+        moon_rashi_idx = event['index']
+        good_rashis = []
+        for r_idx, r_name in enumerate(RASHIS):
+            # diff = (Current Moon - Birth Moon) % 12 + 1
+            diff = (moon_rashi_idx - r_idx) % 12 + 1
+            if diff in [1, 3, 6, 7, 10, 11]: 
+                 good_rashis.append({"name": r_name.split(' ')[0], "icon": RASHI_ICONS.get(r_name, "")})
+
+        # Format time label
+        d_start = dt_from_jd(event['start'], tz)
+        d_end = dt_from_jd(event['end'], tz)
+        base_date = dt_from_jd(base_jd, tz).date()
+        
+        label = "Whole Day"
+        if len(rashi_events) > 1:
+            if not d_start: s_s = "..."
+            else: s_s = d_start.strftime('%b %d, %I:%M %p') if d_start.date() != base_date else d_start.strftime('%I:%M %p')
+            
+            if not d_end: e_s = "..." 
+            else: e_s = d_end.strftime('%b %d, %I:%M %p') if d_end.date() != base_date else d_end.strftime('%I:%M %p')
+            
+            label = f"{s_s} to {e_s}"
+        
+        chandra_periods[f"period_{i+1}"] = {"time": label, "good_rashis": good_rashis}
+
+    if "period_1" not in chandra_periods: chandra_periods["period_1"] = {"time": "---", "good_rashis": []}
+
+    # --- TARABALAM (Star Strength) ---
+    # Good Taras are 2, 4, 6, 8, 9
+    tara_periods = {}
     for i, event in enumerate(nak_events):
         day_nak_idx = event['index']
         good_naks = []
@@ -734,13 +758,12 @@ def get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz, base_jd):
             
             label = f"{s_s} to {e_s}"
             
-        periods[f"period_{i+1}"] = {"time": label, "nakshatras": good_naks}
+        tara_periods[f"period_{i+1}"] = {"time": label, "nakshatras": good_naks}
 
     # Ensure at least structure exists if no events (unlikely)
-    if "period_1" not in periods: periods["period_1"] = {"time": "---", "nakshatras": []}
-    if "period_2" not in periods: periods["period_2"] = {"time": "", "nakshatras": []}
-
-    return {"chandrabalam": {"good_rashis": good_rashis, "ashtama_chandra": ["Ashtama Chandra check required"]}, "tarabalam": periods}
+    if "period_1" not in tara_periods: tara_periods["period_1"] = {"time": "---", "nakshatras": []}
+    
+    return {"chandrabalam": chandra_periods, "tarabalam": tara_periods}
 
 def get_panchaka_rahita_details(lagnas, tithi_events, nak_events, weekday_idx):
     """Calculates Panchaka Rahita Muhurtha (Good/Bad Panchaka) based on Lagna timings."""
@@ -1003,8 +1026,24 @@ def fetch_panchang(loc_str_or_dict, date_str):
     # Calculate Daily Nivas/Shool with full timings
     nivas_shool = get_daily_nivas_details(rise, rise_next, w_idx, tithi_events, nak_events, moon_rashi_idx, sun_rashi_idx, sun_long, tz)
     
+    # Generate Moon Rashi Events locally for Chandrabalam Logic
+    # We need to find Moon Sign changes for the period `rise` to `rise_next`
+    target_next_rashi = (moon_rashi_idx + 1) % 12
+    def check_sign(t): return int(swe.calc_ut(t, swe.MOON, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0] / 30)
+    
+    rashi_events_list = []
+    # Current rashi
+    r_end = find_trans(rise, check_sign, target_next_rashi)
+    
+    if not r_end or r_end >= rise_next:
+        rashi_events_list.append({'index': moon_rashi_idx, 'start': rise, 'end': rise_next})
+    else:
+        rashi_events_list.append({'index': moon_rashi_idx, 'start': rise, 'end': r_end})
+        # Next rashi
+        rashi_events_list.append({'index': target_next_rashi, 'start': r_end, 'end': rise_next})
+
     epoch = get_epoch_details(jd_noon, dt)
-    chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(moon_rashi_idx, nak_events, tz, rise)
+    chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(rashi_events_list, nak_events, tz, rise)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
     panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_events, nak_events, w_idx)
     festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)

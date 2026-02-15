@@ -484,19 +484,42 @@
     <div class="row-container" style="align-items: stretch;">
         <div class="cell-left" style="flex-direction: column; border-right: 1px solid #f1c40f;">
             <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Chandrabalam</div>
-            <div class="grid-container">
-                {% for rashi in data.details.chandrabalam_tarabalam.chandrabalam.good_rashis %}
-                <div class="grid-item"><span class="grid-icon">{{ rashi.icon }}</span> {{ rashi.name }}</div>
-                {% endfor %}
+            {% for key, period in data.details.chandrabalam_tarabalam.chandrabalam.items() %}
+            <div style="width: 100%; margin-bottom: 8px;">
+                <div
+                    style="font-size: 0.85rem; font-weight: bold; color: #5d4037; border-bottom: 1px dotted #dcdcdc; padding-bottom: 2px; margin-bottom: 4px;">
+                    <i class="far fa-clock"></i> {{ period.time }}
+                </div>
+                <div class="grid-container">
+                    {% for rashi in period.good_rashis %}
+                    <div class="grid-item"><span class="grid-icon">{{ rashi.icon }}</span> {{ rashi.name }}</div>
+                    {% endfor %}
+                    {% if not period.good_rashis %}
+                    <div class="grid-item" style="color: #999;">Check 8th House.</div>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
         </div>
         <div class="cell-right" style="flex-direction: column;">
             <div style="font-weight: 700; color: #922b21; margin-bottom: 10px;">Good Tarabalam</div>
-            <div class="grid-container">
-                {% for nak in data.details.chandrabalam_tarabalam.tarabalam.period_1.nakshatras %}
-                <div class="grid-item"><span class="grid-icon">{{ nak.icon }}</span> {{ nak.name }}</div>
-                {% endfor %}
+
+            {% for key, period in data.details.chandrabalam_tarabalam.tarabalam.items() %}
+            <div style="width: 100%; margin-bottom: 8px;">
+                <div
+                    style="font-size: 0.85rem; font-weight: bold; color: #5d4037; border-bottom: 1px dotted #dcdcdc; padding-bottom: 2px; margin-bottom: 4px;">
+                    <i class="far fa-clock"></i> {{ period.time }}
+                </div>
+                <div class="grid-container">
+                    {% for nak in period.nakshatras %}
+                    <div class="grid-item"><span class="grid-icon">{{ nak.icon }}</span> {{ nak.name }}</div>
+                    {% endfor %}
+                    {% if not period.nakshatras %}
+                    <div class="grid-item" style="color: #999;">No suitable Tarabalam found.</div>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 
