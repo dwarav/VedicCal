@@ -447,6 +447,10 @@
         } else { alert("Geolocation not supported."); }
     }
 
+    {% if is_first_load %}
+    window.onload = function () { detectLocation(); };
+    {% endif %}
+
     const input = document.getElementById('locationInput');
     const list = document.getElementById('suggestions');
     let debounceTimer;
@@ -475,6 +479,7 @@
                                     li.addEventListener('click', () => {
                                         input.value = cleanName;
                                         list.style.display = 'none';
+                                        document.getElementById('muhurthaForm').submit();
                                     });
                                     list.appendChild(li);
                                 }

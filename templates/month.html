@@ -325,6 +325,10 @@
         } else { alert("Geolocation not supported."); }
     }
 
+    {% if is_first_load %}
+    window.onload = function () { detectLocation(); };
+    {% endif %}
+
     const input = document.getElementById('locationInput');
     const list = document.getElementById('suggestions');
     let debounceTimer;

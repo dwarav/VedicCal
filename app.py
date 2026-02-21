@@ -75,6 +75,7 @@ def monthly_view():
     loc_data = get_default_location_data()
     loc_name_display = loc_data['name']
 
+    is_first_load = False
     if request.method == 'POST':
         if request.form.get('month_year'):
             ym_str = request.form.get('month_year')
@@ -87,6 +88,8 @@ def monthly_view():
             if found_loc:
                 loc_data = found_loc
                 loc_name_display = req_loc
+    else:
+        is_first_load = True
 
     # Calculate Calendar
     cal = calendar.monthcalendar(year, month)
@@ -121,7 +124,8 @@ def monthly_view():
                            month_name=month_name, 
                            year=year, 
                            location=loc_name_display, 
-                           current_ym=f"{year}-{month:02d}")
+                           current_ym=f"{year}-{month:02d}",
+                           is_first_load=is_first_load)
 
 
 @app.route('/muhurtha', methods=['GET', 'POST'])
@@ -139,6 +143,7 @@ def muhurtha_view():
         'tz': pytz.timezone('Asia/Kolkata')
     }
 
+    is_first_load = False
     if request.method == 'POST':
         if request.form.get('month_year'):
             ym_str = request.form.get('month_year')
@@ -149,6 +154,8 @@ def muhurtha_view():
             found_loc = get_location(loc_name)
             if found_loc:
                 loc_data = found_loc
+    else:
+        is_first_load = True
 
     # Calculate Muhurthas (Standard)
     muhurtha_data = get_monthly_muhurthas(loc_data, year, month)
@@ -213,7 +220,8 @@ def muhurtha_view():
                            month_name=month_name, 
                            year=year, 
                            location=loc_name, 
-                           current_ym=f"{year}-{month:02d}")
+                           current_ym=f"{year}-{month:02d}",
+                           is_first_load=is_first_load)
 
 
 # ... (Keep existing imports) ...
