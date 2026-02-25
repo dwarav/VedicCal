@@ -1060,49 +1060,44 @@ def fetch_panchang(loc_str_or_dict, date_str):
     # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
     def get_special_timing(events, start_offsets, duration_mins=96):
         timings = []
-        duration_days = duration_mins / (24 * 60)
+        duration_ghatis = duration_mins / 24.0
         
-        # Helper to find exact Nakshatra Entry (True Start)
-        def get_true_start(nak_idx, ref_jd):
-            # Target Longitude for this Nakshatra Start
-            target_long = nak_idx * 13.333333333
-            
-            # Function to check if Moon is >= target_long (handling wrap-around 0/360)
+        # Helper to find exact Nakshatra Entry (True Start) and Exit
+        def get_true_start_end(nak_idx, ref_jd):
             def check_long(t):
                  l = swe.calc_ut(t, swe.MOON, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
                  return (int(l / 13.333333333), 0)
             
-            # We want when it *became* nak_idx. (Transition (nak_idx-1) -> nak_idx)
             prev = (nak_idx - 1) % 27
             limit = 2.0 # Look back 2 days max
             
-            # If Nakshatra is 0 (Ashwini), we look for transition 26 -> 0
-            # find_trans finds when func becomes target.
-            # No, find_trans finds when val == target and next != target (End of Target).
-            # So to find Start of Curr, we find End of Prev.
-            
             t_start = find_trans(ref_jd - limit, check_long, prev, limit=limit)
-            return t_start
+            
+            if t_start:
+                 t_end = find_trans(t_start + 0.1, check_long, nak_idx, limit=limit)
+            else:
+                 t_end = None
+            return t_start, t_end
 
         for n in events:
             idx = n['index']
             
-            # Always recalculate true start for precision, or if clamp suspected
-            # Use 'end' as reference to look back from, or 'start' + 1 if available
             ref = n['end'] if n['end'] else (n['start'] + 0.5 if n['start'] else rise)
             
-            true_start = get_true_start(idx, ref)
+            true_start, true_end = get_true_start_end(idx, ref)
             if not true_start: 
-                 # Fallback to provided start if search fails (unlikely)
                  true_start = n['start']
+            if not true_end:
+                 true_end = true_start + 1.0 if true_start else rise + 1.0
             
             if not true_start: continue
 
-            offset_ghati = start_offsets[idx]
-            offset_days = offset_ghati * (24/60.0) / 24.0 # Ghati to Days: X * 24mins / (24*60 mins) = X / 60.0
+            n_duration = true_end - true_start
             
-            s_jd = true_start + offset_days
-            e_jd = s_jd + duration_days
+            offset_ghati = start_offsets[idx]
+            # Proportional calculation based on actual Nakshatra duration being 60 ghatis
+            s_jd = true_start + (n_duration * (offset_ghati / 60.0))
+            e_jd = s_jd + (n_duration * (duration_ghatis / 60.0))
             
             # Check overlap with "Today"
             if e_jd < rise: continue
