@@ -17,7 +17,14 @@
         background: #b71c1c;
         border-bottom: 4px solid #d4ac0d;
         padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .capture-header .header-content {
         text-align: center;
+        flex-grow: 1;
     }
 
     .capture-header h1 {
@@ -251,8 +258,12 @@
 <div id="captureArea">
 
     <div class="capture-header">
-        <h1><span class="translate-dwara notranslate">Dwara</span>'s Vedic Calendar</h1>
-        <p>PRECISION PANCHANG</p>
+        <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara" style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
+        <div class="header-content">
+            <h1><span class="translate-dwara notranslate">Dwara</span>'s Vedic Calendar</h1>
+            <p>PRECISION PANCHANG</p>
+        </div>
+        <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family" style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
     </div>
 
     <div class="main-info">
