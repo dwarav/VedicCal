@@ -1,7 +1,7 @@
 import calendar
 from datetime import datetime
 import swisseph as swe
-from .core import fetch_month_day_data, fetch_panchang, setup_swisseph, jd_from_dt
+from .core import fetch_month_day_data, fetch_panchang, setup_swisseph, jd_from_dt, calc_sun_rise_set
 
 # --- HELPER: COMBUSTION CHECK (MOODAMI) ---
 def get_combustion_status(jd):
@@ -163,20 +163,38 @@ def get_monthly_muhurthas(loc, year, month):
                                     bad_windows.append((ke['start'], ke['end']))
                         
                         # Inauspicious Yogas to exclude per Drik Panchangam
-                        INAUSPICIOUS_YOGAS = {"Vishkambha", "Atiganda", "Shula", "Ganda", 
-                                              "Vyaghata", "Vajra", "Vyatipata", "Parigha", "Vaidhriti"}
+                        # 1 ghati = 1/60th of the full duration
+                        YOGA_BAD_GHATIS = {
+                            "Vishkambha": 3,
+                            "Atiganda": 6,
+                            "Shula": 5,
+                            "Ganda": 6,
+                            "Vyaghata": 9,
+                            "Vajra": 3,
+                            "Vyatipata": 60, # entire
+                            "Parigha": 30, # first half
+                            "Vaidhriti": 60 # entire
+                        }
                         yoga_events = full_data.get('yoga', [])
                         for ye in yoga_events:
-                            if ye['name'] in INAUSPICIOUS_YOGAS and ye.get('start') and ye.get('end'):
-                                bad_windows.append((ye['start'], ye['end']))
+                            y_name = ye['name']
+                            if y_name in YOGA_BAD_GHATIS and ye.get('start') and ye.get('end'):
+                                y_start = ye['start']
+                                y_end = ye['end']
+                                duration = y_end - y_start
+                                bad_portion = YOGA_BAD_GHATIS[y_name] / 60.0
+                                bad_end = y_start + (duration * bad_portion)
+                                bad_windows.append((y_start, bad_end))
                         
                         # Find overlapping windows (nak ∩ tithi) minus bad windows
                         best_window = None
+                        rise, _ = calc_sun_rise_set(jd_noon, loc['lat'], loc['lon'])
+                        rise_next, _ = calc_sun_rise_set(jd_noon + 1, loc['lat'], loc['lon'])
                         for ns, ne_jd, nak_name in good_nak_windows:
                             for ts, te_jd, tithi_name in good_tithi_windows:
-                                # Calculate overlap
-                                overlap_start = max(ns, ts)
-                                overlap_end = min(ne_jd, te_jd)
+                                # Calculate overlap bounded by Vedic Day (Sunrise to next Sunrise)
+                                overlap_start = max(ns, ts, rise)
+                                overlap_end = min(ne_jd, te_jd, rise_next)
                                 if overlap_start >= overlap_end: continue
                                 
                                 # Subtract Bhadra + inauspicious Yoga periods
