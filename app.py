@@ -8,6 +8,7 @@ from datetime import datetime
 import pytz
 
 app = Flask(__name__)
+app.secret_key = 'dwara-vedic-calendar-secret-key'
 
 # --- HARDCODED FALLBACK (No API Call) ---
 def get_default_location_data():
@@ -135,13 +136,8 @@ def muhurtha_view():
     month = today.month
     
     # Default Location Logic (Same as other pages)
-    loc_name = "Bangalore, India"
-    loc_data = {
-        'name': "Bangalore, India",
-        'lat': 12.9716,
-        'lon': 77.5946,
-        'tz': pytz.timezone('Asia/Kolkata')
-    }
+    loc_data = get_default_location_data()
+    loc_name = loc_data['name']
 
     is_first_load = False
     if request.method == 'POST':
@@ -224,7 +220,6 @@ def muhurtha_view():
                            is_first_load=is_first_load)
 
 
-# ... (Keep existing imports) ...
 
 
 @app.route('/horoscope', methods=['GET', 'POST'])
@@ -256,7 +251,8 @@ def horoscope_view():
                 # 3. Format Date/Time for Display (e.g., "December 12, 1977 Monday")
                 dt_obj = datetime.strptime(f"{birth_date} {birth_time}", "%Y-%m-%d %H:%M")
                 formatted_date = dt_obj.strftime("%B %d, %Y %A")
-                formatted_time = dt_obj.strftime("%I:%M %p IST (+05:30)") # Assuming IST for now
+                tz_zone = str(loc.get('tz', 'UTC'))
+                formatted_time = dt_obj.strftime(f"%I:%M %p") + f" ({tz_zone})"
                 
                 # 4. Prepare Bio Data
                 bio_details = {
@@ -295,7 +291,7 @@ def horoscope_view():
                 data["predictions"] = {
                     "daily": f"Today is a favorable day for {sign} rashi. Financial gains are indicated.",
                     "weekly": f"This week requires patience for {sign}. Career growth is steady.",
-                    "yearly": f"2025 brings transformation for {sign}. Saturn's transit is favorable."
+                    "yearly": f"{dt_obj.year} brings transformation for {sign}. Saturn's transit is favorable."
                 }
 
     return render_template('horoscope.html', 

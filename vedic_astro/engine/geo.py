@@ -29,5 +29,5 @@ def get_location(name):
             'lon': loc.longitude, 
             'tz': pytz.timezone(tz_str)
         }
-    except: 
+    except Exception: 
         return None

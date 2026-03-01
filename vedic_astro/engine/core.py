@@ -2,7 +2,6 @@ import swisseph as swe
 from datetime import datetime, timedelta, date
 import pytz
 import os
-import math
 import urllib.parse
 import calendar
 
@@ -62,7 +61,7 @@ def dt_from_jd(jd, tz):
     sec = int((mins - mi) * 60)
     try:
         return datetime(int(y), int(m), int(d), h, mi, sec, tzinfo=pytz.utc).astimezone(tz)
-    except: return None
+    except Exception: return None
 
 # ================= CALCULATORS =================
 def calc_sun_rise_set(jd, lat, lon):
@@ -84,14 +83,15 @@ def calc_sun_rise_set(jd, lat, lon):
         rise = swe.rise_trans(jd_search, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)[1][0]
         set_ = swe.rise_trans(jd_search, swe.SUN, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)[1][0]
         return rise, set_
-    except: return 0.0, 0.0
+    except Exception: return 0.0, 0.0
 
 def calc_moon_rise_set(jd_start, lat, lon):
     """
-    Calculates Moon rise and set times.
+    Calculates Moon rise and set times for the given day.
+    Checks the 24 hour period from midnight to find the correct rise/set.
     
     Args:
-        jd_start (float): Julian Day to start search.
+        jd_start (float): Julian Day (usually noon) of the target day.
         lat (float): Latitude.
         lon (float): Longitude.
         
@@ -100,12 +100,46 @@ def calc_moon_rise_set(jd_start, lat, lon):
     """
     if jd_start is None: return 0.0, 0.0
     geopos = (float(lon), float(lat), 0.0)
-    jd_search = jd_start - 0.5
+    
+    # Start search from local midnight (approx jd_start - 0.5)
+    jd_search_start = jd_start - 0.5
+    
     try:
-        res_rise = swe.rise_trans(jd_search, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
-        res_set = swe.rise_trans(jd_search, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
-        return res_rise[1][0], res_set[1][0]
-    except: return 0.0, 0.0
+        # Get next rise after midnight
+        res_rise = swe.rise_trans(jd_search_start, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
+        rise_time = res_rise[1][0]
+        
+        # Get next set after midnight
+        res_set = swe.rise_trans(jd_search_start, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
+        set_time = res_set[1][0]
+        
+        # Validation: check if the found times are actually within the target 24-hour day
+        # A day is roughly from jd_search_start to jd_search_start + 1.0
+        
+        if rise_time > jd_search_start + 1.0:
+             rise_time = 0.0 # No moonrise on this day
+             
+        if set_time > jd_search_start + 1.0:
+             set_time = 0.0 # No moonset on this day
+             
+        # Additionally, if the time found is before the start of the day (rare, but just in case)
+        if rise_time < jd_search_start:
+             # Try next rise
+             res_rise2 = swe.rise_trans(rise_time + 0.1, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
+             if res_rise2[1][0] < jd_search_start + 1.0:
+                 rise_time = res_rise2[1][0]
+             else:
+                 rise_time = 0.0
+        
+        if set_time < jd_search_start:
+             res_set2 = swe.rise_trans(set_time + 0.1, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
+             if res_set2[1][0] < jd_search_start + 1.0:
+                 set_time = res_set2[1][0]
+             else:
+                 set_time = 0.0
+                 
+        return rise_time, set_time
+    except Exception: return 0.0, 0.0
 
 def get_pos(jd):
     """
@@ -123,7 +157,7 @@ def get_pos(jd):
         sun = swe.calc_ut(jd, swe.SUN, flags)[0][0]
         moon = swe.calc_ut(jd, swe.MOON, flags)[0][0]
         return sun, moon
-    except: return 0.0, 0.0
+    except Exception: return 0.0, 0.0
 
 def get_events(start_jd, end_jd, func, names, count, is_karana=False):
     """
@@ -158,7 +192,7 @@ def get_events(start_jd, end_jd, func, names, count, is_karana=False):
             curr_search = e_jd + 0.002
             curr_idx = (curr_idx + 1) % count
             loops += 1
-    except: pass
+    except Exception: pass
     return events
 
 def find_trans(start, func, target, limit=2.0):
@@ -178,7 +212,7 @@ def find_trans(start, func, target, limit=2.0):
                 t1, t2 = curr, curr + 1/24.0
                 found = True
                 break
-        except: pass
+        except Exception: pass
         curr += 1/24.0
     if not found: return None
     # Refine precision
@@ -187,7 +221,7 @@ def find_trans(start, func, target, limit=2.0):
         try:
             if func(mid)[0] == target: t1 = mid
             else: t2 = mid
-        except: break
+        except Exception: break
     return t2
 
 def get_karana_name(k):
@@ -206,7 +240,6 @@ def fmt_duration(jd_start, jd_end):
     seconds = total_seconds % 60
     return f"{hours:02d} Hours {minutes:02d} Mins {seconds:02d} Secs"
 
-# --- HELPER: GET ENTRY/EXIT TIMES ---
 # --- HELPER: GET ENTRY/EXIT TIMES ---
 def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
     """Calculates when a planet enters and exits a specific angular division (sign/nakshatra)."""
@@ -273,14 +306,6 @@ def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
         dt_ex = dt_from_jd(exit_jd, tz)
         if dt_ex: exit_str = dt_ex.strftime("%d %b, %I:%M %p")
     return entry_str, exit_str
-
-# ... (Helper functions remain) ...
-
-# ... inside fetch_panchang (around line 961) ...
-
-    # Fixed Logic: Use module-level helper
-    moon_rashi_start, moon_rashi_end = get_entry_exit_times(jd_noon, swe.MOON, moon_rashi_idx, 30, tz)
-    sun_rashi_start, sun_rashi_end = get_entry_exit_times(jd_noon, swe.SUN, sun_rashi_idx, 30, tz)
 
 
 # ================= HELPER CALCULATORS =================
@@ -838,7 +863,7 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
                 lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(curr_jd), "start_jd": lagna_start_jd, "end_jd": curr_jd})
                 lagna_start_jd = curr_jd
             last_sign_idx = curr_sign_idx
-        except: pass
+        except Exception: pass
         curr_jd += step
     if last_sign_idx != -1:
         rashi_name = RASHIS[last_sign_idx]
@@ -945,6 +970,7 @@ def fetch_month_day_data(loc, date_str):
     festival_names = [f['name'] for f in festivals]
     return {
         "tithi": tithi_name, "tithi_icon": tithi_icon,
+        "full_tithi_name": t_item['name'],  # e.g. "Shukla Panchami" (with Paksha prefix)
         "tithi_start": tithi_start, "tithi_end": tithi_end,
         "nakshatra": nak_name, "nak_end": nak_end,
         "nakshatra_idx": n_item['index'],
@@ -1056,7 +1082,6 @@ def fetch_panchang(loc_str_or_dict, date_str):
         return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
     def fmt_range(start, end): return f"{fmt_dt(start)} - {fmt_dt(end)}"
     calc_timings = get_calculated_timings(nak_events, w_idx, sun_nak_idx, tithi_events, rise, rise_next, tz)
-    # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
     # --- Fix for Amrit/Varjyam (Calculate for all active Nakshatras) ---
     def get_special_timing(events, start_offsets, duration_mins=96):
         timings = []

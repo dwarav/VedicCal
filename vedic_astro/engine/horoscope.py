@@ -269,7 +269,7 @@ def get_sudarshana_chakra(planetary_positions, lagna_rashi_idx, moon_rashi_idx, 
                 p_rasi_idx = RASHIS.index(planet['rasi'])
                 house_num = (p_rasi_idx - reference_sign_idx + 12) % 12 + 1
                 chart[str(house_num)].append(planet['symbol']) 
-            except: pass
+            except Exception: pass
         return chart
     charts['lagna_chart'] = build_chart(lagna_rashi_idx)
     charts['moon_chart'] = build_chart(moon_rashi_idx)
@@ -306,7 +306,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     setup_swisseph()
     try:
         dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
-    except: return None
+    except Exception: return None
     tz = loc['tz']
     local_dt = tz.localize(dt)
     utc_dt = local_dt.astimezone(pytz.utc)
@@ -394,7 +394,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         target_next = (current_sign_idx + 1) % 12
         def check_sign_idx(t):
             pos = swe.calc_ut(t, body_id, flags)[0][0]
-            return int(pos / 30)
+            return (int(pos / 30), 0)
         exit_jd = find_trans(jd_center, check_sign_idx, target_next)
         days_back = 35 if body_id == swe.SUN else 4
         search_start = jd_center - days_back
@@ -407,7 +407,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         search_start = jd_center - 2.0
         def check_nak_idx(t):
             pos = swe.calc_ut(t, swe.MOON, flags)[0][0]
-            return int(pos / 13.333333333)
+            return (int(pos / 13.333333333), 0)
         entry_jd = find_trans(search_start, check_nak_idx, current_nak_idx)
         next_nak = (current_nak_idx + 1) % 27
         exit_jd = find_trans(jd_center, check_nak_idx, next_nak)
