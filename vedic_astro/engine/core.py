@@ -109,34 +109,29 @@ def calc_moon_rise_set(jd_start, lat, lon):
         res_rise = swe.rise_trans(jd_search_start, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
         rise_time = res_rise[1][0]
         
-        # Get next set after midnight
-        res_set = swe.rise_trans(jd_search_start, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
-        set_time = res_set[1][0]
-        
-        # Validation: check if the found times are actually within the target 24-hour day
-        # A day is roughly from jd_search_start to jd_search_start + 1.0
-        
+        # Validation: check if the found rise time is within the target 24-hour day
         if rise_time > jd_search_start + 1.0:
-             rise_time = 0.0 # No moonrise on this day
-             
-        if set_time > jd_search_start + 1.0:
-             set_time = 0.0 # No moonset on this day
+             # No moonrise on this day, so try finding the most recent rise before midnight
+             # to anchor the moonset calculation.
+             res_rise_prev = list(swe.rise_trans(jd_search_start - 1.0, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos))
+             anchor_rise = res_rise_prev[1][0]
+             rise_time = 0.0 # Indicate no rise today
+        else:
+             anchor_rise = rise_time
              
         # Additionally, if the time found is before the start of the day (rare, but just in case)
-        if rise_time < jd_search_start:
+        if anchor_rise < jd_search_start and rise_time != 0.0:
              # Try next rise
-             res_rise2 = swe.rise_trans(rise_time + 0.1, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
+             res_rise2 = swe.rise_trans(anchor_rise + 0.1, swe.MOON, swe.CALC_RISE | swe.BIT_DISC_CENTER, geopos)
              if res_rise2[1][0] < jd_search_start + 1.0:
-                 rise_time = res_rise2[1][0]
+                 anchor_rise = res_rise2[1][0]
+                 rise_time = anchor_rise
              else:
                  rise_time = 0.0
-        
-        if set_time < jd_search_start:
-             res_set2 = swe.rise_trans(set_time + 0.1, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
-             if res_set2[1][0] < jd_search_start + 1.0:
-                 set_time = res_set2[1][0]
-             else:
-                 set_time = 0.0
+
+        # Get the very next moonset AFTER our anchor rise time
+        res_set = swe.rise_trans(anchor_rise, swe.MOON, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
+        set_time = res_set[1][0]
                  
         return rise_time, set_time
     except Exception: return 0.0, 0.0
@@ -253,7 +248,7 @@ def get_entry_exit_times(jd_ref, body_id, current_val, span_deg, tz):
     # Check function for transitions
     def check_idx(t):
         pos = swe.calc_ut(t, body_id, swe.FLG_SIDEREAL | swe.FLG_SPEED)[0][0]
-        return int(pos / span_deg)
+        return (int(pos / span_deg), 0)
 
     # Determine search limits based on body
     limit = 2.0
@@ -1138,7 +1133,9 @@ def fetch_panchang(loc_str_or_dict, date_str):
     amrit_time = get_special_timing(nak_events, AMRIT_STARTS)
     moon_rashi_start, moon_rashi_end = get_entry_exit_times(jd_noon, swe.MOON, moon_rashi_idx, 30, tz)
     sun_rashi_start, sun_rashi_end = get_entry_exit_times(jd_noon, swe.SUN, sun_rashi_idx, 30, tz)
-    data = {"meta": {"location": loc['name'], "date": dt_from_jd(rise, tz).strftime("%A, %d %B %Y"), "sunrise": fmt_dt(rise), "sunset": fmt_dt(set_), "moonrise": fmt_dt(moon_rise), "moonset": fmt_dt(moon_set)}, "details": {"moonsign": RASHIS[moon_rashi_idx], "sunsign": RASHIS[sun_rashi_idx], "samvat": samvat, "ritu_ayana": ritu_ayana, "dinamana": dinamana, "ratrimana": ratrimana, "madhyahna": fmt_dt(madhyahna_jd), "nivas_shool": nivas_shool, "epoch": epoch, "chandrabalam_tarabalam": chandrabalam_tarabalam, "panchaka_rahita": panchaka_rahita, "udaya_lagna": udaya_lagna, "festivals": festivals, "moonsign_start": moon_rashi_start, "moonsign_end": moon_rashi_end, "sunsign_start": sun_rashi_start, "sunsign_end": sun_rashi_end}, "tithi": tithi_events, "nakshatra": nak_events, "yoga": get_events(rise, rise_next, fn_yoga, YOGAS, 27), "karana": get_events(rise, rise_next, fn_karana, [], 60, True), "moon_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 3.333333333), 0), PADA_NAMES, 108), "sun_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[0] / 3.333333333), 0), PADA_NAMES, 108), "timings": {"brahma": fmt_range(*muhurtas["brahma"]), "pratah": fmt_range(*muhurtas["pratah"]), "vijaya": fmt_range(*muhurtas["vijaya"]), "godhuli": fmt_range(*muhurtas["godhuli"]), "sayahna": fmt_range(*muhurtas["sayahna"]), "nishita": fmt_range(*muhurtas["nishita"]), "dur_day": ", ".join([fmt_range(s, e) for s, e in muhurtas["dur_day"]]), "sarvartha": calc_timings["sarvartha"], "baana": calc_timings["baana"], "vidaal": calc_timings["vidaal"], "anandadi": calc_timings["anandadi"], "tamil": calc_timings["tamil"], "jeevanama": calc_timings["jeevanama"], "netrama": calc_timings["netrama"], "tripushkara": calc_timings["tripushkara"], "rahu": rahu_time, "yama": yama_time, "guli": guli_time, "varjyam": varjyam_time, "amrit": amrit_time}}
+    sun_nak_start, sun_nak_end = get_entry_exit_times(jd_noon, swe.SUN, sun_nak_idx, 13.333333333, tz)
+    
+    data = {"meta": {"location": loc['name'], "date": dt_from_jd(rise, tz).strftime("%A, %d %B %Y"), "sunrise": fmt_dt(rise), "sunset": fmt_dt(set_), "moonrise": fmt_dt(moon_rise), "moonset": fmt_dt(moon_set)}, "details": {"moonsign": RASHIS[moon_rashi_idx], "sunsign": RASHIS[sun_rashi_idx], "sun_nakshatra": NAKSHATRAS[sun_nak_idx], "samvat": samvat, "ritu_ayana": ritu_ayana, "dinamana": dinamana, "ratrimana": ratrimana, "madhyahna": fmt_dt(madhyahna_jd), "nivas_shool": nivas_shool, "epoch": epoch, "chandrabalam_tarabalam": chandrabalam_tarabalam, "panchaka_rahita": panchaka_rahita, "udaya_lagna": udaya_lagna, "festivals": festivals, "moonsign_start": moon_rashi_start, "moonsign_end": moon_rashi_end, "sunsign_start": sun_rashi_start, "sunsign_end": sun_rashi_end, "sun_nakshatra_start": sun_nak_start, "sun_nakshatra_end": sun_nak_end}, "tithi": tithi_events, "nakshatra": nak_events, "yoga": get_events(rise, rise_next, fn_yoga, YOGAS, 27), "karana": get_events(rise, rise_next, fn_karana, [], 60, True), "moon_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[1] / 3.333333333), 0), PADA_NAMES, 108), "sun_pada": get_events(rise, rise_next, lambda j: (int(get_pos(j)[0] / 3.333333333), 0), PADA_NAMES, 108), "timings": {"brahma": fmt_range(*muhurtas["brahma"]), "pratah": fmt_range(*muhurtas["pratah"]), "vijaya": fmt_range(*muhurtas["vijaya"]), "godhuli": fmt_range(*muhurtas["godhuli"]), "sayahna": fmt_range(*muhurtas["sayahna"]), "nishita": fmt_range(*muhurtas["nishita"]), "dur_day": ", ".join([fmt_range(s, e) for s, e in muhurtas["dur_day"]]), "sarvartha": calc_timings["sarvartha"], "baana": calc_timings["baana"], "vidaal": calc_timings["vidaal"], "anandadi": calc_timings["anandadi"], "tamil": calc_timings["tamil"], "jeevanama": calc_timings["jeevanama"], "netrama": calc_timings["netrama"], "tripushkara": calc_timings["tripushkara"], "rahu": rahu_time, "yama": yama_time, "guli": guli_time, "varjyam": varjyam_time, "amrit": amrit_time}}
     if isinstance(muhurtas["abhijit"], tuple): data["timings"]["abhijit"] = fmt_range(*muhurtas["abhijit"])
     else: data["timings"]["abhijit"] = muhurtas["abhijit"]
     for item in data['tithi']: item['start_fmt'] = fmt_dt(item['start']); item['end_fmt'] = fmt_dt(item['end']); item['icon'] = TITHI_ICONS.get(item['name'], "🌑")

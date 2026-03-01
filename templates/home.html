@@ -258,12 +258,14 @@
 <div id="captureArea">
 
     <div class="capture-header">
-        <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara" style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
+        <img src="{{ url_for('static', filename='images/venkateswara.jpg') }}" class="header-img" alt="Venkateswara"
+            style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
         <div class="header-content">
             <h1><span class="translate-dwara notranslate">Dwara</span>'s Vedic Calendar</h1>
             <p>PRECISION PANCHANG</p>
         </div>
-        <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family" style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
+        <img src="{{ url_for('static', filename='images/shiva_family.jpg') }}" class="header-img" alt="Shiva Family"
+            style="height: 80px; width: auto; border: 2px solid #d4ac0d; border-radius: 8px;">
     </div>
 
     <div class="main-info">
@@ -333,20 +335,41 @@
 
     <div class="header-section">Rashi and Nakshatra</div>
     <div class="row-container">
-        <div class="cell-left"><span class="label">Moonsign</span><span class="value"><i class="fas fa-moon"></i> {{
-                data.details.moonsign }}</span></div>
+        <div class="cell-left">
+            <span class="label">Moonsign</span>
+            <div class="value">
+                <i class="fas fa-moon"></i> {{ data.details.moonsign }}
+                <div class="sub-val">{{ data.details.moonsign_start }} to {{ data.details.moonsign_end }}</div>
+            </div>
+        </div>
         <div class="cell-right"><span class="label">Nakshatra Pada</span>
             <div class="value">{% for item in data.moon_pada %}<div>{{ item.name }} <span class="sub-val">upto {{
                         item.end_fmt }}</span></div>{% endfor %}</div>
         </div>
     </div>
     <div class="row-container">
-        <div class="cell-left"><span class="label">Sunsign</span><span class="value"><i class="fas fa-sun"></i> {{
-                data.details.sunsign }}</span></div>
+        <div class="cell-left">
+            <span class="label">Sunsign</span>
+            <div class="value">
+                <i class="fas fa-sun"></i> {{ data.details.sunsign }}
+                <div class="sub-val">{{ data.details.sunsign_start }} to {{ data.details.sunsign_end }}</div>
+            </div>
+        </div>
         <div class="cell-right"><span class="label">Surya Pada</span>
             <div class="value">{% for item in data.sun_pada %}<div>{{ item.name }} <span class="sub-val">upto {{
                         item.end_fmt }}</span></div>{% endfor %}</div>
         </div>
+    </div>
+    <div class="row-container">
+        <div class="cell-left">
+            <span class="label">Surya Nakshatra</span>
+            <div class="value">
+                <i class="fas fa-certificate text-warning"></i> {{ data.details.sun_nakshatra }}
+                <div class="sub-val">{{ data.details.sun_nakshatra_start }} to {{ data.details.sun_nakshatra_end }}
+                </div>
+            </div>
+        </div>
+        <div class="cell-right"></div>
     </div>
 
     <div class="no-share">
