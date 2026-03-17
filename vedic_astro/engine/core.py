@@ -408,13 +408,71 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
     tripushkara_str = get_tripushkara_yoga(tithi_events, nak_events, weekday_idx, start_jd, end_jd, tz)
     return {"anandadi": anandadi_str, "tamil": tamil_str, "sarvartha": sarvartha_str, "baana": baana_str, "netrama": n, "jeevanama": j, "tripushkara": tripushkara_str, "vidaal": vidaal_str}
 
-def get_samvat_details(dt):
+def get_samvat_details(dt, lunar_month=None, tithi=None):
     """Calculates Vikram and Shaka Samvat years."""
     year = dt.year
-    is_after_new_year = dt.month > 4 or (dt.month == 4 and dt.day > 14)
-    vikram = year + 57 if is_after_new_year else year + 56
-    shaka = year - 78 if is_after_new_year else year - 79
-    samvat_idx = (shaka + 11) % 60
+    # For Solar Samvat (fixed date)
+    is_after_solar_new_year = dt.month > 4 or (dt.month == 4 and dt.day > 14)
+    vikram = year + 57 if is_after_solar_new_year else year + 56
+    shaka = year - 78 if is_after_solar_new_year else year - 79
+    
+    # For Samvatsara name (Lunar transition on Ugadi - Chaitra Shukla Pratipada)
+    # If we have lunar month and tithi, use them to decide.
+    # Otherwise fallback to solar transition for backward compatibility.
+    if lunar_month and tithi:
+        # Chaitra Shukla Pratipada is the start of the new lunar year.
+        # But wait, lunar_month 'Chaitra' starts with Krishna Paksha in Purnimanta, 
+        # or Shukla Paksha in Amanta. The app uses Amanta (from lunar_month_idx_calc).
+        # In Amanta, New Year is Chaitra Shukla Pratipada (Tithi 0).
+        is_after_lunar_new_year = (lunar_month != "Phalguna" and lunar_month != "Magha") # Oversimplified
+        # Detailed logic: Chaitra is the first month. 
+        # If month is Chaitra and tithi >= 0, it's new year.
+        # If month is Vaishakha etc, it's new year.
+        # If month is Phalguna, it's old year.
+        
+        # In this app's MONTHS: ["Chaitra", "Vaishakha", ...]
+        # Chaitra is index 0.
+        try:
+            m_idx = MONTHS.index(lunar_month)
+            # Samvatsara changes at Chaitra Shukla Pratipada (Tithi 0)
+            # So if m_idx > 0, or (m_idx == 0 and tithi_idx is handled elsewhere)
+            # Actually, the samvat_idx calculation (shaka + 11) % 60 is standard for the START of the year.
+            # Shaka year itself increments at Ugadi.
+            
+            # The current Shaka calculation (year - 78/79) is Solar.
+            # We should probably calculate a 'Lunar Shaka' for the index.
+            lunar_shaka = year - 78 if (m_idx > 0 or (m_idx == 0)) else year - 79
+            # Wait, if m_idx is 0 (Chaitra), it's already the new Shaka year.
+            # If m_idx is 11 (Phalguna), it's the old Shaka year.
+            lunar_shaka = year - 78 if m_idx >= 0 and m_idx < 10 else year - 79 
+            # This is still rough. Let's use the actual lunar month index.
+            # If month is Chaitra, Vaishakha... up to Phalguna.
+            # The year 2026: Ugadi is March 19.
+            # Before March 19: Phalguna (m_idx 11). lunar_shaka = 2026 - 79 = 1947.
+            # After March 19: Chaitra (m_idx 0). lunar_shaka = 2026 - 78 = 1948.
+            
+            # So: if m_idx == 11 (Phalguna) or (m_idx == 10 and current day is before transition)
+            # Actually, just m_idx < 11 usually works if Chaitra is 0.
+            # But wait, if it's Jan/Feb 2026, it's still Shaka 1947, and month is Magha/Phalguna.
+            # So if m_idx is 10 or 11, it's definitely old year if it's early in Gregorian year.
+            # If m_idx is 0, it's definitely new year.
+            
+            if m_idx < 10: # Chaitra (0) to Pausha (9)
+                lunar_shaka = year - 78
+            else: # Magha (10), Phalguna (11)
+                # If Gregorian month is Jan/Feb/March, it's the old Shaka year.
+                if dt.month <= 4:
+                    lunar_shaka = year - 79
+                else: 
+                    # This case rarely happens (Phalguna in April/May)
+                    lunar_shaka = year - 78
+            
+            samvat_idx = (lunar_shaka + 11) % 60
+        except:
+            samvat_idx = (shaka + 11) % 60
+    else:
+        samvat_idx = (shaka + 11) % 60
+        
     samvat_name = SAMVATSARA_NAMES[samvat_idx]
     return {"vikram": vikram, "shaka": shaka, "samvatsara": samvat_name, "chandramasa": ""}
 
@@ -1016,26 +1074,24 @@ def fetch_panchang(loc_str_or_dict, date_str):
     rahu_time = get_kalam(RAHU_KEY)
     yama_time = get_kalam(YAMA_KEY)
     guli_time = get_kalam(GULI_KEY)
-    samvat = get_samvat_details(dt)
-    # Correct Chandramasa Calculation (Amanta): Month is determined by the Sun's Rashi at the moment of the *previous* New Moon.
-    # Calculate tithi at sunrise first to backtrack
-    tithi_at_sunrise_idx = int(((moon_long - sun_long) % 360) / 12)
-    
-    # Backtrack Sun's position to New Moon (approx 1 degree per tithi)
-    # sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 0.9856)) / 30)
-    # Actually, simpler approximation often used suggests:
-    sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 1.0)) / 30)
-    
-    lunar_month_idx_calc = (sun_rashi_new_moon + 1) % 12
-    current_chandramasa = MONTHS[lunar_month_idx_calc]
-    samvat["chandramasa"] = current_chandramasa
-    ritu_ayana = get_ritu_ayana_details(rise)
-    muhurtas = calculate_muhurtas(rise, set_, rise_next, w_idx)
     
     # Restore Sunrise-based indices for general day calculations (Festivals, Tarabalam etc)
     tithi_idx = int(((moon_long - sun_long) % 360) / 12)
     nak_idx = int(moon_long / 13.333333)
     sun_nak_idx = int(sun_long / 13.333333)
+
+    # Correct Chandramasa Calculation (Amanta): Month is determined by the Sun's Rashi at the moment of the *previous* New Moon.
+    # Backtrack Sun's position to New Moon (approx 1 degree per tithi)
+    sun_rashi_new_moon = int((sun_long - (tithi_idx * 1.0)) / 30)
+    lunar_month_idx_calc = (sun_rashi_new_moon + 1) % 12
+    current_chandramasa = MONTHS[lunar_month_idx_calc]
+    
+    # Now call get_samvat_details with lunar info
+    samvat = get_samvat_details(dt, lunar_month=current_chandramasa, tithi=tithi_idx)
+    samvat["chandramasa"] = current_chandramasa
+    
+    ritu_ayana = get_ritu_ayana_details(rise)
+    muhurtas = calculate_muhurtas(rise, set_, rise_next, w_idx)
 
     fn_tithi = lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 12), 0)
     fn_nak = lambda j: (int(get_pos(j)[1] / 13.333333333), 0)

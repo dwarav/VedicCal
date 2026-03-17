@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Ephemeris files (large binaries)
+# ephe/
+
+# Logs and temp files
+*.log
+*.bak
+/tmp/
