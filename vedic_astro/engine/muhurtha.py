@@ -35,6 +35,21 @@ RIKTA_TITHIS = {"Chaturthi", "Navami", "Chaturdashi"}
 RASHI_NAMES = ["Mesha", "Vrishabha", "Mithuna", "Karkataka", "Simha", "Kanya", 
                "Tula", "Vrischika", "Dhanus", "Makara", "Kumbha", "Meena"]
 
+RASHI_TO_NAKS = {
+    0: ['Ashwini', 'Bharani', 'Krittika'], 
+    1: ['Krittika', 'Rohini', 'Mrigashira'], 
+    2: ['Mrigashira', 'Ardra', 'Punarvasu'], 
+    3: ['Punarvasu', 'Pushya', 'Ashlesha'], 
+    4: ['Magha', 'Purva Phalguni', 'Uttara Phalguni'], 
+    5: ['Uttara Phalguni', 'Hasta', 'Chitra'], 
+    6: ['Chitra', 'Swati', 'Vishakha'], 
+    7: ['Vishakha', 'Anuradha', 'Jyeshtha'], 
+    8: ['Mula', 'Purva Ashadha', 'Uttara Ashadha'], 
+    9: ['Uttara Ashadha', 'Shravana', 'Dhanishta'], 
+    10: ['Dhanishta', 'Shatabhisha', 'Purva Bhadrapada'], 
+    11: ['Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati']
+}
+
 # ---------------------------------------------------------------------------
 # HELPER FUNCTIONS
 # ---------------------------------------------------------------------------
@@ -467,10 +482,15 @@ def get_monthly_muhurthas(loc, year, month):
                     # Map all lagnas for display
                     formatted_lagnas = []
                     for ex_s, l_ws, l_we, n_name, t_name, l_name in lagnas_found:
+                        l_idx = RASHI_NAMES.index(l_name)
+                        bad_janma_rashi_idx = (l_idx + 5) % 12
+                        bad_naks = ", ".join(RASHI_TO_NAKS[bad_janma_rashi_idx])
+                        
                         formatted_lagnas.append({
                             "lagna_name": l_name,
                             "muhurta_start": fmt_start(ex_s, tz, year, month, day),
-                            "muhurta_window": fmt_window(l_ws, l_we, tz, year, month, day)
+                            "muhurta_window": fmt_window(l_ws, l_we, tz, year, month, day),
+                            "bad_for_naks": bad_naks
                         })
 
                     # ── Collect display metadata ───────────────────────────
