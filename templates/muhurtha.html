@@ -125,6 +125,52 @@
         margin-bottom: 20px;
     }
 
+    /* Exact muhurtha time window box */
+    .muhurtha-window {
+        background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+        border: 1.5px solid #81c784;
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-top: 10px;
+    }
+    .muhurtha-window .mw-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #2e7d32;
+        letter-spacing: 0.4px;
+        text-transform: uppercase;
+    }
+    .muhurtha-window .mw-time {
+        font-size: 1.3rem;
+        font-weight: 900;
+        color: #1b5e20;
+        letter-spacing: 1px;
+    }
+    .muhurtha-window .mw-sub {
+        font-size: 0.7rem;
+        color: #558b2f;
+        margin-top: 2px;
+    }
+    .muhurtha-window .mw-range {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #2e7d32;
+        margin-top: 2px;
+        letter-spacing: 0.3px;
+    }
+
+    /* Telugu attribution badge */
+    .telugu-badge {
+        display: inline-block;
+        background: #b71c1c;
+        color: #fff;
+        font-size: 0.75rem;
+        padding: 4px 14px;
+        border-radius: 20px;
+        letter-spacing: 0.4px;
+        margin-bottom: 16px;
+    }
+
     @media(max-width: 768px) {
         .muhurtha-card {
             flex-direction: column;
@@ -187,6 +233,9 @@
 
 <div class="muhurtha-wrapper">
     <h2 class="section-title">Auspicious Dates in {{ month_name }} {{ year }}</h2>
+    <div class="text-center">
+        <span class="telugu-badge"><i class="fas fa-om me-1"></i> Telugu / Gantala Panchangam &nbsp;·&nbsp; Exact Muhurtha Times</span>
+    </div>
 
     <ul class="nav nav-pills mb-4 justify-content-center" id="pills-tab" role="tablist">
         <li class="nav-item"><button class="nav-link {% if not bride_details.name %}active{% endif %}"
@@ -204,8 +253,9 @@
     <div class="tab-content">
 
         <div class="tab-pane fade {% if not bride_details.name %}show active{% endif %}" id="pills-marriage">
-            {% if not muhurtha_data.marriage %}<div class="alert alert-warning text-center">No standard Marriage
-                Muhurthas found.</div>{% endif %}
+            {% if not muhurtha_data.marriage %}<div class="alert alert-warning text-center">No Marriage Muhurthas found this month.
+                <small class="d-block mt-1 text-muted">Possible reasons: Chaturmas (Ashadha–Kartika), Soonya Masa, Moodami (combustion), or no suitable Nakshatra+Tithi overlap.</small>
+            </div>{% endif %}
             {% for item in muhurtha_data.marriage %}
             <div class="muhurtha-card">
                 <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
@@ -215,7 +265,19 @@
                         item.tithi_end }}</div>
 
                     <div class="m-nak mt-2">✨ {{ item.nakshatra }}</div>
-                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Nakshatra ends at {{ item.nak_end }}</div>
+                    {% if item.lagnas %}
+                    <div class="muhurtha-window">
+                        <div class="mw-label" style="text-align: center;"><i class="fas fa-star"></i> Shubha Muhurtha Times</div>
+                        {% for lagna in item.lagnas %}
+                        <div class="mt-2 text-start px-2 py-1" style="border-left: 3px solid #81c784; background: rgba(255,255,255,0.6); border-radius: 0 4px 4px 0;">
+                            <div class="mw-time"><i class="fas fa-clock" style="font-size:0.9rem;"></i> {{ lagna.muhurta_start }}</div>
+                            <div class="mw-range" style="font-weight:700;">{{ lagna.lagna_name }} Lagna: <span style="font-weight:400; color:#555;">{{ lagna.muhurta_window }}</span></div>
+                        </div>
+                        {% endfor %}
+                        <div class="mw-sub mt-2 pt-1 text-center" style="border-top: 1px dashed #a5d6a7;">Rahu Kalam &amp; Bhadra excluded</div>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="m-time-box">
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
@@ -295,8 +357,19 @@
                     <div class="validity-info"><i class="fas fa-hourglass-start"></i> {{ item.tithi_start }} - {{
                         item.tithi_end }}</div>
                     <div class="m-nak mt-2">✨ {{ item.nakshatra }}</div>
-                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
-
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Nakshatra ends at {{ item.nak_end }}</div>
+                    {% if item.lagnas %}
+                    <div class="muhurtha-window">
+                        <div class="mw-label" style="text-align: center;"><i class="fas fa-star"></i> Shubha Muhurtha Times</div>
+                        {% for lagna in item.lagnas %}
+                        <div class="mt-2 text-start px-2 py-1" style="border-left: 3px solid #81c784; background: rgba(255,255,255,0.6); border-radius: 0 4px 4px 0;">
+                            <div class="mw-time"><i class="fas fa-clock" style="font-size:0.9rem;"></i> {{ lagna.muhurta_start }}</div>
+                            <div class="mw-range" style="font-weight:700;">{{ lagna.lagna_name }} Lagna: <span style="font-weight:400; color:#555;">{{ lagna.muhurta_window }}</span></div>
+                        </div>
+                        {% endfor %}
+                        <div class="mw-sub mt-2 pt-1 text-center" style="border-top: 1px dashed #a5d6a7;">Rahu Kalam &amp; Bhadra excluded</div>
+                    </div>
+                    {% endif %}
                     <!-- Compatibility Badge -->
                     <div class="mt-2 p-2 rounded" style="background: #e8f5e9; font-size: 0.8rem;">
                         <strong>Tara Bala:</strong><br>
@@ -335,12 +408,18 @@
                         item.tithi_end }}</div>
 
                     <div class="m-nak mt-2">🏡 {{ item.nakshatra }}</div>
-                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
-                    
-                    {% if item.muhurta_window %}
-                    <div class="mt-2 p-2 rounded" style="background: #e8f5e9; border: 1px solid #a5d6a7;">
-                        <strong style="color: #2e7d32;"><i class="fas fa-star"></i> Muhurta Window:</strong>
-                        <span style="color: #1b5e20; font-weight: 600;">{{ item.muhurta_window }}</span>
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Nakshatra ends at {{ item.nak_end }}</div>
+
+                    {% if item.lagnas %}
+                    <div class="muhurtha-window">
+                        <div class="mw-label" style="text-align: center;"><i class="fas fa-star"></i> Shubha Muhurtha Times</div>
+                        {% for lagna in item.lagnas %}
+                        <div class="mt-2 text-start px-2 py-1" style="border-left: 3px solid #81c784; background: rgba(255,255,255,0.6); border-radius: 0 4px 4px 0;">
+                            <div class="mw-time"><i class="fas fa-clock" style="font-size:0.9rem;"></i> {{ lagna.muhurta_start }}</div>
+                            <div class="mw-range" style="font-weight:700;">{{ lagna.lagna_name }} Lagna: <span style="font-weight:400; color:#555;">{{ lagna.muhurta_window }}</span></div>
+                        </div>
+                        {% endfor %}
+                        <div class="mw-sub mt-2 pt-1 text-center" style="border-top: 1px dashed #a5d6a7;">Rahu Kalam, Bhadra &amp; bad Yogas excluded</div>
                     </div>
                     {% endif %}
                 </div>
@@ -373,7 +452,19 @@
                         item.tithi_end }}</div>
 
                     <div class="m-nak mt-2">👶 {{ item.nakshatra }}</div>
-                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Nakshatra ends at {{ item.nak_end }}</div>
+                    {% if item.lagnas %}
+                    <div class="muhurtha-window">
+                        <div class="mw-label" style="text-align: center;"><i class="fas fa-star"></i> Shubha Muhurtha Times</div>
+                        {% for lagna in item.lagnas %}
+                        <div class="mt-2 text-start px-2 py-1" style="border-left: 3px solid #81c784; background: rgba(255,255,255,0.6); border-radius: 0 4px 4px 0;">
+                            <div class="mw-time"><i class="fas fa-clock" style="font-size:0.9rem;"></i> {{ lagna.muhurta_start }}</div>
+                            <div class="mw-range" style="font-weight:700;">{{ lagna.lagna_name }} Lagna: <span style="font-weight:400; color:#555;">{{ lagna.muhurta_window }}</span></div>
+                        </div>
+                        {% endfor %}
+                        <div class="mw-sub mt-2 pt-1 text-center" style="border-top: 1px dashed #a5d6a7;">Rahu Kalam excluded &middot; Both Pakshas allowed</div>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="m-time-box">
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
@@ -404,7 +495,19 @@
                         item.tithi_end }}</div>
 
                     <div class="m-nak mt-2">🚗 {{ item.nakshatra }}</div>
-                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Ends at {{ item.nak_end }}</div>
+                    <div class="validity-info"><i class="fas fa-hourglass-end"></i> Nakshatra ends at {{ item.nak_end }}</div>
+                    {% if item.lagnas %}
+                    <div class="muhurtha-window">
+                        <div class="mw-label" style="text-align: center;"><i class="fas fa-star"></i> Shubha Muhurtha Times</div>
+                        {% for lagna in item.lagnas %}
+                        <div class="mt-2 text-start px-2 py-1" style="border-left: 3px solid #81c784; background: rgba(255,255,255,0.6); border-radius: 0 4px 4px 0;">
+                            <div class="mw-time"><i class="fas fa-clock" style="font-size:0.9rem;"></i> {{ lagna.muhurta_start }}</div>
+                            <div class="mw-range" style="font-weight:700;">{{ lagna.lagna_name }} Lagna: <span style="font-weight:400; color:#555;">{{ lagna.muhurta_window }}</span></div>
+                        </div>
+                        {% endfor %}
+                        <div class="mw-sub mt-2 pt-1 text-center" style="border-top: 1px dashed #a5d6a7;">Rahu Kalam excluded &middot; Both Pakshas allowed</div>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="m-time-box">
                     <span class="time-badge"><i class="fas fa-clock time-icon"></i> Amrit: {{ item.amrit }}</span>
