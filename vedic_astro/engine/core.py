@@ -1051,7 +1051,7 @@ def fetch_month_day_data(loc, date_str):
     tithi_at_sunrise_idx = int(((moon_long - sun_long) % 360) / 12)
     nak_idx_sunrise = int(moon_long / 13.333333)
     moon_rashi_idx = int(moon_long / 30)
-    lunar_month_name, is_adika_month = get_chandramasa(jd_noon)
+    lunar_month_name, is_adika_month = get_chandramasa(rise)
     if not lunar_month_name:
         # Fallback
         sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 1.0)) / 30)
@@ -1061,21 +1061,21 @@ def fetch_month_day_data(loc, date_str):
     fn_nak = lambda j: (int(get_pos(j)[1] / 13.333333333), 0)
     tithi_events = get_events(rise, rise_next, fn_tithi, TITHIS, 30)
     nak_events = get_events(rise, rise_next, fn_nak, NAKSHATRAS, 27)
-    tithis_to_check = {tithi_at_sunrise_idx}
-    for e in tithi_events: tithis_to_check.add(e['index'])
-    naks_to_check = {nak_idx_sunrise}
-    for e in nak_events: naks_to_check.add(e['index'])
     all_festivals = []
     seen_fest_names = set()
-    for t_idx in tithis_to_check:
-        fests = get_festivals_details(rise, t_idx, sun_long, dt, -1, moon_rashi_idx)
-        for f in fests:
-            if f['name'] not in seen_fest_names:
-                all_festivals.append(f)
-                seen_fest_names.add(f['name'])
+    # Tithi → use ONLY the tithi at suryodayam (sunrise) per Telugu/Vedic tradition
+    fests_tithi = get_festivals_details(rise, tithi_at_sunrise_idx, sun_long, dt, -1, moon_rashi_idx)
+    for f in fests_tithi:
+        if f['name'] not in seen_fest_names:
+            all_festivals.append(f)
+            seen_fest_names.add(f['name'])
+
+    # Nakshatra → check all nakshatras that occur during the day
+    naks_to_check = {nak_idx_sunrise}
+    for e in nak_events: naks_to_check.add(e['index'])
     for n_idx in naks_to_check:
-        fests = get_festivals_details(rise, -1, sun_long, dt, n_idx, moon_rashi_idx)
-        for f in fests:
+        fests_nak = get_festivals_details(rise, -1, sun_long, dt, n_idx, moon_rashi_idx)
+        for f in fests_nak:
             if f['name'] not in seen_fest_names:
                 all_festivals.append(f)
                 seen_fest_names.add(f['name'])
@@ -1274,7 +1274,7 @@ def fetch_panchang(loc_str_or_dict, date_str):
     sun_nak_idx = int(sun_long / 13.333333)
 
     # Correct Chandramasa Calculation (Amanta) with Adika Masa detection
-    chandramasa_name, is_adika = get_chandramasa(jd_noon)
+    chandramasa_name, is_adika = get_chandramasa(rise)
     if not chandramasa_name:
         # Fallback to approximation if get_chandramasa failed
         sun_rashi_new_moon = int((sun_long - (tithi_idx * 1.0)) / 30)
