@@ -1,6 +1,6 @@
 import calendar
 from flask import Flask, render_template, request
-from vedic_astro.engine.core import fetch_panchang, fetch_month_day_data
+from vedic_astro.engine.core import fetch_panchang, fetch_month_day_data, get_upcoming_festivals
 from vedic_astro.engine.horoscope import get_horoscope_by_birth_details
 from vedic_astro.engine.muhurtha import get_monthly_muhurthas, filter_marriage_muhurthas, get_nak_idx
 from vedic_astro.engine.geo import get_location
@@ -59,12 +59,19 @@ def home():
         error = str(e)
         data = None
 
+    upcoming_festivals = []
+    try:
+        upcoming_festivals = get_upcoming_festivals(loc_data, date)
+    except Exception:
+        pass
+
     return render_template('home.html', 
                            data=data, 
                            today=date, 
                            location_val=location_name, 
                            error=error, 
-                           is_first_load=is_first_load)
+                           is_first_load=is_first_load,
+                           upcoming_festivals=upcoming_festivals)
 
 @app.route('/month', methods=['GET', 'POST'])
 def monthly_view():

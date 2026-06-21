@@ -968,6 +968,74 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
         if nak_idx == 3: add_fest("Rohini Vratam")
     return festivals
 
+def get_upcoming_festivals(loc, from_date_str, days_ahead=60):
+    """
+    Scans the next `days_ahead` days and returns a list of upcoming festivals.
+
+    Args:
+        loc (dict): Location dictionary with 'lat', 'lon', 'tz'.
+        from_date_str (str): Start date in YYYY-MM-DD format (usually today).
+        days_ahead (int): How many days forward to scan (default 60).
+
+    Returns:
+        list of dicts: [
+            {
+                'name': str,          # Festival name
+                'date_str': str,      # e.g. "Sun, 22 Jun"
+                'full_date': str,     # YYYY-MM-DD
+                'days_away': int,     # 0 = today, 1 = tomorrow, ...
+                'image_url': str,     # Image URL for the festival
+            },
+            ...
+        ]
+        Sorted by date. Each festival appears only once (earliest occurrence wins).
+    """
+    setup_swisseph()
+    from datetime import date as _date, timedelta as _td
+
+    try:
+        start = _date.fromisoformat(from_date_str)
+    except Exception:
+        start = _date.today()
+
+    seen_names = set()
+    results = []
+
+    for offset in range(days_ahead):
+        check_date = start + _td(days=offset)
+        date_str = check_date.strftime("%Y-%m-%d")
+        try:
+            lite = fetch_month_day_data(loc, date_str)
+            if "error" in lite:
+                continue
+            if not lite.get("is_festival"):
+                continue
+            for name in lite.get("festival_names", []):
+                if name not in seen_names:
+                    seen_names.add(name)
+                    # Build image URL using the same helper as get_festivals_details
+                    image_url = None
+                    import urllib.parse as _ulp
+                    for key, url in FESTIVAL_IMAGES_STATIC.items():
+                        if key in name:
+                            image_url = url
+                            break
+                    if not image_url:
+                        seed = sum(ord(c) for c in name)
+                        safe_name = _ulp.quote(name)
+                        image_url = f"https://image.pollinations.ai/prompt/Hindu%20festival%20{safe_name}%20devotional%20art?width=300&height=200&nologo=true&seed={seed}"
+                    results.append({
+                        "name": name,
+                        "date_str": check_date.strftime("%a, %d %b"),
+                        "full_date": date_str,
+                        "days_away": offset,
+                        "image_url": image_url,
+                    })
+        except Exception:
+            continue
+
+    return results
+
 def fetch_month_day_data(loc, date_str):
     """
     Lightweight fetch function for the Month View.
@@ -1252,7 +1320,26 @@ def fetch_panchang(loc_str_or_dict, date_str):
     chandrabalam_tarabalam = get_chandrabalam_tarabalam_details(rashi_events_list, nak_events, tz, rise)
     udaya_lagna = get_udaya_lagna_details(rise, rise_next, tz, loc['lat'], loc['lon'])
     panchaka_rahita = get_panchaka_rahita_details(udaya_lagna, tithi_events, nak_events, w_idx)
-    festivals = get_festivals_details(rise, tithi_idx, sun_long, dt, nak_idx, moon_rashi_idx)
+    # Festival matching:
+    # Tithi → use ONLY the tithi at suryodayam (sunrise) per Telugu/Vedic tradition
+    # Nakshatra → check all nakshatras that occur during the day
+    naks_to_check = {nak_idx}
+    for e in nak_events: naks_to_check.add(e['index'])
+
+    all_festivals = []
+    seen_fest_names = set()
+    for f in get_festivals_details(rise, tithi_idx, sun_long, dt, -1, moon_rashi_idx):
+        if f['name'] not in seen_fest_names:
+            all_festivals.append(f)
+            seen_fest_names.add(f['name'])
+    for n_idx in naks_to_check:
+        for f in get_festivals_details(rise, -1, sun_long, dt, n_idx, moon_rashi_idx):
+            if f['name'] not in seen_fest_names:
+                all_festivals.append(f)
+                seen_fest_names.add(f['name'])
+    festivals = all_festivals
+
+
     dinamana = fmt_duration(rise, set_)
     ratrimana = fmt_duration(set_, rise_next)
     madhyahna_jd = rise + (set_ - rise) / 2
