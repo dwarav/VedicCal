@@ -946,6 +946,16 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
         if not any(f['name'] == name for f in festivals): festivals.append({"name": name, "image_url": get_image_url(name)})
     greg_key = (dt_obj.month, dt_obj.day)
     if greg_key in GREGORIAN_FESTIVALS: add_fest(GREGORIAN_FESTIVALS[greg_key])
+    
+    # --- NEW GREGORIAN / HOLIDAY CHECKS ---
+    # 1. Father's Day (Third Sunday of June)
+    if dt_obj.month == 6 and dt_obj.weekday() == 6 and 15 <= dt_obj.day <= 21:
+        add_fest("ఫాదర్స్ డే (Father's Day)")
+        
+    # 2. Muharram (observed on June 16, 2026)
+    if dt_obj.year == 2026 and dt_obj.month == 6 and dt_obj.day == 16:
+        add_fest("మొహర్రం (Muharram)")
+
     if tithi_idx >= 0:
         paksha_code = 0 if tithi_idx < 15 else 1
         tithi_in_paksha = tithi_idx % 15
@@ -959,10 +969,155 @@ def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_i
         if paksha_code == 0 and tithi_in_paksha == 7: add_fest("Durgashtami")
         if paksha_code == 1 and tithi_in_paksha == 7: add_fest("Kalashtami")
         if tithi_in_paksha == 10: prefix = "Shukla" if paksha_code == 0 else "Krishna"; add_fest(f"{prefix} Ekadashi")
-        if tithi_in_paksha == 12: add_fest("Pradosham")
+        if tithi_in_paksha == 12:
+            if dt_obj.weekday() == 5:
+                add_fest("Shani Trayodashi (శని త్రయోదశి)")
+                add_fest("Shani Pradosha Vratam (శని ప్రదోష వ్రతం)")
+            elif dt_obj.weekday() == 0:
+                add_fest("Soma Pradosham (సోమ ప్రదోషం)")
+            elif dt_obj.weekday() == 1:
+                add_fest("Bhauma Pradosham (భౌమ ప్రదోషం)")
+            else:
+                add_fest("Pradosha Vratam (ప్రదోష వ్రతం)")
         if paksha_code == 1 and tithi_in_paksha == 13: add_fest("Masik Shivaratri")
         if paksha_code == 1 and tithi_in_paksha == 14: add_fest("Amavasya")
-        if paksha_code == 0 and tithi_in_paksha == 14: add_fest("Purnima")
+        if paksha_code == 0 and tithi_in_paksha == 14:
+            add_fest("పౌర్ణమి (Purnima)")
+            add_fest("పౌర్ణమి వ్రతం (Purnima Vratam)")
+        
+        # --- NEW TELUGU CALENDAR / SPECIAL EVENTS ---
+        # 1. Month Start (Masa Prarambham)
+        if paksha_code == 0 and tithi_in_paksha == 0:
+            add_fest(f"{MONTHS[lunar_month_idx]} Masa Prarambham")
+            
+        # 2. Varalakshmi Vratam (Friday preceding the Full Moon in Shravana month)
+        if lunar_month_idx == 4 and paksha_code == 0 and dt_obj.weekday() == 4 and (7 <= tithi_in_paksha <= 13):
+            add_fest("Varalakshmi Vratam")
+            
+        # 3. Karthika Somavaram (Mondays in Kartika Month)
+        if lunar_month_idx == 7 and dt_obj.weekday() == 0:
+            add_fest("Karthika Somavaram")
+            
+        # 4. Sankranti (Sun enters a new Rashi today)
+        flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
+        sun_rashi_now = int(swe.calc_ut(jd, swe.SUN, flags)[0][0] / 30)
+        sun_rashi_tomorrow = int(swe.calc_ut(jd + 1.0, swe.SUN, flags)[0][0] / 30)
+        if sun_rashi_now != sun_rashi_tomorrow:
+            add_fest(f"{RASHIS[sun_rashi_tomorrow]} Sankranti")
+            
+        # 5. Sun Nakshatra Transit (Suryachara - Sun enters a new Nakshatra today)
+        sun_nak_now = int(swe.calc_ut(jd, swe.SUN, flags)[0][0] / 13.333333333)
+        sun_nak_tomorrow = int(swe.calc_ut(jd + 1.0, swe.SUN, flags)[0][0] / 13.333333333)
+        if sun_nak_now != sun_nak_tomorrow:
+            add_fest(f"Sun enters {NAKSHATRAS[sun_nak_tomorrow]} Nakshatra")
+
+        # 6. Rama Lakshmana Dwadashi (Jyeshtha Shukla Dwadashi)
+        if lunar_month_idx == 2 and paksha_code == 0 and tithi_in_paksha == 11:
+            add_fest("రామలక్ష్మణ ద్వాదశి (Rama Lakshmana Dwadashi)")
+
+        # 7. Jyeshtha Purnima events
+        if lunar_month_idx == 2 and paksha_code == 0 and tithi_in_paksha == 14:
+            add_fest("ఏరువాక పౌర్ణమి (Eruvaka Purnima)")
+            add_fest("వట సావిత్రి వ్రతం (Vat Savitri Vratam)")
+            add_fest("కబీర్ దాస్ జయంతి (Kabir Das Jayanti)")
+            add_fest("జ్యేష్ఠ పూర్ణిమ (Jyeshtha Purnima)")
+            add_fest("జ్యేష్ఠ పూర్ణిమ వ్రతం (Jyeshtha Purnima Vratam)")
+
+        # 8. Bhanu Saptami (Saptami Tithi on Sunday)
+        if tithi_in_paksha == 6 and dt_obj.weekday() == 6:
+            add_fest("భాను సప్తమి (Bhanu Saptami)")
+
+        # 9. Dynamic Pushkaralu (Adi Pushkaram / Starts)
+        PUSHKARA_RIVERS = {
+            0: "Ganga (గంగ)",
+            1: "Narmada (నర్మదా)",
+            2: "Saraswati (సరస్వతి)",
+            3: "Yamuna (యమునా)",
+            4: "Godavari (గోదావరి)",
+            5: "Krishna (కృష్ణా)",
+            6: "Kaveri (కావేరి)",
+            7: "Bhima (భీమా)",
+            8: "Tapti / Pushkar (తపి/పుష్కర)",
+            9: "Tungabhadra (తుంగభద్ర)",
+            10: "Sindhu (సింధు)",
+            11: "Pranhita (ప్రాణహిత)"
+        }
+        
+        YEAR_TO_RASHI = {
+            0: 9,   # 2020: Tungabhadra (Capricorn)
+            1: 10,  # 2021: Sindhu (Aquarius)
+            2: 11,  # 2022: Pranhita (Pisces)
+            3: 0,   # 2023: Ganga (Aries)
+            4: 1,   # 2024: Narmada (Taurus)
+            5: 2,   # 2025: Saraswati (Gemini)
+            6: 3,   # 2026: Yamuna (Cancer)
+            7: 4,   # 2027: Godavari (Leo)
+            8: 5,   # 2028: Krishna (Virgo)
+            9: 6,   # 2029: Kaveri (Libra)
+            10: 7,  # 2030: Bhima (Scorpio)
+            11: 8   # 2031: Tapti / Pushkar (Sagittarius)
+        }
+        
+        offset = (dt_obj.year - 2020) % 12
+        active_rashi = YEAR_TO_RASHI[offset]
+        river = PUSHKARA_RIVERS[active_rashi]
+        
+        # Hardcoded celebrated dates for 2020-2031
+        PUSHKARALU_START_DATES = {
+            2020: (11, 20), # Tungabhadra
+            2021: (11, 21), # Sindhu
+            2022: (4, 13),  # Pranhita
+            2023: (4, 22),  # Ganga
+            2024: (5, 1),   # Narmada
+            2025: (5, 15),  # Saraswati
+            2026: (6, 2),   # Yamuna
+            2027: (6, 26),  # Godavari
+            2028: (7, 25),  # Krishna
+            2029: (8, 25),  # Kaveri
+            2030: (9, 23),  # Bhima
+            2031: (10, 16), # Tapti
+        }
+        
+        start_date = None
+        if dt_obj.year in PUSHKARALU_START_DATES:
+            m, d = PUSHKARALU_START_DATES[dt_obj.year]
+            start_date = date(dt_obj.year, m, d)
+        else:
+            # Fallback dynamic calculation
+            flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
+            start_dt = datetime(dt_obj.year - 1, 11, 1, 6, 0)
+            end_dt = datetime(dt_obj.year, 12, 31, 6, 0)
+            
+            entries = []
+            curr = start_dt
+            last_rashi = None
+            while curr <= end_dt:
+                jd_val = swe.julday(curr.year, curr.month, curr.day, 6.0)
+                r = int(swe.calc_ut(jd_val, swe.JUPITER, flags)[0][0] / 30)
+                if last_rashi is not None and r == active_rashi and last_rashi != active_rashi:
+                    entries.append(curr.date())
+                last_rashi = r
+                curr += timedelta(days=1)
+                
+            if entries:
+                for entry in entries:
+                    if entry >= date(dt_obj.year, 3, 1):
+                        start_date = entry
+                        break
+                if not start_date:
+                    start_date = entries[-1]
+            else:
+                start_date = date(dt_obj.year, 5, 1)
+                
+        current_date = dt_obj.date()
+        if start_date <= current_date < start_date + timedelta(days=12):
+            entry_day_offset = (current_date - start_date).days + 1
+            if entry_day_offset == 1:
+                add_fest(f"{river} Pushkaralu Prarambham ({river} పుష్కరాలు ప్రారంభం)")
+            elif entry_day_offset == 12:
+                add_fest(f"{river} Pushkaralu Adi Pushkaram ముగింపు ({river} పుష్కరాలు ముగింపు)")
+            else:
+                add_fest(f"{river} Pushkaralu (Adi Pushkaram Day {entry_day_offset})")
     if nak_idx >= 0:
         if nak_idx == 2: add_fest("Krittika (Karthigai)")
         if nak_idx == 3: add_fest("Rohini Vratam")
