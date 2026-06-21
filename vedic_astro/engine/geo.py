@@ -29,5 +29,6 @@ def get_location(name):
             'lon': loc.longitude, 
             'tz': pytz.timezone(tz_str)
         }
-    except Exception: 
+    except Exception as e: 
+        print(f"[geo] get_location failed for '{name}': {e}")
         return None

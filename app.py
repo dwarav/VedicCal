@@ -261,24 +261,24 @@ def horoscope_view():
                     "Birth Date": formatted_date,
                     "Birth Time": formatted_time,
                     "Weekday": dt_obj.strftime("%A"),
-                    "Sunrise": data['sunrise'],
-                    "Sunset": data['sunset'],
-                    "Place of Birth": loc['name'],
+                    "Sunrise": data.get('sunrise', '---'),
+                    "Sunset": data.get('sunset', '---'),
+                    "Place of Birth": loc.get('name', location_name),
                     
-                    "Nakshatra": data['nakshatra'],
-                    "Tithi": data['kundli_details']['tithi'],
-                    "Yoga": data['kundli_details']['yoga'],
-                    "Karana": data['kundli_details']['karana'],
+                    "Nakshatra": data.get('nakshatra', '---'),
+                    "Tithi": data.get('kundli_details', {}).get('tithi', '---'),
+                    "Yoga": data.get('kundli_details', {}).get('yoga', '---'),
+                    "Karana": data.get('kundli_details', {}).get('karana', '---'),
                     
-                    "Rasi": data['moon_sign'],
-                    "Rasi Lord": data['kundli_details']['sign_lord'],
-                    "Ascendant": data['lagna'],
-                    "Ascendant Lord": data['lagna_lord'],
+                    "Rasi": data.get('moon_sign', '---'),
+                    "Rasi Lord": data.get('kundli_details', {}).get('sign_lord', '---'),
+                    "Ascendant": data.get('lagna', '---'),
+                    "Ascendant Lord": data.get('lagna_lord', '---'),
                     
-                    "Vikram Samvat": data['samvat']['vikram'],
-                    "Animal Sign": data['kundli_details']['yoni'],
-                    "God": data['kundli_details']['fav'].get('deity', '---'),
-                    "Bhutham": data['kundli_details']['tatva'],
+                    "Vikram Samvat": data.get('samvat', {}).get('vikram', '---'),
+                    "Animal Sign": data.get('kundli_details', {}).get('yoni', '---'),
+                    "God": data.get('kundli_details', {}).get('fav', {}).get('deity', '---'),
+                    "Bhutham": data.get('kundli_details', {}).get('tatva', '---'),
                     
                     # Sudarshana Data is available in data['sudarshana']
                     "Gothram": "---", # Placeholder as requested
@@ -287,11 +287,11 @@ def horoscope_view():
                 }
                 
                 # 5. Add Placeholder Predictions
-                sign = data['moon_sign'].split(' ')[0]
+                sign = data.get('moon_sign', '').split(' ')[0] or 'your'
                 data["predictions"] = {
                     "daily": f"Today is a favorable day for {sign} rashi. Financial gains are indicated.",
                     "weekly": f"This week requires patience for {sign}. Career growth is steady.",
-                    "yearly": f"{dt_obj.year} brings transformation for {sign}. Saturn's transit is favorable."
+                    "yearly": f"{datetime.now().year} brings transformation for {sign}. Saturn's transit is favorable."
                 }
 
     return render_template('horoscope.html', 

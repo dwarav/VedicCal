@@ -160,14 +160,8 @@ def compute_muhurtha_window(rule, full_data, jd_noon, loc, tz, weekday, year, mo
     karana_events = full_data.get('karana', [])
     yoga_events   = full_data.get('yoga', [])
 
-    rise,      _ = calc_sun_rise_set(jd_noon,     loc['lat'], loc['lon'])
+    rise, set_jd = calc_sun_rise_set(jd_noon,     loc['lat'], loc['lon'])
     rise_next, _ = calc_sun_rise_set(jd_noon + 1, loc['lat'], loc['lon'])
-    set_jd,    _ = calc_sun_rise_set(jd_noon,     loc['lat'], loc['lon'])
-    # get actual sunset
-    try:
-        _, set_jd = calc_sun_rise_set(jd_noon, loc['lat'], loc['lon'])
-    except Exception:
-        set_jd = rise + 0.5  # fallback
 
     if not rise or rise == 0.0:
         return None

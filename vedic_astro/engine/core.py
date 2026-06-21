@@ -386,7 +386,7 @@ def get_calculated_timings(nak_events, weekday_idx, sun_nak_idx, tithi_events, s
     anandadi_str = fmt_event(nak_events, lambda idx: ANANDADI_YOGAS[(idx + ananda_offset[weekday_idx]) % 28])
     tamil_str = fmt_event(nak_events, lambda idx: get_tamil_yoga(weekday_idx, idx))
     baana_str = fmt_event(nak_events, lambda idx: get_baana_type(sun_nak_idx, idx))
-    n, j = get_netram_jeevan(nak_events[0]['index'])
+    n, j = get_netram_jeevan(nak_events[0]['index']) if nak_events else ("---", "---")
     ss_found = []
     vidaal_found = []
     for e in nak_events:
@@ -1012,6 +1012,8 @@ def fetch_month_day_data(loc, date_str):
         d = dt_from_jd(jd, tz)
         if not d: return "---"
         return d.strftime('%b %d, %I:%M %p') if d.date() != dt.date() else d.strftime('%I:%M %p')
+    if not tithi_events or not nak_events:
+        return {"error": "Could not compute tithi/nakshatra for this date"}
     t_item = tithi_events[0]
     tithi_name = t_item['name'].split(' ')[-1]
     tithi_icon = TITHI_ICONS.get(t_item['name'], "🌑")

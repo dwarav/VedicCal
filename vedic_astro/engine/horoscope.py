@@ -323,9 +323,8 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     lagna_rashi = int(lagna_deg / 30)
     chart_data[lagna_rashi].append("Lagna")
     
-    # Navamsa of Lagna
-    lagna_total_min = (lagna_deg) * 60
-    lagna_navamsa_rashi = int(lagna_total_min / 200) % 12
+    # Navamsa of Lagna — use the correct varga formula, same as planets
+    lagna_navamsa_rashi = get_varga_sign(lagna_deg % 30, lagna_rashi, 9)
     navamsa_chart_data[lagna_navamsa_rashi].append("Lagna")
     
     def deg_to_dms(deg):
