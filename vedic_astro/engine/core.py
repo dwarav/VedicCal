@@ -983,8 +983,12 @@ def fetch_month_day_data(loc, date_str):
     tithi_at_sunrise_idx = int(((moon_long - sun_long) % 360) / 12)
     nak_idx_sunrise = int(moon_long / 13.333333)
     moon_rashi_idx = int(moon_long / 30)
-    sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 1.0)) / 30)
-    lunar_month_name = MONTHS[(sun_rashi_new_moon + 1) % 12]
+    lunar_month_name, is_adika_month = get_chandramasa(jd_noon)
+    if not lunar_month_name:
+        # Fallback
+        sun_rashi_new_moon = int((sun_long - (tithi_at_sunrise_idx * 1.0)) / 30)
+        lunar_month_name = MONTHS[(sun_rashi_new_moon + 1) % 12]
+        is_adika_month = False
     fn_tithi = lambda j: (int((get_pos(j)[1] - get_pos(j)[0]) % 360 / 12), 0)
     fn_nak = lambda j: (int(get_pos(j)[1] / 13.333333333), 0)
     tithi_events = get_events(rise, rise_next, fn_tithi, TITHIS, 30)
@@ -1033,10 +1037,129 @@ def fetch_month_day_data(loc, date_str):
         "is_festival": len(festivals) > 0,
         "festival_names": festival_names,
         "lunar_month": lunar_month_name,
+        "is_adika": is_adika_month,
         "tithi_start_jd": t_item['start'], # Needed for muhurtha matching
         "tithi_end_jd": t_item['end'],
         "nak_end_jd": n_item['end']
     }
+
+def get_chandramasa(jd_ref):
+    """
+    Returns the correct Telugu/Vedic lunar month name for the given Julian Day,
+    including proper Adika Masa (intercalary month) detection.
+
+    Algorithm (Amanta system):
+      1. Find the previous Amavasya (New Moon) by searching backwards.
+      2. Find the next Amavasya (New Moon) by searching forward.
+      3. Check if the Sun changes Rashi (Sankranti) between those two Amavasyas.
+         - If YES  → regular (Nija) month named after the Rashi the Sun enters.
+         - If NO   → Adika (intercalary) month; the next month is Nija.
+
+    Returns:
+        tuple: (month_name: str, is_adika: bool)
+            month_name is e.g. "Ashadha" or "Adika Ashadha"
+            is_adika is True when the month is intercalary
+    """
+    flags = swe.FLG_SWIEPH | swe.FLG_SIDEREAL | swe.FLG_SPEED
+
+    def moon_sun_diff(jd):
+        """Moon − Sun elongation in degrees [0, 360)."""
+        sun = swe.calc_ut(jd, swe.SUN,  flags)[0][0]
+        moon = swe.calc_ut(jd, swe.MOON, flags)[0][0]
+        return (moon - sun) % 360
+
+    def find_amavasya(start_jd, direction=1, max_days=35):
+        """
+        Finds the Julian Day of the nearest Amavasya (elongation ≈ 0°) by
+        binary-searching in `direction` (+1 forward, -1 backward).
+        """
+        step = direction * (1.0 / 24)  # 1-hour steps
+        curr = start_jd
+        limit = start_jd + direction * max_days
+
+        # Walk until the elongation crosses 0° (i.e. wraps around 360→0)
+        prev_diff = moon_sun_diff(curr)
+        while (direction == 1 and curr < limit) or (direction == -1 and curr > limit):
+            curr += step
+            diff = moon_sun_diff(curr)
+            # Detect the crossing: elongation drops from ~360° side to ~0° side
+            if direction == 1 and prev_diff > 350 and diff < 10:
+                break
+            if direction == -1 and prev_diff < 10 and diff > 350:
+                break
+            prev_diff = diff
+        else:
+            return None  # not found
+
+        # Binary-search refine to within ~1 minute
+        t1, t2 = (curr - step, curr) if direction == 1 else (curr, curr - step)
+        for _ in range(30):
+            mid = (t1 + t2) / 2
+            d = moon_sun_diff(mid)
+            if d < 180:  # still before new moon (elongation < 180 means waxing)
+                t2 = mid
+            else:
+                t1 = mid
+        return (t1 + t2) / 2
+
+    def sun_rashi_at(jd):
+        """Sidereal Sun Rashi index 0–11 at a given Julian Day."""
+        return int(swe.calc_ut(jd, swe.SUN, flags)[0][0] / 30)
+
+    def find_sankranti_between(jd_start, jd_end):
+        """
+        Returns the Julian Day of the Sun's sign change (Sankranti) within
+        [jd_start, jd_end], or None if the Sun stays in the same Rashi.
+        """
+        r_start = sun_rashi_at(jd_start)
+        r_end   = sun_rashi_at(jd_end)
+        if r_start == r_end:
+            return None  # No Sankranti → Adika Masa!
+        # Binary search for the exact Sankranti moment
+        t1, t2 = jd_start, jd_end
+        for _ in range(40):
+            mid = (t1 + t2) / 2
+            if sun_rashi_at(mid) == r_start:
+                t1 = mid
+            else:
+                t2 = mid
+        return (t1 + t2) / 2
+
+    try:
+        prev_am = find_amavasya(jd_ref, direction=-1)
+        if prev_am is None:
+            prev_am = jd_ref - 15  # fallback
+
+        next_am = find_amavasya(jd_ref, direction=1)
+        if next_am is None:
+            next_am = jd_ref + 15  # fallback
+
+        sankranti_jd = find_sankranti_between(prev_am, next_am)
+
+        if sankranti_jd is None:
+            # No Sankranti in this lunar month → Adika Masa
+            # Name it after the Rashi the Sun will enter in the NEXT lunar month
+            next_next_am = find_amavasya(next_am + 1, direction=1)
+            if next_next_am is None:
+                next_next_am = next_am + 30
+            sankranti_jd2 = find_sankranti_between(next_am, next_next_am)
+            if sankranti_jd2:
+                rashi_idx = sun_rashi_at(sankranti_jd2 + 0.5)
+            else:
+                rashi_idx = (sun_rashi_at(next_am) + 1) % 12
+            month_name = f"Adika {MONTHS[rashi_idx % 12]}"
+            return month_name, True
+        else:
+            # Normal month: named after the Rashi the Sun enters (the Sankranti sign)
+            rashi_idx = sun_rashi_at(sankranti_jd + 0.5)  # just after Sankranti
+            month_name = MONTHS[rashi_idx % 12]
+            return month_name, False
+
+    except Exception as e:
+        print(f"[get_chandramasa] Error: {e}")
+        # Graceful fallback to old approximation
+        return None, False
+
 
 def fetch_panchang(loc_str_or_dict, date_str):
     """
@@ -1082,15 +1205,19 @@ def fetch_panchang(loc_str_or_dict, date_str):
     nak_idx = int(moon_long / 13.333333)
     sun_nak_idx = int(sun_long / 13.333333)
 
-    # Correct Chandramasa Calculation (Amanta): Month is determined by the Sun's Rashi at the moment of the *previous* New Moon.
-    # Backtrack Sun's position to New Moon (approx 1 degree per tithi)
-    sun_rashi_new_moon = int((sun_long - (tithi_idx * 1.0)) / 30)
-    lunar_month_idx_calc = (sun_rashi_new_moon + 1) % 12
-    current_chandramasa = MONTHS[lunar_month_idx_calc]
+    # Correct Chandramasa Calculation (Amanta) with Adika Masa detection
+    chandramasa_name, is_adika = get_chandramasa(jd_noon)
+    if not chandramasa_name:
+        # Fallback to approximation if get_chandramasa failed
+        sun_rashi_new_moon = int((sun_long - (tithi_idx * 1.0)) / 30)
+        chandramasa_name = MONTHS[(sun_rashi_new_moon + 1) % 12]
+        is_adika = False
+    current_chandramasa = chandramasa_name
     
     # Now call get_samvat_details with lunar info
     samvat = get_samvat_details(dt, lunar_month=current_chandramasa, tithi=tithi_idx)
     samvat["chandramasa"] = current_chandramasa
+    samvat["is_adika"] = is_adika
     
     ritu_ayana = get_ritu_ayana_details(rise)
     muhurtas = calculate_muhurtas(rise, set_, rise_next, w_idx)

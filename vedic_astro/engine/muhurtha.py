@@ -425,8 +425,11 @@ def get_monthly_muhurthas(loc, year, month):
                 curr_nak   = lite_data['nakshatra']
                 curr_tithi = lite_data['tithi']
                 full_tithi = lite_data.get('full_tithi_name', '')
-                is_shukla  = full_tithi.startswith('Shukla') or full_tithi == 'Purnima'
+                is_shukla   = full_tithi.startswith('Shukla') or full_tithi == 'Purnima'
                 lunar_month = lite_data.get('lunar_month', '')
+                is_adika    = lite_data.get('is_adika', False)
+                # For Chaturmas/avoid-month checks, strip "Adika " prefix to get base name
+                base_lunar_month = lunar_month.replace('Adika ', '') if is_adika else lunar_month
 
                 for cat, rule in RULES.items():
 
@@ -437,11 +440,14 @@ def get_monthly_muhurthas(loc, year, month):
                         continue
                     if rule.get('shukla_only') and not is_shukla:
                         continue
-                    if rule.get('avoid_chaturmas') and is_chaturmas(lunar_month):
+                    # Adika Masa is always inauspicious for marriage & Griha Pravesh
+                    if is_adika and cat in ('marriage', 'gruha'):
+                        continue
+                    if rule.get('avoid_chaturmas') and is_chaturmas(base_lunar_month):
                         continue
                     if rule.get('avoid_soonya_masa') and soonya_masa:
                         continue
-                    if rule.get('avoid_lunar_months') and lunar_month in rule['avoid_lunar_months']:
+                    if rule.get('avoid_lunar_months') and base_lunar_month in rule['avoid_lunar_months']:
                         continue
 
                     # Quick nakshatra / tithi pre-check using sunrise values
