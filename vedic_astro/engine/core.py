@@ -924,35 +924,64 @@ def get_udaya_lagna_details(jd_start, jd_end, tz, lat, lon):
         lagnas.append({"name": rashi_name.split(' ')[0], "icon": icon, "start": fmt_lagna_time(lagna_start_jd), "end": fmt_lagna_time(jd_end), "start_jd": lagna_start_jd, "end_jd": jd_end})
     return lagnas
 
+def get_festival_image_url(name):
+    """Retrieves standard static image or returns a dynamic Pollinations image URL (tailoring for secular/Hindu events)."""
+    for key, url in FESTIVAL_IMAGES_STATIC.items():
+        if key in name:
+            if url.startswith("/static"):
+                rel_path = url.lstrip("/")
+                base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) # Root
+                abs_path = os.path.join(base_dir, rel_path)
+                if os.path.exists(abs_path): return url
+            else:
+                return url
+    
+    seed = sum(ord(c) for c in name)
+    safe_name = urllib.parse.quote(name)
+    
+    is_hindu = True
+    secular_keywords = [
+        "Mother", "Father", "Yoga", "Women", "Earth", "Environment", "Ocean", 
+        "Friendship", "Health", "Peace", "United Nations", "Halloween", "Human Rights", 
+        "Labor", "New Year", "Valentine", "Children", "Republic", "Independence", "Parents",
+        "Youth", "Science", "Forest", "Water", "Doctor", "Teacher", "Engineer", "Food", "Christmas"
+    ]
+    for kw in secular_keywords:
+        if kw.lower() in name.lower():
+            is_hindu = False
+            break
+            
+    if is_hindu:
+        return f"https://image.pollinations.ai/prompt/Hindu%20festival%20{safe_name}%20devotional%20art?width=300&height=200&nologo=true&seed={seed}"
+    else:
+        return f"https://image.pollinations.ai/prompt/{safe_name}?width=300&height=200&nologo=true&seed={seed}"
+
 def get_festivals_details(jd, tithi_idx, sun_long, dt_obj, nak_idx, moon_rashi_idx):
     """Matches Tithi, Nakshatra, and Month to the Festival Database."""
     festivals = []
-    def get_image_url(name):
-        for key, url in FESTIVAL_IMAGES_STATIC.items():
-            if key in name: 
-                if url.startswith("/static"):
-                    rel_path = url.lstrip("/")
-                    # We are in vedic_astro/engine/core.py (2 levels down)
-                    # rel_path is from root.
-                    # We need to check if file exists in root.
-                    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__))) # Root
-                    abs_path = os.path.join(base_dir, rel_path)
-                    if os.path.exists(abs_path): return url
-                else: return url 
-        seed = sum(ord(c) for c in name)
-        safe_name = urllib.parse.quote(name)
-        return f"https://image.pollinations.ai/prompt/Hindu%20festival%20{safe_name}%20devotional%20art?width=300&height=200&nologo=true&seed={seed}"
     def add_fest(name):
-        if not any(f['name'] == name for f in festivals): festivals.append({"name": name, "image_url": get_image_url(name)})
+        if not any(f['name'] == name for f in festivals): festivals.append({"name": name, "image_url": get_festival_image_url(name)})
     greg_key = (dt_obj.month, dt_obj.day)
     if greg_key in GREGORIAN_FESTIVALS: add_fest(GREGORIAN_FESTIVALS[greg_key])
     
     # --- NEW GREGORIAN / HOLIDAY CHECKS ---
-    # 1. Father's Day (Third Sunday of June)
+    # 1. Mother's Day (Second Sunday of May)
+    if dt_obj.month == 5 and dt_obj.weekday() == 6 and 8 <= dt_obj.day <= 14:
+        add_fest("మదర్స్ డే (Mother's Day)")
+
+    # 2. Father's Day (Third Sunday of June)
     if dt_obj.month == 6 and dt_obj.weekday() == 6 and 15 <= dt_obj.day <= 21:
         add_fest("ఫాదర్స్ డే (Father's Day)")
         
-    # 2. Muharram (observed on June 16, 2026)
+    # 3. Parents' Day (Fourth Sunday of July)
+    if dt_obj.month == 7 and dt_obj.weekday() == 6 and 22 <= dt_obj.day <= 28:
+        add_fest("తల్లిదండ్రుల దినోత్సవం (Parents' Day)")
+
+    # 4. Friendship Day (First Sunday of August)
+    if dt_obj.month == 8 and dt_obj.weekday() == 6 and 1 <= dt_obj.day <= 7:
+        add_fest("స్నేహితుల రోజు (Friendship Day)")
+        
+    # 5. Muharram (observed on June 16, 2026)
     if dt_obj.year == 2026 and dt_obj.month == 6 and dt_obj.day == 16:
         add_fest("మొహర్రం (Muharram)")
 
@@ -1168,17 +1197,7 @@ def get_upcoming_festivals(loc, from_date_str, days_ahead=60):
             for name in lite.get("festival_names", []):
                 if name not in seen_names:
                     seen_names.add(name)
-                    # Build image URL using the same helper as get_festivals_details
-                    image_url = None
-                    import urllib.parse as _ulp
-                    for key, url in FESTIVAL_IMAGES_STATIC.items():
-                        if key in name:
-                            image_url = url
-                            break
-                    if not image_url:
-                        seed = sum(ord(c) for c in name)
-                        safe_name = _ulp.quote(name)
-                        image_url = f"https://image.pollinations.ai/prompt/Hindu%20festival%20{safe_name}%20devotional%20art?width=300&height=200&nologo=true&seed={seed}"
+                    image_url = get_festival_image_url(name)
                     results.append({
                         "name": name,
                         "date_str": check_date.strftime("%a, %d %b"),
