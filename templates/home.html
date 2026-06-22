@@ -903,38 +903,27 @@
         shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
 
         try {
-            // 1. Create a deep clone of the capture area
-            const originalNode = document.querySelector("#captureArea");
-            const clone = originalNode.cloneNode(true);
+            const captureNode = document.querySelector("#captureArea");
 
-            // 2. Prepare clone for capture with sharing-active class
-            clone.classList.add('sharing-active');
-            clone.style.width = "480px";
-            clone.style.position = "absolute";
-            clone.style.left = "0";
-            clone.style.top = "0";
-            clone.style.opacity = "0.01";
-            clone.style.zIndex = "-100";
-            clone.style.pointerEvents = "none";
-
-            // 3. REMOVE sections we don't want to share
-            const unwanted = clone.querySelectorAll('.no-share');
-            unwanted.forEach(el => el.remove());
-
-            // 4. Append clone to body to render inside active viewport flow for perfect font anti-aliasing
-            document.body.appendChild(clone);
-
-            // Wait for layout and font rendering to settle
-            await new Promise(resolve => setTimeout(resolve, 150));
-
-            // 5. Generate Canvas (Use scale: 3 for high-definition sharpness)
-            const canvas = await html2canvas(clone, { 
+            // Generate Canvas using html2canvas's native onclone callback for absolute clarity and avoiding opacity issues
+            const canvas = await html2canvas(captureNode, { 
                 useCORS: true, 
                 scale: 3,
                 logging: false,
-                imageTimeout: 0
+                imageTimeout: 0,
+                onclone: (clonedDoc) => {
+                    const clonedNode = clonedDoc.querySelector("#captureArea");
+                    clonedNode.classList.add('sharing-active');
+                    clonedNode.style.width = "480px";
+                    clonedNode.style.maxWidth = "480px";
+                    clonedNode.style.margin = "0";
+                    clonedNode.style.boxShadow = "none";
+
+                    // Remove all unwanted sections from the clone
+                    const unwanted = clonedNode.querySelectorAll('.no-share');
+                    unwanted.forEach(el => el.remove());
+                }
             });
-            document.body.removeChild(clone); // Cleanup
 
             // 6. Share
             const caption = `*Dwara's Vedic Calendar*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
