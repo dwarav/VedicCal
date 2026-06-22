@@ -331,7 +331,7 @@
             font-size: 0.95rem !important;
             font-weight: 800 !important;
             color: #7b1e16 !important; /* Ultra high contrast red */
-            width: 125px !important;
+            width: 142px !important; /* Widened to prevent wrapping of Nakshatra Pada, Surya Nakshatra, etc. */
             text-align: right !important;
             margin-right: 12px !important;
             text-decoration: underline !important;
@@ -430,7 +430,7 @@
         }
 
         .sharing-active .grid-container {
-            grid-template-columns: repeat(3, 1fr) !important; /* Keep 3 columns side-by-side */
+            grid-template-columns: repeat(2, 1fr) !important; /* Changed to 2 columns to prevent horizontal overflow/overlap */
             gap: 6px !important;
         }
 
@@ -448,6 +448,14 @@
         .sharing-active .good-muhurta-label {
             color: #1b5e20 !important;
             font-weight: 800 !important;
+        }
+
+        /* Force vertical layout (stacking) on cells intended to be column-based (e.g. Chandrabalam/Tarabalam) */
+        .sharing-active .cell-left[style*="flex-direction: column"],
+        .sharing-active .cell-left[style*="flex-direction:column"],
+        .sharing-active .cell-right[style*="flex-direction: column"],
+        .sharing-active .cell-right[style*="flex-direction:column"] {
+            flex-direction: column !important;
         }
 
         /* Force single column for Panchaka/Udaya Lagna container layouts */
