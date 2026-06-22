@@ -792,8 +792,16 @@
             // 4. Append clone to body to render
             document.body.appendChild(clone);
 
-            // 5. Generate Canvas
-            const canvas = await html2canvas(clone, { useCORS: true, scale: 2 });
+            // Wait for layout and font rendering to settle
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // 5. Generate Canvas (Use scale: 3 for high-definition sharpness)
+            const canvas = await html2canvas(clone, { 
+                useCORS: true, 
+                scale: 3,
+                logging: false,
+                imageTimeout: 0
+            });
             document.body.removeChild(clone); // Cleanup
 
             // 6. Share
