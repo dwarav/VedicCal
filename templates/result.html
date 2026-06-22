@@ -287,6 +287,134 @@
                 width: 100%;
             }
         }
+
+        /* High-Definition Optimization for WhatsApp Share Card */
+        .sharing-active {
+            width: 480px !important;
+            max-width: 480px !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            background: #fff8e1 !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            text-shadow: 0 0 1px rgba(0,0,0,0.01) !important;
+        }
+
+        .sharing-active .row-container {
+            flex-direction: column !important; /* Forces vertical layout for extreme readability on mobile */
+        }
+
+        .sharing-active .cell-left,
+        .sharing-active .cell-right {
+            font-size: 1.05rem !important;
+            color: #1c0f0a !important; /* Ultra high contrast text */
+            padding: 10px 16px !important;
+            border-right: none !important;
+            border-bottom: 1px dashed #f1c40f !important;
+            display: flex !important;
+            flex-direction: row !important; /* Label & Value side-by-side */
+            align-items: flex-start !important;
+        }
+
+        .sharing-active .cell-right {
+            border-bottom: none !important;
+        }
+
+        .sharing-active .label {
+            font-size: 1.05rem !important;
+            font-weight: 800 !important;
+            color: #7b1e16 !important; /* Strong dark red for maximum legibility */
+            width: 140px !important;
+            text-align: left !important;
+            margin-right: 12px !important;
+            text-decoration: underline !important;
+            text-decoration-color: #d35400 !important;
+            flex-shrink: 0 !important;
+        }
+
+        .sharing-active .value {
+            font-size: 1.05rem !important;
+            font-weight: 700 !important;
+            color: #000000 !important;
+        }
+
+        .sharing-active .sub-val {
+            font-size: 0.9rem !important;
+            color: #3e2723 !important;
+            font-weight: 600 !important;
+        }
+
+        .sharing-active .header-section {
+            font-size: 1.15rem !important;
+            font-weight: 900 !important;
+            padding: 10px 0 !important;
+            color: #321c15 !important;
+            letter-spacing: 1px !important;
+        }
+
+        .sharing-active .brand-header {
+            padding: 20px 15px !important;
+        }
+
+        .sharing-active .brand-header h1 {
+            font-size: 2.2rem !important;
+            font-weight: 800 !important;
+        }
+
+        .sharing-active .brand-header .subtitle {
+            font-size: 0.9rem !important;
+            letter-spacing: 3px !important;
+        }
+
+        .sharing-active .main-info {
+            padding: 16px !important;
+        }
+
+        .sharing-active .main-info h2 {
+            font-size: 1.55rem !important;
+            color: #3e2723 !important;
+        }
+
+        .sharing-active .main-info p {
+            font-size: 1.1rem !important;
+            color: #5d4037 !important;
+        }
+
+        .sharing-active .festival-container {
+            padding: 12px !important;
+            gap: 8px !important;
+        }
+
+        .sharing-active .festival-item {
+            width: 100% !important; /* Stack festival items vertically on the card */
+            padding: 8px 12px !important;
+        }
+
+        .sharing-active .festival-item span {
+            font-size: 1.05rem !important;
+            font-weight: 800 !important;
+            color: #7b241c !important;
+        }
+
+        .sharing-active .grid-container {
+            grid-template-columns: repeat(2, 1fr) !important; /* Keeps grid structure legible */
+            gap: 8px !important;
+        }
+
+        .sharing-active .grid-item {
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            color: #2e1c16 !important;
+        }
+
+        .sharing-active .grid-icon {
+            font-size: 1.15rem !important;
+        }
+
+        .sharing-active .good-muhurta-label {
+            color: #1b5e20 !important;
+            font-weight: 800 !important;
+        }
     </style>
 </head>
 
@@ -836,9 +964,39 @@
         async function shareCard() {
             const shareBtn = document.querySelector('.share-fab');
             const originalHTML = shareBtn.innerHTML;
+            shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
             try {
-                shareBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-                const canvas = await html2canvas(document.querySelector("#captureArea"), { useCORS: true, scale: 2 });
+                // 1. Create a deep clone of the capture area
+                const originalNode = document.querySelector("#captureArea");
+                const clone = originalNode.cloneNode(true);
+
+                // 2. Prepare clone for capture with sharing-active class
+                clone.classList.add('sharing-active');
+                clone.style.width = "480px";
+                clone.style.position = "absolute";
+                clone.style.left = "0";
+                clone.style.top = "0";
+                clone.style.opacity = "0.01";
+                clone.style.zIndex = "-100";
+                clone.style.pointerEvents = "none";
+
+                // 3. Append clone to body to render inside active viewport flow for perfect font anti-aliasing
+                document.body.appendChild(clone);
+
+                // Wait for layout and font rendering to settle
+                await new Promise(resolve => setTimeout(resolve, 150));
+
+                // 4. Generate Canvas (Use scale: 3 for high-definition sharpness)
+                const canvas = await html2canvas(clone, { 
+                    useCORS: true, 
+                    scale: 3,
+                    logging: false,
+                    imageTimeout: 0
+                });
+                document.body.removeChild(clone); // Cleanup
+
+                // 5. Share
                 const caption = `*Vedic Panchang*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
                 canvas.toBlob(async (blob) => {
                     const file = new File([blob], "panchang.png", { type: "image/png" });
@@ -852,8 +1010,12 @@
                         window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
                     }
                 }, 'image/png');
-            } catch (e) { alert("Error"); }
-            finally { shareBtn.innerHTML = originalHTML; }
+            } catch (e) { 
+                alert("Error generating card."); 
+                console.error(e);
+            } finally { 
+                shareBtn.innerHTML = originalHTML; 
+            }
         }
     </script>
 
