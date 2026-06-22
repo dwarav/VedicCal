@@ -22,6 +22,8 @@
 
     .calendar-table {
         width: 100%;
+        table-layout: fixed;
+        min-width: 900px;
         border-collapse: separate;
         border-spacing: 0;
         background: #fff;
@@ -158,12 +160,10 @@
         font-size: 0.65rem;
         padding: 2px 6px;
         border-radius: 4px;
-        display: inline-block;
+        display: block;
         margin-top: 4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        max-width: 100%;
+        white-space: normal;
+        word-wrap: break-word;
     }
 
     .empty-cell {
