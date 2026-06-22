@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.venv/
+venv/
+env/
+.env
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Logs and temp files
+*.log
+*.bak
+/tmp/
+
+# Vercel Function Size Limit Optimization
+# Ignore all ephemeris files to avoid the 245 MB size limit
+ephe/**/*
+# Re-include only the planetary and lunar ephemeris files for 1800-2400 AD (standard usage)
+!ephe/sepl_18.se1
+!ephe/semo_18.se1
+# Re-include planetary and lunar ephemeris files for 1200-1800 AD (extended usage)
+!ephe/sepl_12.se1
+!ephe/semo_12.se1
