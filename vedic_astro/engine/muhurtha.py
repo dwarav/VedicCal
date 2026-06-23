@@ -213,7 +213,8 @@ def compute_muhurtha_window(rule, full_data, jd_noon, loc, tz, weekday, year, mo
                                 l_dur = curr - lagna_start
                                 if l_dur >= 15 / 1440.0: # At least 15 mins
                                     exact_s = lagna_start + (15 / 1440.0) if l_dur > (30 / 1440.0) else lagna_start + (l_dur / 2.0)
-                                    all_lagnas.append((exact_s, lagna_start, curr, nak_name, tithi_name, RASHI_NAMES[current_l_idx]))
+                                    if exact_s < curr:  # Guard: exact start must be within window
+                                        all_lagnas.append((exact_s, lagna_start, curr, nak_name, tithi_name, RASHI_NAMES[current_l_idx]))
                             current_l_idx = l_idx
                             lagna_start = curr
                         curr += step
@@ -223,14 +224,28 @@ def compute_muhurtha_window(rule, full_data, jd_noon, loc, tz, weekday, year, mo
                         l_dur = we - lagna_start
                         if l_dur >= 15 / 1440.0:
                             exact_s = lagna_start + (15 / 1440.0) if l_dur > (30 / 1440.0) else lagna_start + (l_dur / 2.0)
-                            all_lagnas.append((exact_s, lagna_start, we, nak_name, tithi_name, RASHI_NAMES[current_l_idx]))
+                            if exact_s < we:  # Guard: exact start must be within window
+                                all_lagnas.append((exact_s, lagna_start, we, nak_name, tithi_name, RASHI_NAMES[current_l_idx]))
 
     if not all_lagnas:
         return None
 
     # Sort lagnas by start time
     all_lagnas.sort(key=lambda x: x[0])
-    return all_lagnas
+
+    # Deduplicate: remove lagnas with same rashi_name and nearly-identical start time (within 10 min)
+    # This handles cases where overlapping nak/tithi windows produce duplicate entries
+    deduped = []
+    seen = set()
+    for entry in all_lagnas:
+        exact_s, l_ws, l_we, n_name, t_name, l_name = entry
+        # Round to nearest 10-min block for deduplication key
+        key = (l_name, round(exact_s * 144))  # 144 = 1440/10
+        if key not in seen:
+            seen.add(key)
+            deduped.append(entry)
+
+    return deduped
 
 
 def _fmt_jd(jd, tz, year, month, day):
