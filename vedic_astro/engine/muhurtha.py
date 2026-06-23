@@ -266,7 +266,7 @@ def fmt_window(ws_jd, we_jd, tz, year, month, day):
 #   (Magha & Mula excluded — Pada 1 issues; Telugu tradition avoids both)
 #   Tithis: Dwitiya, Tritiya, Panchami, Saptami, Dashami, Ekadashi, Trayodashi
 #   Avoid: Tuesday only (not Saturday — Telugu tradition)
-#   Shukla Paksha only
+#   Both Pakshas allowed (highly auspicious tithis only)
 #   Avoid: Moodami (Venus/Jupiter combustion)
 #   Avoid: Chaturmas (Ashadha–Kartika); Soonya Masa (Sun in Dhanu/Mithuna)
 #   Avoid: Rikta Tithis (4/9/14); Rahu Kalam; Bhadra (Vishti Karana)
@@ -314,11 +314,11 @@ RULES = {
         "lagnas": [1, 2, 3, 4, 5, 6, 8, 10, 11], # Sthira & Dwisvabhava preferred
         "exclude_days":    [1],        # Avoid Tuesday only (Telugu tradition)
         "check_moodami":   True,
-        "shukla_only":     True,
+        "shukla_only":     False,
         "avoid_bhadra":    True,
         "avoid_rahu_kalam":True,
         "avoid_bad_yoga":  True,
-        "avoid_chaturmas": True,
+        "avoid_lunar_months": ["Ashadha", "Bhadrapada", "Ashwina", "Pushya"],
         "avoid_soonya_masa":True,
         "avoid_rikta_tithis":True,
     },
@@ -450,18 +450,6 @@ def get_monthly_muhurthas(loc, year, month):
                     if rule.get('avoid_lunar_months') and base_lunar_month in rule['avoid_lunar_months']:
                         continue
 
-                    # Quick nakshatra / tithi pre-check using sunrise values
-                    nak_ok   = curr_nak in rule['naks']
-                    tithi_ok = curr_tithi in rule['tithis']
-                    if rule.get('avoid_rikta_tithis') and is_rikta_tithi(curr_tithi):
-                        tithi_ok = False
-
-                    # For window-based categories (Griha Pravesh), skip the
-                    # sunrise pre-check and always compute the window — the nak
-                    # may have just started after midnight and is valid.
-                    # For others, use the pre-check as a fast gate.
-                    if cat != 'gruha' and not (nak_ok and tithi_ok):
-                        continue
 
                     # ── Compute exact window ───────────────────────────────
                     full_data = fetch_panchang(loc, date_str)

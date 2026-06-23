@@ -126,10 +126,25 @@ GREGORIAN_FESTIVALS = {
 }
 
 FESTIVAL_IMAGES_STATIC = {
-    # Specific / Priority Matches First to avoid generic keyword overrides
-    "Ekadashi":        "/static/images/vishnu_ekadashi.png",
+    # --- 1. Highly Specific / Multi-word Priority Matches (To avoid generic overrides) ---
+    "Krishna Ekadashi": "/static/images/vishnu_ekadashi.png",
+    "Pushkaralu":      "https://image.pollinations.ai/prompt/Hindu%20devotees%20taking%20holy%20dip%20in%20sacred%20river%20during%20Pushkaram%20festival%20classical%20devotional%20art?width=300&height=200&nologo=true&seed=4491",
     "Eruvaka Purnima": "/static/images/eruvaka_purnima.jpg",
-    "Varalakshmi":     "/static/images/varalakshmi.jpg",
+    "Vat Savitri":     "/static/images/vat_savitri.jpg",
+    "Sharad Purnima":  "/static/images/sharad_purnima.jpg",
+    "Kojagari":        "/static/images/sharad_purnima.jpg",
+    "Guru Purnima":    "/static/images/guru_purnima.jpg",
+    "Buddha Purnima":  "/static/images/buddha.jpg",
+    
+    "Sankashti":       "/static/images/sankashti.jpg",
+    "Sankashta":       "/static/images/sankashta.jpg",
+    
+    "Makara Sankranti": "/static/images/makara_sankranti.png",
+    "Ganga Dussehra":  "/static/images/ganga_dussehra.jpg",
+    
+    "Vijaya Dashami":  "/static/images/vijaya.jpg",
+    "Vijayadashami":   "/static/images/vijaya.jpg",
+    
     "Tulsi Vivah":     "/static/images/tulsi_vivah.jpg",
     "Govardhan":       "/static/images/govardhan_puja.jpg",
     "Ratha Saptami":   "/static/images/ratha_saptami.jpg",
@@ -138,11 +153,8 @@ FESTIVAL_IMAGES_STATIC = {
     "Nagula":          "/static/images/nagula_panchami.jpg",
     "Jagannath Rath":  "/static/images/rath_yatra.jpg",
     "Rath Yatra":      "/static/images/rath_yatra.jpg",
-    "Vat Savitri":     "/static/images/vat_savitri.jpg",
     "Buddha":          "/static/images/buddha.jpg",
     "Ganga":           "/static/images/ganga_dussehra.jpg",
-    "Sharad Purnima":  "/static/images/sharad_purnima.jpg",
-    "Kojagari":        "/static/images/sharad_purnima.jpg",
     "Dattatreya":      "/static/images/dattatreya.jpg",
     "Kabir Das":       "/static/images/kabir_das.jpg",
     
@@ -161,43 +173,50 @@ FESTIVAL_IMAGES_STATIC = {
     "Atla Tadde":      "https://image.pollinations.ai/prompt/Atla%20Tadde%20traditional%20Telugu%20women%20worshipping%20Goddess%20Gauri%20with%20clay%20lamps%20and%20atla%20dosas%20devotional%20art?width=300&height=200&nologo=true&seed=3301",
     "Anant Chaturdashi": "https://image.pollinations.ai/prompt/Lord%20Ananta%20Padmanabha%20Swamy%20Vishnu%20reclining%20on%20serpent%20Shesha%20in%20cosmic%20ocean%20classical%20devotional%20painting?width=300&height=200&nologo=true&seed=7711",
     
-    # Standard Mappings
+    # --- 2. Standard Local Festival Mappings ---
     "Ugadi":           "/static/images/ugadi.jpg",
     "Rama Navami":     "/static/images/rama_navami.jpg",
     "Sree Rama":       "/static/images/rama_navami.jpg",
     "Hanuman":         "/static/images/hanuman.jpg",
     "Akshaya Tritiya": "/static/images/akshaya_tritiya.jpg",
-    "Guru Purnima":    "/static/images/guru_purnima.jpg",
     "Raksha Bandhan":  "/static/images/raksha_bandhan.jpg",
     "Janmashtami":     "/static/images/janmashtami.jpg",
     "Krishna":         "/static/images/janmashtami.jpg",
     "Ganesh":          "/static/images/ganesh.jpg",
     "Vinayaka":        "/static/images/vinayaka.jpg",
-    "Chavithi":        "/static/images/vinayaka.jpg",
-    "Sankashti":       "/static/images/sankashti.jpg",
-    "Sankashta":       "/static/images/sankashta.jpg",
     "Mahalaya":        "/static/images/durga.jpg",
     "Navratri":        "/static/images/navratri.jpg",
     "Navaratri":       "/static/images/navratri.jpg",
     "Dasara":          "/static/images/dussehra.jpg",
     "Dussehra":        "/static/images/dussehra.jpg",
-    "Vijaya Dashami":  "/static/images/dussehra.jpg",
     "Durga":           "/static/images/durga.jpg",
     
     # Sankranti specific and generic
-    "Makara Sankranti": "/static/images/makara_sankranti.png",
     "Pongal":          "/static/images/makara_sankranti.png",
     "Bhogi":           "/static/images/makara_sankranti.png",
     "Kanuma":          "/static/images/makara_sankranti.png",
     "Mukkanuma":       "/static/images/makara_sankranti.png",
-    "Sankranti":       "/static/images/sankranti_generic.jpg",
     
-    # Secular and other
+    # --- 3. Added Local Mappings to Fix Wrong/Missing Images ---
+    "Varalakshmi":     "/static/images/varalakshmi.jpg",
+    "Shivaratri":      "/static/images/shivaratri.jpg",
+    "Holi":            "/static/images/holi.jpg",
+    "Deepavali":       "/static/images/deepavali.jpg",
+    "Diwali":          "/static/images/diwali.jpg",
+    
+    # --- 4. Secular / Holiday / Calendar System Generic Mappings ---
     "Christmas":       "/static/images/christmas.jpg",
     "Republic":        "/static/images/republic.jpg",
     "Independence":    "/static/images/independence.jpg",
     "Yoga":            "/static/images/yoga.jpg",
     "Rath":            "/static/images/rath_yatra.jpg",
+    
+    # --- 5. Generic Fallbacks (Keep at the bottom!) ---
+    "Ekadashi":        "/static/images/vishnu_ekadashi.png",
+    "Pradosha":        "/static/images/pradosh.jpg",
+    "Pradosham":       "/static/images/pradosh.jpg",
+    "Chavithi":        "/static/images/vinayaka.jpg",
     "Purnima":         "/static/images/purnima.jpg",
     "Amavasya":        "/static/images/amavasya.jpg",
+    "Sankranti":       "/static/images/sankranti_generic.jpg",
 }

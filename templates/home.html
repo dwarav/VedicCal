@@ -156,13 +156,22 @@
         box-sizing: border-box;
     }
 
-    .festival-item img {
+    .festival-item-img-wrapper {
         width: 50px;
         height: 50px;
-        object-fit: cover;
         margin-right: 10px;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .festival-item-img-wrapper img,
+    .festival-item-img-wrapper .image-placeholder {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
         border-radius: 50%;
         border: 2px solid #d4ac0d;
+        box-sizing: border-box;
     }
 
     .festival-item span {
@@ -198,11 +207,21 @@
         box-shadow: 0 6px 16px rgba(183,28,28,0.15);
     }
 
-    .upcoming-card img {
+    .upcoming-card-img-wrapper {
         width: 100%;
         height: 90px;
+        position: relative;
+        flex-shrink: 0;
+        background: #fff8e1;
+    }
+
+    .upcoming-card-img-wrapper img,
+    .upcoming-card-img-wrapper .image-placeholder {
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         border-bottom: 2px solid #d4ac0d;
+        box-sizing: border-box;
     }
 
     .upcoming-card-body {
@@ -837,7 +856,13 @@
     <div class="row-container festival-container">
         {% for festival in data.details.festivals %}
         <div class="festival-item">
-            <img src="{{ festival.image_url }}" alt="{{ festival.name }}">
+            <div class="festival-item-img-wrapper">
+                <img src="{{ festival.image_url }}" alt="{{ festival.name }}"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" style="display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #b71c1c, #e65100); color: #fff8e1; font-size: 1.2rem;">
+                    🪔
+                </div>
+            </div>
             <span>{{ festival.name }}</span>
         </div>
         {% endfor %}
@@ -854,7 +879,13 @@
         {% for fest in upcoming_festivals %}
         <a href="/?location={{ location_val | urlencode }}&date={{ fest.full_date }}"
            class="upcoming-card" style="text-decoration: none;" title="View panchang for {{ fest.name }}">
-            <img src="{{ fest.image_url }}" alt="{{ fest.name }}" loading="lazy">
+            <div class="upcoming-card-img-wrapper">
+                <img src="{{ fest.image_url }}" alt="{{ fest.name }}" loading="lazy"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-placeholder" style="display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #b71c1c, #e65100); color: #fff8e1; font-size: 2rem;">
+                    🪔
+                </div>
+            </div>
             <div class="upcoming-card-body">
                 <div class="upcoming-card-name">{{ fest.name }}</div>
                 <div class="upcoming-card-date">{{ fest.date_str }}</div>

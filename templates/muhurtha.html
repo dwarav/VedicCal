@@ -254,7 +254,7 @@
 
         <div class="tab-pane fade {% if not bride_details.name %}show active{% endif %}" id="pills-marriage">
             {% if not muhurtha_data.marriage %}<div class="alert alert-warning text-center">No Marriage Muhurthas found this month.
-                <small class="d-block mt-1 text-muted">Possible reasons: Chaturmas (Ashadha–Kartika), Soonya Masa, Moodami (combustion), or no suitable Nakshatra+Tithi overlap.</small>
+                <small class="d-block mt-1 text-muted">Possible reasons: Inauspicious Month (Ashadha, Bhadrapada, Ashwina, Pushya), Soonya Masa, Moodami (combustion), or no suitable Nakshatra+Tithi overlap.</small>
             </div>{% endif %}
             {% for item in muhurtha_data.marriage %}
             <div class="muhurtha-card">
@@ -399,8 +399,9 @@
         </div>
 
         <div class="tab-pane fade" id="pills-gruha">
-            {% if not muhurtha_data.gruha %}<div class="alert alert-warning text-center">No dates found.</div>{% endif
-            %}
+            {% if not muhurtha_data.gruha %}<div class="alert alert-warning text-center">No House Warming Muhurthas found this month.
+                <small class="d-block mt-1 text-muted">Possible reasons: Inauspicious Month (Chaitra, Ashadha, Bhadrapada, Ashwina), Moodami (combustion), or no suitable Nakshatra+Tithi overlap.</small>
+            </div>{% endif %}
             {% for item in muhurtha_data.gruha %}
             <div class="muhurtha-card">
                 <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
@@ -444,8 +445,9 @@
         </div>
 
         <div class="tab-pane fade" id="pills-naming">
-            {% if not muhurtha_data.naming %}<div class="alert alert-warning text-center">No dates found.</div>{% endif
-            %}
+            {% if not muhurtha_data.naming %}<div class="alert alert-warning text-center">No Naming Muhurthas found this month.
+                <small class="d-block mt-1 text-muted">Possible reasons: Inauspicious days, or no suitable Nakshatra+Tithi overlap.</small>
+            </div>{% endif %}
             {% for item in muhurtha_data.naming %}
             <div class="muhurtha-card">
                 <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
@@ -488,8 +490,9 @@
         </div>
 
         <div class="tab-pane fade" id="pills-vehicle">
-            {% if not muhurtha_data.vehicle %}<div class="alert alert-warning text-center">No dates found.</div>{% endif
-            %}
+            {% if not muhurtha_data.vehicle %}<div class="alert alert-warning text-center">No Vehicle Purchase Muhurthas found this month.
+                <small class="d-block mt-1 text-muted">Possible reasons: Inauspicious days, or no suitable Nakshatra+Tithi overlap.</small>
+            </div>{% endif %}
             {% for item in muhurtha_data.vehicle %}
             <div class="muhurtha-card">
                 <div class="m-date">{{ item.date.split(' ')[0] }} <span>{{ item.day_name[:3] }}</span></div>
