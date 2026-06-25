@@ -995,7 +995,7 @@
                 useCORS: true, 
                 scale: 3,
                 logging: false,
-                imageTimeout: 0,
+                imageTimeout: 5000, // 5 seconds timeout to prevent hanging on slow images
                 onclone: (clonedDoc) => {
                     const clonedNode = clonedDoc.querySelector("#captureArea");
                     clonedNode.classList.add('sharing-active');
@@ -1010,24 +1010,66 @@
                 }
             });
 
-            // 6. Share
-            const caption = `*Dwara's Vedic Calendar*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
-            canvas.toBlob(async (blob) => {
-                const file = new File([blob], "panchang.png", { type: "image/png" });
-                if (navigator.share) {
-                    try { await navigator.share({ files: [file], text: caption }); } catch (e) { }
-                } else {
-                    const link = document.createElement('a');
-                    link.download = `Panchang.png`;
-                    link.href = canvas.toDataURL();
-                    link.click();
-                    window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+            // Convert canvas to blob using a promise wrapper to catch any security/tainted canvas exceptions
+            const blob = await new Promise((resolve, reject) => {
+                try {
+                    canvas.toBlob((b) => {
+                        if (b) resolve(b);
+                        else reject(new Error("Canvas toBlob returned null"));
+                    }, 'image/png');
+                } catch (err) {
+                    reject(err);
                 }
-            }, 'image/png');
+            });
+
+            const file = new File([blob], "panchang.png", { type: "image/png" });
+            const caption = `*Dwara's Vedic Calendar*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
+
+            let shared = false;
+            // Check if navigator.share and navigator.canShare are supported and can share the file
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({ files: [file], text: caption });
+                    shared = true;
+                } catch (shareError) {
+                    console.warn("Navigator share failed, falling back:", shareError);
+                    // If user cancelled, treat it as handled
+                    if (shareError.name === 'AbortError') {
+                        shared = true;
+                    }
+                }
+            }
+
+            if (!shared) {
+                // Fallback: Download the image and open WhatsApp Web/App with text caption
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `Panchang.png`;
+                link.href = blobUrl;
+                link.click();
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+
+                window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+            }
 
         } catch (e) {
-            alert("Error generating card.");
-            console.error(e);
+            console.error("Error generating card:", e);
+            // Fallback to text-only share if image generation fails (e.g. CORS/tainted canvas issues)
+            const confirmText = "We couldn't generate the image card due to browser or security restrictions. Would you like to share the text calendar details instead?";
+            if (confirm(confirmText)) {
+                const caption = `*Dwara's Vedic Calendar*\n📅 ${document.getElementById('shareDate').innerText}\n📍 ${document.getElementById('shareLoc').innerText}`;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ text: caption });
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                        }
+                    }
+                } else {
+                    window.open(`https://wa.me/?text=${encodeURIComponent(caption)}`, '_blank');
+                }
+            }
         } finally {
             shareBtn.innerHTML = originalHTML;
         }
