@@ -174,14 +174,14 @@ FESTIVAL_IMAGES_STATIC = {
     "Anant Chaturdashi": "https://image.pollinations.ai/prompt/Lord%20Ananta%20Padmanabha%20Swamy%20Vishnu%20reclining%20on%20serpent%20Shesha%20in%20cosmic%20ocean%20classical%20devotional%20painting?width=300&height=200&nologo=true&seed=7711",
     
     # --- 2. Standard Local Festival Mappings ---
-    "Ugadi":           "/static/images/ugadi.jpg",
+    "Ugadi":           "https://image.pollinations.ai/prompt/Ugadi%20festival%20celebration%20traditional%20bowl%20of%20Ugadi%20Pachadi%2C%20mango%20leaves%20and%20marigold%20garlands%2C%20rangoli%2C%20warm%20sunlight%2C%20classical%20devotional%20art?width=300&height=200&nologo=true&seed=9021",
     "Rama Navami":     "/static/images/rama_navami.jpg",
     "Sree Rama":       "/static/images/rama_navami.jpg",
     "Hanuman":         "/static/images/hanuman.jpg",
     "Akshaya Tritiya": "/static/images/akshaya_tritiya.jpg",
     "Raksha Bandhan":  "/static/images/raksha_bandhan.jpg",
-    "Janmashtami":     "/static/images/janmashtami.jpg",
-    "Krishna":         "/static/images/janmashtami.jpg",
+    "Janmashtami":     "https://image.pollinations.ai/prompt/Baby%20Krishna%20sitting%20happily%20next%20to%20a%20clay%20pot%20overflowing%20with%20fresh%20white%20butter%20holding%20a%20small%20flute%2C%20peacock%20feather%20in%20his%20hair%2C%20warm%20divine%20light%2C%20classical%20devotional%20art?width=300&height=200&nologo=true&seed=8821",
+    "Krishna":         "https://image.pollinations.ai/prompt/Baby%20Krishna%20sitting%20happily%20next%20to%20a%20clay%20pot%20overflowing%20with%20fresh%20white%20butter%20holding%20a%20small%20flute%2C%20peacock%20feather%20in%20his%20hair%2C%20warm%20divine%20light%2C%20classical%20devotional%20art?width=300&height=200&nologo=true&seed=8821",
     "Ganesh":          "/static/images/ganesh.jpg",
     "Vinayaka":        "/static/images/vinayaka.jpg",
     "Mahalaya":        "/static/images/durga.jpg",
@@ -210,6 +210,10 @@ FESTIVAL_IMAGES_STATIC = {
     "Independence":    "/static/images/independence.jpg",
     "Yoga":            "/static/images/yoga.jpg",
     "Rath":            "/static/images/rath_yatra.jpg",
+    "Friendship":      "https://image.pollinations.ai/prompt/Diverse%20group%20of%20happy%20friends%20laughing%20and%20sharing%20a%20warm%20moment%20together%20in%20a%20sunny%20park%2C%20high%20quality%20photo?width=300&height=200&nologo=true&seed=1234",
+    "Parents":         "https://image.pollinations.ai/prompt/Happy%20loving%20family%2C%20parents%20with%20their%20young%20children%20smiling%20together%20in%20a%20warm%20cozy%20home%2C%20high%20quality%20photo?width=300&height=200&nologo=true&seed=5678",
+    "Mother":          "https://image.pollinations.ai/prompt/A%20loving%20mother%20hugging%20her%20young%20child%20warmly%2C%20soft%20natural%20lighting%2C%20peaceful%20tender%20moment%2C%20high%20quality%20photo?width=300&height=200&nologo=true&seed=9012",
+    "Father":          "https://image.pollinations.ai/prompt/A%20happy%20father%20playing%20with%20his%20young%20child%2C%20lifting%20them%20in%20the%20air%20and%20laughing%20outdoors%20in%20a%20park%2C%20high%20quality%20photo?width=300&height=200&nologo=true&seed=3456",
     
     # --- 5. Generic Fallbacks (Keep at the bottom!) ---
     "Ekadashi":        "/static/images/vishnu_ekadashi.png",
@@ -217,6 +221,6 @@ FESTIVAL_IMAGES_STATIC = {
     "Pradosham":       "/static/images/pradosh.jpg",
     "Chavithi":        "/static/images/vinayaka.jpg",
     "Purnima":         "/static/images/purnima.jpg",
-    "Amavasya":        "/static/images/amavasya.jpg",
+    "Amavasya":        "https://image.pollinations.ai/prompt/Beautiful%20star%20filled%20dark%20night%20sky%2C%20quiet%20sacred%20river%20bank%20with%20rows%20of%20burning%20clay%20lamps%20reflection%20in%20water%2C%20peaceful%20temple%20silhouette%20in%20background%2C%20no%20moon%2C%20spiritual%20atmosphere?width=300&height=200&nologo=true&seed=1001",
     "Sankranti":       "/static/images/sankranti_generic.jpg",
 }
