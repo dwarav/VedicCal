@@ -153,8 +153,42 @@ def calculate_doshas(planet_positions, lagna_rashi, moon_rashi):
     else:
         dosha_report.append({ "name": "Mangal Dosha", "status": "Absent", "desc": "No Mangal Dosha present.", "remedy": "None needed." })
         
-    # Kalsarpa Dosha (Simplified Check)
-    dosha_report.append({ "name": "Kalsarpa Dosha", "status": "Absent", "desc": "Planets are not hemmed between Rahu and Ketu.", "remedy": "None needed." })
+    # Kalsarpa Dosha (Proper Check)
+    rahu_h = p_houses.get('Rahu')
+    ketu_h = p_houses.get('Ketu')
+    if rahu_h and ketu_h:
+        # Check if all 7 main planets are hemmed between Rahu and Ketu
+        main_planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']
+        rahu_rasi = next((p['rasi'] for p in planet_positions if p['planet'] == 'Rahu'), None)
+        ketu_rasi = next((p['rasi'] for p in planet_positions if p['planet'] == 'Ketu'), None)
+        rahu_idx = RASHIS.index(rahu_rasi) if rahu_rasi and rahu_rasi in RASHIS else -1
+        ketu_idx = RASHIS.index(ketu_rasi) if ketu_rasi and ketu_rasi in RASHIS else -1
+        kalsarpa_present = False
+        if rahu_idx >= 0 and ketu_idx >= 0:
+            # Arc from Rahu to Ketu (clockwise, i.e., increasing rashi index)
+            arc_rahu_to_ketu = []
+            idx = rahu_idx
+            while idx != ketu_idx:
+                arc_rahu_to_ketu.append(idx)
+                idx = (idx + 1) % 12
+            arc_rahu_to_ketu.append(ketu_idx)
+            # Check all main planets are in this arc
+            all_in_arc = True
+            for mp in main_planets:
+                mp_rasi = next((p['rasi'] for p in planet_positions if p['planet'] == mp), None)
+                if mp_rasi and mp_rasi in RASHIS:
+                    mp_idx = RASHIS.index(mp_rasi)
+                    if mp_idx not in arc_rahu_to_ketu:
+                        all_in_arc = False
+                        break
+            kalsarpa_present = all_in_arc
+        if kalsarpa_present:
+            dosha_report.append({"name": "Kalsarpa Dosha", "status": "Present", "desc": "All planets are hemmed between Rahu and Ketu. This may cause obstacles, delays, and karmic challenges in life.", "remedy": "Perform Kalsarpa Shanti Puja, chant Rahu/Ketu mantras, and worship Naga Devatas."})
+        else:
+            dosha_report.append({"name": "Kalsarpa Dosha", "status": "Absent", "desc": "Planets are not fully hemmed between Rahu and Ketu.", "remedy": "None needed."})
+    else:
+        dosha_report.append({"name": "Kalsarpa Dosha", "status": "Absent", "desc": "Planets are not fully hemmed between Rahu and Ketu.", "remedy": "None needed."})
+
     
     # Pitra Dosha Check
     sun_h = p_houses.get('Sun')
@@ -346,7 +380,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     for v_num in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]:
         v_sign_idx = get_varga_sign(lagna_deg % 30, lagna_rashi, v_num)
         lagna_vargas[f"D{v_num}"] = {"sign": RASHIS[v_sign_idx], "sign_id": v_sign_idx}
-    planetary_positions.append({"planet": "Ascendant", "icon": "Asc", "symbol": "As", "is_retro": False, "position": deg_to_dms(lagna_deg), "degree": deg_to_dms(lagna_deg % 30), "rasi": RASHIS[lagna_rashi], "rasi_lord": RASI_LORDS_MAP[lagna_rashi], "nakshatra": f"{lnak} ({lpada})", "nak_lord": NAK_LORDS[lnak_idx % 9], "house": 1, "relationship": "-", "vargas": lagna_vargas})
+    planetary_positions.append({"planet": "Ascendant", "icon": "Asc", "symbol": "As", "is_retro": False, "position": deg_to_dms(lagna_deg), "degree": deg_to_dms(lagna_deg % 30), "rasi": RASHIS[lagna_rashi], "rasi_lord": RASI_LORDS_MAP[lagna_rashi], "nakshatra": f"{lnak} ({lpada})", "nak_lord": NAK_LORDS[lnak_idx], "house": 1, "relationship": "-", "vargas": lagna_vargas})
     
     # Calculate Planet Positions
     p_names = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu", "Uranus", "Neptune", "Pluto"]
@@ -365,9 +399,8 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         p_name = p_names[i]
         chart_data[rashi].append(p_name)
         
-        # Navamsa
-        total_minutes = deg * 60
-        navamsa_rashi_idx = int(total_minutes / 200) % 12
+        # Navamsa (D9) - use the standard varga formula, same as lagna
+        navamsa_rashi_idx = get_varga_sign(deg % 30, rashi, 9)
         navamsa_chart_data[navamsa_rashi_idx].append(p_name)
         
         nak, pada, nak_idx = get_nak(deg)
@@ -377,7 +410,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
         for v_num in [1, 2, 3, 4, 7, 9, 10, 12, 16, 20, 24, 27, 30, 40, 45, 60]:
             v_sign_idx = get_varga_sign(deg % 30, rashi, v_num)
             vargas[f"D{v_num}"] = {"sign": RASHIS[v_sign_idx], "sign_id": v_sign_idx}
-        planetary_positions.append({"planet": p_name, "icon": PLANET_ICONS.get(p_name, ""), "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30), "rasi": RASHIS[rashi], "rasi_lord": RASI_LORDS_MAP[rashi], "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx % 9], "house": house_num, "relationship": get_planet_relationship(p_name, RASI_LORDS_MAP[rashi], rashi), "vargas": vargas})
+        planetary_positions.append({"planet": p_name, "icon": PLANET_ICONS.get(p_name, ""), "symbol": p_symbols[i], "is_retro": is_retro, "position": deg_to_dms(deg), "degree": deg_to_dms(deg % 30), "rasi": RASHIS[rashi], "rasi_lord": RASI_LORDS_MAP[rashi], "nakshatra": f"{nak} ({pada})", "nak_lord": NAK_LORDS[nak_idx], "house": house_num, "relationship": get_planet_relationship(p_name, RASI_LORDS_MAP[rashi], rashi), "vargas": vargas})
 
     # Moon Chart
     moon_rashi_idx = int(moon_long / 30)
@@ -470,7 +503,7 @@ def get_horoscope_by_birth_details(loc, date_str, time_str, name=""):
     nak_start_idx = nak_idx * 4
     nak_alphabets = NAMA_AKSHARA[nak_start_idx : nak_start_idx + 4]
     
-    nak_lord = NAK_LORDS[nak_idx % 9]
+    nak_lord = NAK_LORDS[nak_idx]
     sign_lord = RASI_LORDS_MAP[moon_rashi_idx]
     lagna_lord = RASI_LORDS_MAP[lagna_rashi] 
     
