@@ -857,7 +857,7 @@
         {% for festival in data.details.festivals %}
         <div class="festival-item">
             <div class="festival-item-img-wrapper">
-                <img src="{{ festival.image_url }}" alt="{{ festival.name }}"
+                <img src="{{ festival.image_url }}" alt="{{ festival.name }}" crossorigin="anonymous"
                      onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                 <div class="image-placeholder" style="display: none; align-items: center; justify-content: center; background: linear-gradient(135deg, #b71c1c, #e65100); color: #fff8e1; font-size: 1.2rem;">
                     🪔
@@ -993,7 +993,7 @@
             // Generate Canvas using html2canvas's native onclone callback for absolute clarity and avoiding opacity issues
             const canvas = await html2canvas(captureNode, { 
                 useCORS: true, 
-                scale: 3,
+                scale: 2, // Scale 2 is much safer for mobile device canvas memory limits than scale 3
                 logging: false,
                 imageTimeout: 5000, // 5 seconds timeout to prevent hanging on slow images
                 onclone: (clonedDoc) => {
@@ -1007,6 +1007,21 @@
                     // Remove all unwanted sections from the clone
                     const unwanted = clonedNode.querySelectorAll('.no-share');
                     unwanted.forEach(el => el.remove());
+
+                    // Clean up images in the clone to prevent html2canvas from hanging on broken/slow CORS images
+                    const originalImages = captureNode.querySelectorAll('img');
+                    const clonedImages = clonedNode.querySelectorAll('img');
+                    clonedImages.forEach((clonedImg, index) => {
+                        const originalImg = originalImages[index];
+                        if (originalImg) {
+                            // If the original image failed to load or is hidden, remove it from the clone
+                            if (originalImg.style.display === 'none' || originalImg.naturalWidth === 0 || !originalImg.src) {
+                                clonedImg.remove();
+                            }
+                        } else {
+                            clonedImg.remove();
+                        }
+                    });
                 }
             });
 
